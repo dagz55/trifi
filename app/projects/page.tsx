@@ -284,21 +284,120 @@ export default function ProjectsPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="active">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">Active projects will be shown here</p>
+        <TabsContent value="active" className="space-y-4">
+          <div className="grid gap-4">
+            {filteredProjects.filter(p => p.status === "In Progress").map((project) => (
+              <Card key={project.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{project.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className={getStatusColor(project.status)}>
+                          {project.status}
+                        </Badge>
+                        <Badge className={getPriorityColor(project.priority)}>
+                          {project.priority}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => toast.info(`Project actions for ${project.name}`)}>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span>{project.progress}% Complete</span>
+                      <span className="text-muted-foreground">Budget: {project.budget}</span>
+                    </div>
+                    <Progress value={project.progress} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {filteredProjects.filter(p => p.status === "In Progress").length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No active projects found</p>
+              </div>
+            )}
           </div>
         </TabsContent>
 
-        <TabsContent value="completed">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">Completed projects will be shown here</p>
+        <TabsContent value="completed" className="space-y-4">
+          <div className="grid gap-4">
+            {filteredProjects.filter(p => p.status === "Completed").map((project) => (
+              <Card key={project.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{project.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className={getStatusColor(project.status)}>
+                          {project.status}
+                        </Badge>
+                        <Badge className={getPriorityColor(project.priority)}>
+                          {project.priority}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => toast.info(`Project actions for ${project.name}`)}>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span>{project.progress}% Complete</span>
+                      <span className="text-muted-foreground">Budget: {project.budget}</span>
+                    </div>
+                    <Progress value={project.progress} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {filteredProjects.filter(p => p.status === "Completed").length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No completed projects found</p>
+              </div>
+            )}
           </div>
         </TabsContent>
 
-        <TabsContent value="planning">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">Projects in planning phase will be shown here</p>
+        <TabsContent value="planning" className="space-y-4">
+          <div className="grid gap-4">
+            {filteredProjects.filter(p => p.status === "Planning").map((project) => (
+              <Card key={project.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{project.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge className={getStatusColor(project.status)}>
+                          {project.status}
+                        </Badge>
+                        <Badge className={getPriorityColor(project.priority)}>
+                          {project.priority}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => toast.info(`Project actions for ${project.name}`)}>
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span>{project.progress}% Complete</span>
+                      <span className="text-muted-foreground">Budget: {project.budget}</span>
+                    </div>
+                    <Progress value={project.progress} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {filteredProjects.filter(p => p.status === "Planning").length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No projects in planning phase found</p>
+              </div>
+            )}
           </div>
         </TabsContent>
       </Tabs>
