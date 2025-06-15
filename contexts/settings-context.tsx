@@ -35,12 +35,12 @@ export interface UserSettings {
 
 const defaultSettings: UserSettings = {
   avatar: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/38184074.jpg-M4vCjTSSWVw5RwWvvmrxXBcNVU8MBU.jpeg",
-  fullName: "Dollar Singh",
-  email: "dollar.singh@example.com",
-  phone: "+1 (555) 123-4567",
-  timezone: "utc-8",
+  fullName: "Maria Santos",
+  email: "maria.santos@trifi.ph",
+  phone: "+63 917 123 4567",
+  timezone: "utc+8",
   language: "en",
-  currency: "usd",
+  currency: "php",
   dateFormat: "mm-dd-yyyy",
   fontSize: 16,
   theme: "system",

@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { TriFiLogo } from "@/components/trifi-logo"
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: Home },
@@ -50,7 +51,7 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
-  const NavItem = ({ item, isBottom = false }) => (
+  const NavItem = ({ item, isBottom = false }: { item: any; isBottom?: boolean }) => (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>
         <Link
@@ -94,11 +95,10 @@ export function Sidebar() {
         >
           <div className="border-b border-border">
             <div className={cn("flex h-16 items-center gap-2 px-4", isCollapsed && "justify-center px-2")}>
-              {!isCollapsed && (
-                <Link href="/" className="flex items-center font-semibold">
-                  <span className="text-lg">TriFi</span>
-                </Link>
-              )}
+              <Link href="/" className="flex items-center gap-2 font-semibold">
+                <TriFiLogo className="w-8 h-8" />
+                {!isCollapsed && <span className="text-lg">TriFi</span>}
+              </Link>
               <Button
                 variant="ghost"
                 size="sm"

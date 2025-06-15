@@ -22,7 +22,7 @@ export function AccountsOverview() {
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0)
 
-  const handleAddMoney = (amount) => {
+  const handleAddMoney = (amount: number) => {
     setAccounts(
       accounts.map((account) =>
         account.name === "Checking" ? { ...account, balance: account.balance + amount } : account,
@@ -30,7 +30,7 @@ export function AccountsOverview() {
     )
   }
 
-  const handleSendMoney = (amount, fromAccount) => {
+  const handleSendMoney = (amount: number, fromAccount: string) => {
     setAccounts(
       accounts.map((account) =>
         account.name === fromAccount ? { ...account, balance: account.balance - amount } : account,
@@ -38,8 +38,8 @@ export function AccountsOverview() {
     )
   }
 
-  const handleRequestMoney = (amount, contact) => {
-    console.log(`Requested $${amount} from ${contact.name}`)
+  const handleRequestMoney = (amount: number, contact: any) => {
+    console.log(`Requested ₱${amount} from ${contact.name}`)
   }
 
   return (
@@ -49,13 +49,13 @@ export function AccountsOverview() {
         <Wallet className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${totalBalance.toLocaleString()}</div>
+        <div className="text-2xl font-bold">₱{totalBalance.toLocaleString()}</div>
         <p className="text-xs text-muted-foreground">Total balance across all accounts</p>
         <div className="mt-4 space-y-2">
           {accounts.map((account) => (
             <div key={account.name} className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">{account.name}</span>
-              <span className="text-sm font-medium">${account.balance.toLocaleString()}</span>
+              <span className="text-sm font-medium">₱{account.balance.toLocaleString()}</span>
             </div>
           ))}
         </div>
