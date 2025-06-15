@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, DollarSign, PieChart } from "lucide-react"
-import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts"
+import { PieChart as RechartsPieChart, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, LineChart, Line } from "recharts"
 
 const portfolioData = [
   { name: "Stocks", value: 45, amount: 450000, color: "#0088FE" },
@@ -41,10 +41,11 @@ export function PortfolioOverview() {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">${totalValue.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">
-            <span className="text-green-500">+{totalGainPercent}%</span> from last month
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm font-medium leading-none">Portfolio Value</p>
+            <div className="text-2xl font-bold">₱{totalValue.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">+0.5% from yesterday</p>
+          </div>
         </CardContent>
       </Card>
 
@@ -54,8 +55,12 @@ export function PortfolioOverview() {
           <TrendingUp className="h-4 w-4 text-green-500" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-500">+${totalGain.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">Unrealized gains</p>
+          <div className="space-y-1">
+            <p className="text-sm font-medium leading-none">Total Gain</p>
+            <div className="text-2xl font-bold text-green-500">+₱{totalGain.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-500">+₱8,420</div>
+            <p className="text-xs text-muted-foreground">+1.2% from last week</p>
+          </div>
         </CardContent>
       </Card>
 
@@ -89,7 +94,7 @@ export function PortfolioOverview() {
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <RechartsPieChart>
-                <Tooltip formatter={(value, name) => [`$${value.toLocaleString()}`, name]} />
+                <Tooltip formatter={(value, name) => [`₱${value.toLocaleString()}`, name]} />
                 <RechartsPieChart data={portfolioData} cx="50%" cy="50%" outerRadius={80} dataKey="amount">
                   {portfolioData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -121,7 +126,7 @@ export function PortfolioOverview() {
               <BarChart data={performanceData}>
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, "Portfolio Value"]} />
+                <Tooltip formatter={(value) => [`₱${value.toLocaleString()}`, "Portfolio Value"]} />
                 <Bar dataKey="value" fill="#0088FE" />
               </BarChart>
             </ResponsiveContainer>
@@ -147,7 +152,7 @@ export function PortfolioOverview() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">${holding.value.toLocaleString()}</p>
+                  <p className="font-medium">₱{holding.value.toLocaleString()}</p>
                   <p className={`text-sm ${holding.change.startsWith("+") ? "text-green-500" : "text-red-500"}`}>
                     {holding.change}
                   </p>

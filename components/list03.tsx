@@ -1,3 +1,5 @@
+"use client"
+
 import { Calendar, PiggyBank, TrendingUp, CreditCard, ArrowRight } from "lucide-react"
 
 const events = [
@@ -33,13 +35,18 @@ const events = [
   },
 ]
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   Pending: "bg-yellow-100 text-yellow-800",
   "In Progress": "bg-blue-100 text-blue-800",
   Completed: "bg-green-100 text-green-800",
 }
 
 export function List03() {
+  const handleViewDetails = (eventId: number) => {
+    console.log(`Viewing details for event ${eventId}`)
+    // Navigate to event details page or open modal
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
@@ -66,7 +73,7 @@ export function List03() {
             </div>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-medium text-gray-900 dark:text-white">
-                ${event.target.toLocaleString()}
+                ₱{event.target.toLocaleString()}
                 <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">target</span>
               </span>
               <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
@@ -74,7 +81,10 @@ export function List03() {
                 {event.date}
               </span>
             </div>
-            <button className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center justify-center">
+            <button 
+              onClick={() => handleViewDetails(event.id)}
+              className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors flex items-center justify-center"
+            >
               View Details
               <ArrowRight className="h-4 w-4 ml-2" />
             </button>

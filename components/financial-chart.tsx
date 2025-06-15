@@ -28,7 +28,7 @@ export function FinancialChart() {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `₱${value}`}
               />
               <Tooltip />
               <Line type="monotone" dataKey="income" stroke="#8884d8" strokeWidth={2} />

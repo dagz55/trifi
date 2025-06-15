@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -13,6 +15,7 @@ import {
   ChevronDown,
   ChevronRight
 } from "lucide-react"
+import { toast } from "sonner"
 
 const faqItems = [
   {
@@ -99,11 +102,58 @@ const contactOptions = [
 ]
 
 export default function HelpPage() {
+  const handleContactSupport = () => {
+    toast.info("Opening contact support form...")
+  }
+
+  const handleContactAction = (action: string, contact: string) => {
+    switch (action) {
+      case "Send Email":
+        window.location.href = `mailto:${contact}`
+        toast.success(`Opening email to ${contact}`)
+        break
+      case "Call Now":
+        toast.success(`Calling ${contact}`)
+        break
+      case "Start Chat":
+        toast.info("Starting live chat...")
+        break
+      default:
+        break
+    }
+  }
+
+  const handleResourceOpen = (title: string, link: string) => {
+    toast.info(`Opening ${title}...`)
+    if (link.startsWith("http")) {
+      window.open(link, "_blank")
+    } else {
+      // Navigate to internal link
+      console.log(`Navigate to ${link}`)
+    }
+  }
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case "View Documentation":
+        toast.info("Opening documentation...")
+        break
+      case "Report an Issue":
+        toast.info("Opening issue report form...")
+        break
+      case "Feature Request":
+        toast.info("Opening feature request form...")
+        break
+      default:
+        break
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Help & Support</h1>
-        <Button>
+        <Button onClick={handleContactSupport}>
           <MessageSquare className="mr-2 h-4 w-4" />
           Contact Support
         </Button>
@@ -181,7 +231,12 @@ export default function HelpPage() {
                         <p className="text-sm font-medium mb-3">
                           {option.contact}
                         </p>
-                        <Button size="sm" variant="outline" className="w-full">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="w-full"
+                          onClick={() => handleContactAction(option.action, option.contact)}
+                        >
                           {option.action}
                         </Button>
                       </div>
@@ -212,7 +267,12 @@ export default function HelpPage() {
                 <p className="text-sm text-muted-foreground mb-3">
                   {resource.description}
                 </p>
-                <Button size="sm" variant="outline" className="w-full">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => handleResourceOpen(resource.title, resource.link)}
+                >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Open
                 </Button>
@@ -229,15 +289,27 @@ export default function HelpPage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <Button variant="outline" className="h-20 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col gap-2"
+              onClick={() => handleQuickAction("View Documentation")}
+            >
               <Book className="h-6 w-6" />
               <span>View Documentation</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col gap-2"
+              onClick={() => handleQuickAction("Report an Issue")}
+            >
               <MessageSquare className="h-6 w-6" />
               <span>Report an Issue</span>
             </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              className="h-20 flex flex-col gap-2"
+              onClick={() => handleQuickAction("Feature Request")}
+            >
               <ExternalLink className="h-6 w-6" />
               <span>Feature Request</span>
             </Button>

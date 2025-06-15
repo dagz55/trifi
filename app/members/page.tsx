@@ -1,9 +1,18 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { 
   Users, 
   Search, 
@@ -17,6 +26,7 @@ import {
   UserX,
   Crown
 } from "lucide-react"
+import { toast } from "sonner"
 
 const members = [
   {
@@ -136,16 +146,66 @@ const getRoleColor = (role: string) => {
 }
 
 export default function MembersPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [departmentFilter, setDepartmentFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
+
+  const handleFilter = () => {
+    toast.info("Opening advanced filters...")
+  }
+
+  const handleInviteMember = () => {
+    toast.info("Opening invite member form...")
+  }
+
+  const handleMessageMember = (memberName: string) => {
+    toast.success(`Opening chat with ${memberName}`)
+  }
+
+  const handleCallMember = (memberName: string, phone: string) => {
+    toast.success(`Calling ${memberName} at ${phone}`)
+  }
+
+  const handleMemberActions = (action: string, memberName: string) => {
+    switch (action) {
+      case "view-profile":
+        toast.info(`Viewing ${memberName}'s profile`)
+        break
+      case "edit-member":
+        toast.info(`Editing ${memberName}'s details`)
+        break
+      case "deactivate":
+        toast.warning(`Deactivating ${memberName}`)
+        break
+      case "remove":
+        toast.error(`Removing ${memberName} from team`)
+        break
+      default:
+        break
+    }
+  }
+
+  const filteredMembers = members.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          member.role.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesDepartment = departmentFilter === "all" || 
+                              member.department.toLowerCase() === departmentFilter
+    const matchesStatus = statusFilter === "all" || member.status === statusFilter
+
+    return matchesSearch && matchesDepartment && matchesStatus
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Members</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleFilter}>
             <Filter className="mr-2 h-4 w-4" />
             Filter
           </Button>
-          <Button>
+          <Button onClick={handleInviteMember}>
             <Plus className="mr-2 h-4 w-4" />
             Invite Member
           </Button>
@@ -181,9 +241,11 @@ export default function MembersPage() {
               <Input 
                 placeholder="Search members..." 
                 className="w-full pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select defaultValue="all">
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Department" />
               </SelectTrigger>
@@ -196,7 +258,7 @@ export default function MembersPage() {
                 <SelectItem value="finance">Finance</SelectItem>
               </SelectContent>
             </Select>
-            <Select defaultValue="all">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[120px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -213,7 +275,7 @@ export default function MembersPage() {
 
       {/* Members Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {members.map((member) => (
+        {filteredMembers.map((member) => (
           <Card key={member.id}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
@@ -231,9 +293,27 @@ export default function MembersPage() {
                     </Badge>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleMemberActions("view-profile", member.name)}>
+                      View Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMemberActions("edit-member", member.name)}>
+                      Edit Member
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMemberActions("deactivate", member.name)}>
+                      Deactivate
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleMemberActions("remove", member.name)}>
+                      Remove
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               <div className="space-y-3">
@@ -266,11 +346,21 @@ export default function MembersPage() {
               </div>
 
               <div className="mt-4 flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleMessageMember(member.name)}
+                >
                   <Mail className="mr-2 h-4 w-4" />
                   Message
                 </Button>
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleCallMember(member.name, member.phone)}
+                >
                   <Phone className="mr-2 h-4 w-4" />
                   Call
                 </Button>
@@ -279,6 +369,16 @@ export default function MembersPage() {
           </Card>
         ))}
       </div>
+
+      {filteredMembers.length === 0 && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No members match your filters</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 } 

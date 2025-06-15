@@ -24,7 +24,7 @@ export function BudgetTracker() {
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Total Spent</span>
             <span className="text-sm font-medium">
-              ${totalSpent.toLocaleString()} / ${totalBudget.toLocaleString()}
+              ₱{totalSpent.toLocaleString()} / ₱{totalBudget.toLocaleString()}
             </span>
           </div>
           <Progress value={overallPercentage} className="h-2" />

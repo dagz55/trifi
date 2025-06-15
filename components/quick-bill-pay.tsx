@@ -36,7 +36,7 @@ export function QuickBillPay() {
                   <p className="text-sm text-muted-foreground">Due: {bill.dueDate}</p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold">${bill.amount}</span>
+                  <span className="font-bold">₱{bill.amount}</span>
                   <Button variant="outline" size="sm" onClick={() => setSelectedBill(bill)}>
                     Pay
                   </Button>

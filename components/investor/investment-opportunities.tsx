@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TrendingUp, Star } from "lucide-react"
+import { toast } from "sonner"
 
 const opportunities = [
   {
@@ -76,12 +77,17 @@ const opportunities = [
   },
 ]
 
-const riskColors = {
-  Low: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  "Low-Medium": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  Medium: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-  High: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  "Very High": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+const handleInvest = (opportunity: any) => {
+  console.log(`Investing in ${opportunity.name}`)
+  toast.success(`Investment in ${opportunity.name} initiated!`)
+}
+
+const riskColors: Record<string, string> = {
+  Low: "bg-green-100 text-green-800",
+  "Low-Medium": "bg-blue-100 text-blue-800",
+  Medium: "bg-yellow-100 text-yellow-800",
+  High: "bg-orange-100 text-orange-800",
+  "Very High": "bg-red-100 text-red-800",
 }
 
 export function InvestmentOpportunities() {
@@ -96,10 +102,6 @@ export function InvestmentOpportunities() {
       if (sortBy === "risk") return a.risk.localeCompare(b.risk)
       return 0
     })
-
-  const handleInvest = (opportunity) => {
-    console.log(`Investing in ${opportunity.name}`)
-  }
 
   return (
     <div className="space-y-6">
@@ -157,8 +159,8 @@ export function InvestmentOpportunities() {
                   <p className="text-lg font-bold text-green-600">{opportunity.expectedReturn}</p>
                 </div>
                 <div>
-                  <p className="font-medium text-muted-foreground">Min. Investment</p>
-                  <p className="text-lg font-bold">${opportunity.minInvestment.toLocaleString()}</p>
+                  <p className="font-medium text-muted-foreground">Minimum Investment</p>
+                  <p className="text-lg font-bold">₱{opportunity.minInvestment.toLocaleString()}</p>
                 </div>
               </div>
 

@@ -10,7 +10,14 @@ import { CheckCircle2 } from "lucide-react"
 
 const steps = ["Amount and Account", "Card Details", "OTP Verification", "Confirmation"]
 
-export function SendMoneyModal({ isOpen, onClose, onSendMoney, accounts }) {
+interface SendMoneyModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSendMoney: (amount: number, fromAccount: string) => void
+  accounts: Array<{ name: string; balance: number }>
+}
+
+export function SendMoneyModal({ isOpen, onClose, onSendMoney, accounts }: SendMoneyModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [amount, setAmount] = useState("")
   const [selectedAccount, setSelectedAccount] = useState("")
@@ -50,7 +57,7 @@ export function SendMoneyModal({ isOpen, onClose, onSendMoney, accounts }) {
                 <SelectContent>
                   {accounts.map((account) => (
                     <SelectItem key={account.name} value={account.name}>
-                      {account.name} (${account.balance.toFixed(2)})
+                      {account.name} (₱{account.balance.toFixed(2)})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -105,7 +112,7 @@ export function SendMoneyModal({ isOpen, onClose, onSendMoney, accounts }) {
             <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
             <p className="text-lg font-medium">Money Sent Successfully</p>
             <p className="text-sm text-muted-foreground">
-              ${amount} has been sent from your {selectedAccount} account.
+              ₱{amount} has been sent from your {selectedAccount} account.
             </p>
           </div>
         )

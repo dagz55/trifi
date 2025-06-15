@@ -10,15 +10,27 @@ import { CheckCircle2 } from "lucide-react"
 
 const steps = ["Select Contact", "Enter Amount", "OTP Verification", "Confirmation"]
 
-const contacts = [
-  { id: "1", name: "John Doe", phoneNumber: "+1 234 567 8901" },
-  { id: "2", name: "Jane Smith", phoneNumber: "+1 987 654 3210" },
-  { id: "3", name: "Alice Johnson", phoneNumber: "+1 555 123 4567" },
+interface Contact {
+  id: string
+  name: string
+  phoneNumber: string
+}
+
+const contacts: Contact[] = [
+  { id: "1", name: "John Doe", phoneNumber: "+63 917 123 4567" },
+  { id: "2", name: "Jane Smith", phoneNumber: "+63 917 987 6543" },
+  { id: "3", name: "Alice Johnson", phoneNumber: "+63 917 555 1234" },
 ]
 
-export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }) {
+interface RequestMoneyModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onRequestMoney: (amount: number, contact: Contact | null) => void
+}
+
+export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }: RequestMoneyModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [selectedContact, setSelectedContact] = useState(null)
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
   const [amount, setAmount] = useState("")
   const [otp, setOtp] = useState("")
 
@@ -37,7 +49,7 @@ export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }) {
         return (
           <div className="space-y-4">
             <Label htmlFor="contact">Select Contact</Label>
-            <Select onValueChange={(value) => setSelectedContact(contacts.find((c) => c.id === value))}>
+            <Select onValueChange={(value) => setSelectedContact(contacts.find((c) => c.id === value) || null)}>
               <SelectTrigger id="contact">
                 <SelectValue placeholder="Select a contact" />
               </SelectTrigger>
@@ -85,7 +97,7 @@ export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }) {
             <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
             <p className="text-lg font-medium">Money Request Sent</p>
             <p className="text-sm text-muted-foreground">
-              ${amount} has been requested from {selectedContact.name}.
+              ₱{amount} has been requested from {selectedContact?.name}.
             </p>
           </div>
         )

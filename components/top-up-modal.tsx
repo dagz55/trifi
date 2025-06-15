@@ -9,7 +9,13 @@ import { CheckCircle2 } from "lucide-react"
 
 const steps = ["Amount", "Card Details", "OTP Verification", "Confirmation"]
 
-export function TopUpModal({ isOpen, onClose, onTopUp }) {
+interface TopUpModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onTopUp: (amount: number) => void
+}
+
+export function TopUpModal({ isOpen, onClose, onTopUp }: TopUpModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [amount, setAmount] = useState("")
   const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" })
@@ -29,7 +35,7 @@ export function TopUpModal({ isOpen, onClose, onTopUp }) {
       case 0:
         return (
           <div className="space-y-4">
-            <Label htmlFor="amount">Top-up Amount</Label>
+            <Label htmlFor="amount">Amount to Top Up</Label>
             <Input
               id="amount"
               type="number"
@@ -84,8 +90,10 @@ export function TopUpModal({ isOpen, onClose, onTopUp }) {
         return (
           <div className="text-center space-y-4">
             <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
-            <p className="text-lg font-medium">Top-up Successful</p>
-            <p className="text-sm text-muted-foreground">${amount} has been added to your account.</p>
+            <p className="text-lg font-medium">Top Up Successful</p>
+            <p className="text-sm text-muted-foreground">
+              ₱{amount} has been added to your account.
+            </p>
           </div>
         )
     }

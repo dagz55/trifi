@@ -1,55 +1,75 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Users, DollarSign, ArrowRight } from "lucide-react"
+import { TrendingUp, TrendingDown, Users, Target, ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const metrics = [
   {
     id: 1,
     title: "Revenue Growth",
-    subtitle: "Monthly revenue target",
+    subtitle: "Quarterly revenue target",
     icon: TrendingUp,
     status: "On Track",
-    progress: 75,
-    target: 100000,
-    current: 75000,
-    unit: "$",
+    progress: 78,
+    current: 1950000,
+    target: 2500000,
+    unit: "₱",
   },
   {
     id: 2,
     title: "Customer Acquisition",
-    subtitle: "New customers this quarter",
+    subtitle: "New customers this month",
     icon: Users,
     status: "Behind",
-    progress: 60,
-    target: 1000,
-    current: 600,
+    progress: 65,
+    current: 156,
+    target: 240,
     unit: "",
   },
   {
     id: 3,
-    title: "Average Order Value",
-    subtitle: "Target AOV for Q3",
-    icon: DollarSign,
+    title: "Cost Reduction",
+    subtitle: "Operating cost optimization",
+    icon: TrendingDown,
     status: "Ahead",
-    progress: 110,
-    target: 150,
-    current: 165,
-    unit: "$",
+    progress: 92,
+    current: 184000,
+    target: 200000,
+    unit: "₱",
+  },
+  {
+    id: 4,
+    title: "Project Completion",
+    subtitle: "Active projects on schedule",
+    icon: Target,
+    status: "On Track",
+    progress: 82,
+    current: 18,
+    target: 22,
+    unit: "",
   },
 ]
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   "On Track": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   Behind: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   Ahead: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
 }
 
 export function BusinessMetrics() {
+  const router = useRouter()
+
+  const handleViewDetails = () => {
+    router.push("/analytics")
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Business Metrics</h2>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleViewDetails}>
           View Details <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

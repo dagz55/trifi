@@ -22,15 +22,21 @@ const data = [
 export function RevenueChart() {
   const { theme } = useTheme()
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <Card className="border-none shadow-lg">
-          <CardContent className="p-2">
-            <p className="text-sm font-semibold">{label}</p>
-            <p className="text-sm text-muted-foreground">Revenue: ${payload[0].value.toLocaleString()}</p>
-          </CardContent>
-        </Card>
+        <div className="rounded-lg border bg-background p-2 shadow-sm">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col">
+              <span className="text-[0.70rem] uppercase text-muted-foreground">Month</span>
+              <span className="font-bold text-muted-foreground">{label}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[0.70rem] uppercase text-muted-foreground">Revenue</span>
+              <span className="font-bold">₱{payload[0].value?.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
       )
     }
     return null
@@ -51,9 +57,11 @@ export function RevenueChart() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => `₱${value}`}
         />
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip
+          content={CustomTooltip}
+        />
         <Line
           type="monotone"
           dataKey="revenue"

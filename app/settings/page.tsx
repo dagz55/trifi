@@ -201,7 +201,7 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button>Save Security Settings</Button>
+                <Button onClick={() => toast.success("Security settings saved successfully")}>Save Security Settings</Button>
               </CardFooter>
             </Card>
 
@@ -249,7 +249,7 @@ export default function SettingsPage() {
                 ))}
               </CardContent>
               <CardFooter>
-                <Button variant="outline">Log Out All Other Sessions</Button>
+                <Button variant="outline" onClick={() => toast.success("All other sessions have been logged out")}>Log Out All Other Sessions</Button>
               </CardFooter>
             </Card>
           </div>
@@ -347,7 +347,7 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save Preferences</Button>
+              <Button onClick={() => toast.success("Preferences saved successfully")}>Save Preferences</Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -366,8 +366,8 @@ export default function SettingsPage() {
                     <Checkbox
                       id="email-notifications"
                       defaultChecked={settings.notifications.email}
-                      onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, email: e.target.checked })
+                      onCheckedChange={(checked) =>
+                        updateNotificationSettings({ ...settings.notifications, email: checked as boolean })
                       }
                     />
                     <Label htmlFor="email-notifications">Email Notifications</Label>
@@ -376,8 +376,8 @@ export default function SettingsPage() {
                     <Checkbox
                       id="push-notifications"
                       defaultChecked={settings.notifications.push}
-                      onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, push: e.target.checked })
+                      onCheckedChange={(checked) =>
+                        updateNotificationSettings({ ...settings.notifications, push: checked as boolean })
                       }
                     />
                     <Label htmlFor="push-notifications">Push Notifications</Label>
@@ -386,7 +386,7 @@ export default function SettingsPage() {
                     <Checkbox
                       id="sms-notifications"
                       defaultChecked={settings.notifications.sms}
-                      onChange={(e) => updateNotificationSettings({ ...settings.notifications, sms: e.target.checked })}
+                      onCheckedChange={(checked) => updateNotificationSettings({ ...settings.notifications, sms: checked as boolean })}
                     />
                     <Label htmlFor="sms-notifications">SMS Notifications</Label>
                   </div>
@@ -397,8 +397,8 @@ export default function SettingsPage() {
                     <Checkbox
                       id="account-activity"
                       defaultChecked={settings.notifications.accountActivity}
-                      onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, accountActivity: e.target.checked })
+                      onCheckedChange={(checked) =>
+                        updateNotificationSettings({ ...settings.notifications, accountActivity: checked as boolean })
                       }
                     />
                     <Label htmlFor="account-activity">Account Activity</Label>
@@ -407,8 +407,8 @@ export default function SettingsPage() {
                     <Checkbox
                       id="new-features"
                       defaultChecked={settings.notifications.newFeatures}
-                      onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, newFeatures: e.target.checked })
+                      onCheckedChange={(checked) =>
+                        updateNotificationSettings({ ...settings.notifications, newFeatures: checked as boolean })
                       }
                     />
                     <Label htmlFor="new-features">New Features and Updates</Label>
@@ -417,8 +417,8 @@ export default function SettingsPage() {
                     <Checkbox
                       id="marketing"
                       defaultChecked={settings.notifications.marketing}
-                      onChange={(e) =>
-                        updateNotificationSettings({ ...settings.notifications, marketing: e.target.checked })
+                      onCheckedChange={(checked) =>
+                        updateNotificationSettings({ ...settings.notifications, marketing: checked as boolean })
                       }
                     />
                     <Label htmlFor="marketing">Marketing and Promotions</Label>
@@ -429,7 +429,7 @@ export default function SettingsPage() {
                 <Label htmlFor="notification-frequency">Notification Frequency</Label>
                 <Select
                   value={settings.notifications.frequency}
-                  onValueChange={(value) => updateNotificationSettings({ ...settings.notifications, frequency: value })}
+                  onValueChange={(value) => updateNotificationSettings({ ...settings.notifications, frequency: value as "real-time" | "daily" | "weekly" })}
                 >
                   <SelectTrigger id="notification-frequency">
                     <SelectValue placeholder="Select Frequency" />
@@ -474,8 +474,8 @@ export default function SettingsPage() {
                       <Switch
                         id="analytics-sharing"
                         checked={settings.privacy.analyticsSharing}
-                        onChange={(e) =>
-                          updatePrivacySettings({ ...settings.privacy, analyticsSharing: e.target.checked })
+                        onCheckedChange={(checked) =>
+                          updatePrivacySettings({ ...settings.privacy, analyticsSharing: checked })
                         }
                       />
                     </div>
@@ -484,8 +484,8 @@ export default function SettingsPage() {
                       <Switch
                         id="personalized-ads"
                         checked={settings.privacy.personalizedAds}
-                        onChange={(e) =>
-                          updatePrivacySettings({ ...settings.privacy, personalizedAds: e.target.checked })
+                        onCheckedChange={(checked) =>
+                          updatePrivacySettings({ ...settings.privacy, personalizedAds: checked })
                         }
                       />
                     </div>
@@ -498,7 +498,7 @@ export default function SettingsPage() {
                   <CardContent>
                     <RadioGroup
                       value={settings.privacy.visibility}
-                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, visibility: value })}
+                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, visibility: value as "public" | "private" })}
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="public" id="visibility-public" />
@@ -520,7 +520,7 @@ export default function SettingsPage() {
                   <CardContent>
                     <Select
                       value={settings.privacy.dataRetention}
-                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, dataRetention: value })}
+                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, dataRetention: value as "6-months" | "1-year" | "2-years" | "indefinite" })}
                     >
                       <SelectTrigger id="data-retention">
                         <SelectValue placeholder="Select Data Retention Period" />
@@ -540,13 +540,13 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <p className="text-sm text-muted-foreground">Connected: Google Analytics, Facebook Pixel</p>
-                    <Button variant="outline">Manage Integrations</Button>
+                    <Button variant="outline" onClick={() => toast.success("Integration settings opened")}>Manage Integrations</Button>
                   </CardContent>
                 </Card>
               </div>
               <div className="flex justify-between">
-                <Button variant="outline">Download Your Data</Button>
-                <Button variant="destructive">Delete My Account</Button>
+                <Button variant="outline" onClick={() => toast.success("Data download initiated")}>Download Your Data</Button>
+                <Button variant="destructive" onClick={() => toast.error("Account deletion requires confirmation")}>Delete My Account</Button>
               </div>
             </CardContent>
             <CardFooter>

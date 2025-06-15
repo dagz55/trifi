@@ -1,6 +1,9 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Calendar, PiggyBank, TrendingUp, CreditCard, ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const events = [
   {
@@ -35,18 +38,24 @@ const events = [
   },
 ]
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   Pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
   "In Progress": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
   Completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
 }
 
 export function UpcomingEvents() {
+  const router = useRouter()
+
+  const handleViewAll = () => {
+    router.push("/meetings")
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Upcoming Events</h2>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleViewAll}>
           View All <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
@@ -71,7 +80,7 @@ export function UpcomingEvents() {
                   <div className="bg-primary h-1.5 rounded-full" style={{ width: `${event.progress}%` }} />
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-medium">${event.target.toLocaleString()}</span>
+                  <span className="font-medium">₱{event.target.toLocaleString()}</span>
                   <span className="text-muted-foreground">{event.progress}% complete</span>
                 </div>
               </div>

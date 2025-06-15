@@ -108,7 +108,7 @@ export function AnalyticsTab() {
           <CardContent className="space-y-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Customer Lifetime Value</p>
-              <p className="text-2xl font-bold">$1,250</p>
+              <p className="text-2xl font-bold">₱1,250</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Net Promoter Score</p>
@@ -116,15 +116,28 @@ export function AnalyticsTab() {
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">Customer Acquisition Cost</p>
-              <p className="text-2xl font-bold">$75</p>
+              <p className="text-2xl font-bold">₱75</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Average Order Value</p>
-              <p className="text-2xl font-bold">$120</p>
+              <p className="text-sm text-muted-foreground">Average Order Value</p>
+              <p className="text-2xl font-bold">₱1,250</p>
             </div>
+            <Card className="p-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Cost Per Acquisition</p>
+                <p className="text-2xl font-bold">₱75</p>
+              </div>
+            </Card>
+            <Card className="p-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Customer Lifetime Value</p>
+                <p className="text-2xl font-bold">₱120</p>
+              </div>
+            </Card>
           </CardContent>
         </Card>
       </div>
     </div>
   )
 }
+

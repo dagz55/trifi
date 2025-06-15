@@ -123,29 +123,29 @@ export function TransactionHistory() {
     return matchesSearch && matchesType && matchesStatus
   })
 
-  const getTypeColor = (type) => {
+  const getTypeColor = (type: string) => {
     switch (type) {
-      case "Buy":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-      case "Sell":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-      case "Dividend":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+      case "buy":
+        return "bg-green-100 text-green-800"
+      case "sell":
+        return "bg-red-100 text-red-800"
+      case "dividend":
+        return "bg-blue-100 text-blue-800"
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+        return "bg-gray-100 text-gray-800"
     }
   }
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case "Completed":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-      case "Pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-      case "Failed":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+      case "completed":
+        return "bg-green-100 text-green-800"
+      case "pending":
+        return "bg-yellow-100 text-yellow-800"
+      case "failed":
+        return "bg-red-100 text-red-800"
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+        return "bg-gray-100 text-gray-800"
     }
   }
 
@@ -228,9 +228,9 @@ export function TransactionHistory() {
                       </div>
                     </TableCell>
                     <TableCell>{transaction.quantity}</TableCell>
-                    <TableCell>${transaction.price.toFixed(2)}</TableCell>
-                    <TableCell className="font-medium">${transaction.total.toFixed(2)}</TableCell>
-                    <TableCell>${transaction.fees.toFixed(2)}</TableCell>
+                    <TableCell>₱{transaction.price.toFixed(2)}</TableCell>
+                    <TableCell className="font-medium">₱{transaction.total.toFixed(2)}</TableCell>
+                    <TableCell>₱{transaction.fees.toFixed(2)}</TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>
                     </TableCell>

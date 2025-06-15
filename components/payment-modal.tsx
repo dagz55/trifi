@@ -10,7 +10,21 @@ import { CheckCircle2 } from "lucide-react"
 
 const steps = ["Payment Option", "Card Details", "OTP Verification", "Confirmation"]
 
-export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess }) {
+interface Bill {
+  id: number
+  name: string
+  amount: number
+  dueDate: string
+}
+
+interface PaymentModalProps {
+  bill: Bill
+  isOpen: boolean
+  onClose: () => void
+  onPaymentSuccess: () => void
+}
+
+export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess }: PaymentModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [paymentOption, setPaymentOption] = useState("full")
   const [cardDetails, setCardDetails] = useState({ number: "", expiry: "", cvv: "" })
@@ -30,14 +44,15 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess }) {
       case 0:
         return (
           <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">Choose your payment option</p>
             <RadioGroup value={paymentOption} onValueChange={setPaymentOption}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="full" id="full" />
-                <Label htmlFor="full">Pay in full (${bill.amount})</Label>
+                <Label htmlFor="full">Pay in full (₱{bill.amount})</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="installments" id="installments" />
-                <Label htmlFor="installments">Pay in 4 (${(bill.amount / 4).toFixed(2)} x 4)</Label>
+                <Label htmlFor="installments">Pay in 4 (₱{(bill.amount / 4).toFixed(2)} x 4)</Label>
               </div>
             </RadioGroup>
           </div>
@@ -89,7 +104,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess }) {
             <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
             <p className="text-lg font-medium">Payment Successful</p>
             <p className="text-sm text-muted-foreground">
-              Your payment of ${bill.amount} for {bill.name} has been processed successfully.
+              Your payment of ₱{bill.amount} for {bill.name} has been processed successfully.
             </p>
           </div>
         )

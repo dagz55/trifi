@@ -27,9 +27,9 @@ export function SavingsGoals() {
               <div key={goal.name} className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>{goal.name}</span>
-                  <span>
-                    ${goal.current.toLocaleString()} / ${goal.target.toLocaleString()}
-                  </span>
+                  <p className="text-sm text-muted-foreground">
+                    ₱{goal.current.toLocaleString()} / ₱{goal.target.toLocaleString()}
+                  </p>
                 </div>
                 <Progress value={percentage} className="h-2" />
                 <p className="text-xs text-right text-muted-foreground">{percentage.toFixed(1)}% complete</p>

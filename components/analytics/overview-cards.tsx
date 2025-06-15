@@ -3,31 +3,31 @@ import { DollarSign, Users, CreditCard, TrendingUp } from "lucide-react"
 
 const cards = [
   {
-    title: "Total Revenue",
+    title: "Total Balance",
     icon: DollarSign,
-    amount: "$45,231.89",
+    amount: "₱45,231.89",
     description: "+20.1% from last month",
     trend: "up",
   },
   {
-    title: "New Customers",
-    icon: Users,
-    amount: "2,350",
-    description: "+180.1% from last month",
-    trend: "up",
-  },
-  {
-    title: "Active Accounts",
-    icon: CreditCard,
-    amount: "12,234",
+    title: "Income",
+    icon: DollarSign,
+    amount: "₱54,231.89",
     description: "+19% from last month",
     trend: "up",
   },
   {
-    title: "Growth Rate",
-    icon: TrendingUp,
-    amount: "18.6%",
-    description: "+5.4% from last month",
+    title: "Expenses",
+    icon: DollarSign,
+    amount: "₱1,259.34",
+    description: "-12% from last month",
+    trend: "down",
+  },
+  {
+    title: "Savings",
+    icon: DollarSign,
+    amount: "₱2,540.52",
+    description: "+5% from last month",
     trend: "up",
   },
 ]

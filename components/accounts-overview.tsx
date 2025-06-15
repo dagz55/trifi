@@ -7,6 +7,12 @@ import { Wallet, Plus, Send, CreditCard, MoreHorizontal } from "lucide-react"
 import { AddMoneyModal } from "./add-money-modal"
 import { SendMoneyModal } from "./send-money-modal"
 import { RequestMoneyModal } from "./request-money-modal"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const initialAccounts = [
   { name: "Checking", balance: 7500 },
@@ -42,6 +48,21 @@ export function AccountsOverview() {
     console.log(`Requested ₱${amount} from ${contact.name}`)
   }
 
+  const handleViewStatement = () => {
+    console.log("Viewing account statement...")
+    // Navigate to account statement page
+  }
+
+  const handleAccountSettings = () => {
+    console.log("Opening account settings...")
+    // Navigate to account settings page
+  }
+
+  const handleExportData = () => {
+    console.log("Exporting account data...")
+    // Export account data as CSV/PDF
+  }
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -69,9 +90,24 @@ export function AccountsOverview() {
           <Button size="sm" onClick={() => setIsRequestMoneyModalOpen(true)}>
             <CreditCard className="mr-2 h-4 w-4" /> Request
           </Button>
-          <Button size="sm" variant="outline">
-            <MoreHorizontal className="mr-2 h-4 w-4" /> More
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline">
+                <MoreHorizontal className="mr-2 h-4 w-4" /> More
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleViewStatement}>
+                View Statement
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleAccountSettings}>
+                Account Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportData}>
+                Export Data
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardContent>
       <AddMoneyModal

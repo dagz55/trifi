@@ -16,21 +16,25 @@ const reportTypes = [
   "Operational Efficiency",
 ]
 
-const dummyReportData = {
-  "Financial Summary": [
-    { id: 1, metric: "Total Revenue", value: "$1,234,567" },
-    { id: 2, metric: "Net Profit", value: "$345,678" },
-    { id: 3, metric: "Operating Expenses", value: "$567,890" },
-    { id: 4, metric: "Gross Margin", value: "28%" },
-    { id: 5, metric: "Return on Investment", value: "15%" },
-  ],
-  "Customer Acquisition": [
-    { id: 1, metric: "New Customers", value: "1,234" },
-    { id: 2, metric: "Customer Acquisition Cost", value: "$50" },
-    { id: 3, metric: "Conversion Rate", value: "3.5%" },
-    { id: 4, metric: "Customer Lifetime Value", value: "$1,200" },
-    { id: 5, metric: "Churn Rate", value: "2.3%" },
-  ],
+const financialSummary = [
+  { id: 1, metric: "Total Revenue", value: "₱1,234,567" },
+  { id: 2, metric: "Net Profit", value: "₱345,678" },
+  { id: 3, metric: "Operating Expenses", value: "₱567,890" },
+  { id: 4, metric: "Gross Margin", value: "28%" },
+  { id: 5, metric: "Return on Investment", value: "15%" },
+]
+
+const marketingMetrics = [
+  { id: 1, metric: "Customer Acquisition Cost", value: "₱125" },
+  { id: 2, metric: "New Customers", value: "1,234" },
+  { id: 3, metric: "Conversion Rate", value: "3.5%" },
+  { id: 4, metric: "Customer Lifetime Value", value: "₱1,200" },
+  { id: 5, metric: "Churn Rate", value: "2.3%" },
+]
+
+const dummyReportData: Record<string, Array<{ id: number; metric: string; value: string }>> = {
+  "Financial Summary": financialSummary,
+  "Customer Acquisition": marketingMetrics,
   // Add more report types here
 }
 

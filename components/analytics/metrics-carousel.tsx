@@ -1,14 +1,14 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { DollarSign, Users, CreditCard, TrendingUp, Briefcase, ShieldCheck } from "lucide-react"
+import { DollarSign, Users, CreditCard, TrendingUp, Briefcase, ShieldCheck, ShoppingCart } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 
 const metrics = [
   {
     title: "Total Revenue",
-    value: "$1,234,567",
+    value: "₱1,234,567",
     icon: DollarSign,
     change: "+12.3%",
     description: "Overall earnings this quarter",
@@ -41,6 +41,24 @@ const metrics = [
     icon: ShieldCheck,
     change: "+0.5%",
     description: "Overall system integrity score",
+  },
+  {
+    title: "New Customers",
+    value: "2,345",
+    icon: Users,
+    change: "+5.6%",
+  },
+  {
+    title: "Order Volume",
+    value: "18,432",
+    icon: ShoppingCart,
+    change: "-2.1%",
+  },
+  {
+    title: "Conversion Rate",
+    value: "3.2%",
+    icon: TrendingUp,
+    change: "+1.8%",
   },
 ]
 

@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -121,25 +125,46 @@ const getPriorityColor = (priority: string) => {
 }
 
 export default function ProjectsPage() {
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProjects = projects.filter((project) =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="border rounded-md px-2 py-1"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Button variant="outline" size="sm" onClick={() => setIsFilterVisible(!isFilterVisible)}>
             <Filter className="mr-2 h-4 w-4" />
             Filter
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => toast.info("Search functionality active")}>
             <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
-          <Button>
+          <Button onClick={() => toast.success("New project creation started")}>
             <Plus className="mr-2 h-4 w-4" />
             New Project
           </Button>
         </div>
       </div>
+
+      {isFilterVisible && (
+        <div className="p-4 border rounded-md">
+          <p>Filter Options</p>
+          {/* Add filter options here */}
+        </div>
+      )}
 
       {/* Project Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -187,7 +212,7 @@ export default function ProjectsPage() {
                         </Badge>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={() => toast.info(`Project actions for ${project.name}`)}>
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </div>
@@ -279,4 +304,4 @@ export default function ProjectsPage() {
       </Tabs>
     </div>
   )
-} 
+}

@@ -1,6 +1,9 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const transactions = [
   { id: 1, name: "Amazon.com", amount: -129.99, date: "2023-07-15", type: "expense" },
@@ -11,6 +14,12 @@ const transactions = [
 ]
 
 export function RecentTransactions() {
+  const router = useRouter()
+
+  const handleViewAllTransactions = () => {
+    router.push("/transactions")
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -32,7 +41,7 @@ export function RecentTransactions() {
                       : "text-red-600 dark:text-red-400"
                   }`}
                 >
-                  {transaction.type === "income" ? "+" : "-"}${Math.abs(transaction.amount).toFixed(2)}
+                  {transaction.type === "income" ? "+" : "-"}₱{Math.abs(transaction.amount).toFixed(2)}
                 </span>
                 {transaction.type === "income" ? (
                   <ArrowUpRight className="h-4 w-4 text-green-600 dark:text-green-400 ml-1" />
@@ -43,7 +52,7 @@ export function RecentTransactions() {
             </div>
           ))}
         </div>
-        <Button className="w-full mt-4" variant="outline">
+        <Button className="w-full mt-4" variant="outline" onClick={handleViewAllTransactions}>
           View All Transactions
         </Button>
       </CardContent>

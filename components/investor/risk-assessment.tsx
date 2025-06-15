@@ -22,7 +22,7 @@ const portfolioRisk = {
   sharpeRatio: 1.25,
   maxDrawdown: "-12.5%",
   beta: 0.95,
-  var: "-$15,420",
+  var: "-₱15,420",
 }
 
 const riskRecommendations = [
@@ -46,24 +46,26 @@ const riskRecommendations = [
   },
 ]
 
-const stressTestScenarios = [
-  { scenario: "Market Crash (-30%)", impact: "-$180,000", recovery: "18 months" },
-  { scenario: "Interest Rate Spike (+3%)", impact: "-$45,000", recovery: "8 months" },
-  { scenario: "Sector Rotation", impact: "-$25,000", recovery: "4 months" },
-  { scenario: "Currency Devaluation", impact: "-$15,000", recovery: "6 months" },
+const scenarioAnalysis = [
+  { scenario: "Market Crash (-30%)", impact: "-₱180,000", recovery: "18 months" },
+  { scenario: "Interest Rate Spike (+3%)", impact: "-₱45,000", recovery: "8 months" },
+  { scenario: "Sector Rotation", impact: "-₱25,000", recovery: "4 months" },
+  { scenario: "Currency Devaluation", impact: "-₱15,000", recovery: "6 months" },
 ]
 
 export function RiskAssessment() {
-  const getRiskColor = (score) => {
-    if (score <= 30) return "text-green-500"
-    if (score <= 60) return "text-yellow-500"
-    return "text-red-500"
+  const getRiskColor = (score: number) => {
+    if (score >= 80) return "text-red-500"
+    if (score >= 60) return "text-orange-500"
+    if (score >= 40) return "text-yellow-500"
+    return "text-green-500"
   }
 
-  const getRiskLevel = (score) => {
-    if (score <= 30) return "Low"
-    if (score <= 60) return "Medium"
-    return "High"
+  const getRiskLevel = (score: number) => {
+    if (score >= 80) return "High Risk"
+    if (score >= 60) return "Medium-High Risk"
+    if (score >= 40) return "Medium Risk"
+    return "Low Risk"
   }
 
   return (
@@ -202,7 +204,7 @@ export function RiskAssessment() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
-            {stressTestScenarios.map((scenario, index) => (
+            {scenarioAnalysis.map((scenario, index) => (
               <div key={index} className="p-4 border rounded-lg">
                 <h4 className="font-medium">{scenario.scenario}</h4>
                 <div className="mt-2 space-y-1">

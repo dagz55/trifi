@@ -26,8 +26,8 @@ const investorData = {
     investmentExperience: "5-10 years",
     timeHorizon: "Long-term (10+ years)",
     investmentGoals: ["Retirement", "Wealth Building", "Tax Optimization"],
-    annualIncome: "$150,000 - $200,000",
-    netWorth: "$500,000 - $1,000,000",
+    annualIncome: "₱150,000 - ₱200,000",
+    netWorth: "₱500,000 - ₱1,000,000",
     liquidityNeeds: "Low",
   },
   preferences: {
@@ -286,11 +286,11 @@ export function InvestorProfile() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Less than $50,000">Less than $50,000</SelectItem>
-                  <SelectItem value="$50,000 - $100,000">$50,000 - $100,000</SelectItem>
-                  <SelectItem value="$100,000 - $150,000">$100,000 - $150,000</SelectItem>
-                  <SelectItem value="$150,000 - $200,000">$150,000 - $200,000</SelectItem>
-                  <SelectItem value="More than $200,000">More than $200,000</SelectItem>
+                  <SelectItem value="Less than ₱50,000">Less than ₱50,000</SelectItem>
+                  <SelectItem value="₱50,000 - ₱100,000">₱50,000 - ₱100,000</SelectItem>
+                  <SelectItem value="₱100,000 - ₱150,000">₱100,000 - ₱150,000</SelectItem>
+                  <SelectItem value="₱150,000 - ₱200,000">₱150,000 - ₱200,000</SelectItem>
+                  <SelectItem value="More than ₱200,000">More than ₱200,000</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -310,10 +310,10 @@ export function InvestorProfile() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Less than $100,000">Less than $100,000</SelectItem>
-                  <SelectItem value="$100,000 - $500,000">$100,000 - $500,000</SelectItem>
-                  <SelectItem value="$500,000 - $1,000,000">$500,000 - $1,000,000</SelectItem>
-                  <SelectItem value="More than $1,000,000">More than $1,000,000</SelectItem>
+                  <SelectItem value="Less than ₱100,000">Less than ₱100,000</SelectItem>
+                  <SelectItem value="₱100,000 - ₱500,000">₱100,000 - ₱500,000</SelectItem>
+                  <SelectItem value="₱500,000 - ₱1,000,000">₱500,000 - ₱1,000,000</SelectItem>
+                  <SelectItem value="More than ₱1,000,000">More than ₱1,000,000</SelectItem>
                 </SelectContent>
               </Select>
             </div>

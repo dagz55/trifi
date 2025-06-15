@@ -35,7 +35,7 @@ export function List02() {
               <span
                 className={`text-sm font-medium ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}
               >
-                {transaction.type === "income" ? "+" : "-"}${Math.abs(transaction.amount).toFixed(2)}
+                {transaction.type === "income" ? "+" : "-"}₱{Math.abs(transaction.amount).toFixed(2)}
               </span>
               {transaction.type === "income" ? (
                 <ArrowUpRight className="h-4 w-4 text-green-600 ml-1" />

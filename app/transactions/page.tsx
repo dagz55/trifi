@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,6 +20,7 @@ import {
   TrendingDown,
   Wallet
 } from "lucide-react"
+import { toast } from "sonner"
 
 const transactions = [
   {
@@ -147,16 +151,60 @@ const formatAmount = (amount: number, type: string) => {
 }
 
 export default function TransactionsPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [typeFilter, setTypeFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
+
+  const handleExportTransactions = () => {
+    toast.success("Exporting transactions as CSV...")
+    // Implement export functionality
+    const csvContent = "data:text/csv;charset=utf-8," + 
+      "ID,Type,Description,Amount,Date,Status,Category\n" +
+      transactions.map(t => `${t.id},${t.type},${t.description},${t.amount},${t.date},${t.status},${t.category}`).join("\n")
+    
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", "transactions.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleAddTransaction = () => {
+    toast.info("Opening add transaction form...")
+    // Navigate to add transaction form or open modal
+  }
+
+  const handleDateRangeFilter = () => {
+    toast.info("Opening date range picker...")
+    // Open date range picker
+  }
+
+  const handleMoreFilters = () => {
+    toast.info("Opening advanced filters...")
+    // Open advanced filters modal
+  }
+
+  const filteredTransactions = transactions.filter(transaction => {
+    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          transaction.category.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesType = typeFilter === "all" || transaction.type === typeFilter
+    const matchesStatus = statusFilter === "all" || transaction.status === statusFilter
+
+    return matchesSearch && matchesType && matchesStatus
+  })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportTransactions}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button>
+          <Button onClick={handleAddTransaction}>
             <Plus className="mr-2 h-4 w-4" />
             Add Transaction
           </Button>
@@ -192,9 +240,11 @@ export default function TransactionsPage() {
               <Input 
                 placeholder="Search transactions..." 
                 className="w-full pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select defaultValue="all">
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
@@ -205,7 +255,7 @@ export default function TransactionsPage() {
                 <SelectItem value="transfer">Transfer</SelectItem>
               </SelectContent>
             </Select>
-            <Select defaultValue="all">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -216,11 +266,11 @@ export default function TransactionsPage() {
                 <SelectItem value="failed">Failed</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleDateRangeFilter}>
               <Calendar className="mr-2 h-4 w-4" />
               Date Range
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleMoreFilters}>
               <Filter className="mr-2 h-4 w-4" />
               More Filters
             </Button>
@@ -240,11 +290,11 @@ export default function TransactionsPage() {
         <TabsContent value="all">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
+              <CardTitle>Recent Transactions ({filteredTransactions.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {transactions.map((transaction) => (
+                {filteredTransactions.map((transaction) => (
                   <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-muted rounded-full">
@@ -276,6 +326,11 @@ export default function TransactionsPage() {
                     </div>
                   </div>
                 ))}
+                {filteredTransactions.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No transactions match your filters</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -284,8 +339,40 @@ export default function TransactionsPage() {
         <TabsContent value="income">
           <Card>
             <CardContent className="p-6">
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Income transactions will be shown here</p>
+              <div className="space-y-4">
+                {filteredTransactions.filter(t => t.type === "income").map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-muted rounded-full">
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+                      <div>
+                        <p className="font-medium">{transaction.description}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{transaction.date}</span>
+                          <span>•</span>
+                          <span>{transaction.account}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="font-medium text-green-600">
+                          {formatAmount(transaction.amount, transaction.type)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      </div>
+                      <Badge className={getStatusColor(transaction.status)}>
+                        {transaction.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {filteredTransactions.filter(t => t.type === "income").length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No income transactions found</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -294,8 +381,40 @@ export default function TransactionsPage() {
         <TabsContent value="expenses">
           <Card>
             <CardContent className="p-6">
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Expense transactions will be shown here</p>
+              <div className="space-y-4">
+                {filteredTransactions.filter(t => t.type === "expense").map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-muted rounded-full">
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+                      <div>
+                        <p className="font-medium">{transaction.description}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{transaction.date}</span>
+                          <span>•</span>
+                          <span>{transaction.account}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="font-medium text-red-600">
+                          {formatAmount(transaction.amount, transaction.type)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      </div>
+                      <Badge className={getStatusColor(transaction.status)}>
+                        {transaction.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {filteredTransactions.filter(t => t.type === "expense").length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No expense transactions found</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -304,8 +423,40 @@ export default function TransactionsPage() {
         <TabsContent value="transfers">
           <Card>
             <CardContent className="p-6">
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Transfer transactions will be shown here</p>
+              <div className="space-y-4">
+                {filteredTransactions.filter(t => t.type === "transfer").map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-muted rounded-full">
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+                      <div>
+                        <p className="font-medium">{transaction.description}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{transaction.date}</span>
+                          <span>•</span>
+                          <span>{transaction.account}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="font-medium text-blue-600">
+                          ₱{transaction.amount.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      </div>
+                      <Badge className={getStatusColor(transaction.status)}>
+                        {transaction.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {filteredTransactions.filter(t => t.type === "transfer").length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No transfer transactions found</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
