@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { CreateInvoiceModal } from "@/components/create-invoice-modal"
+import { useSettings } from "@/contexts/settings-context"
 import { toast } from "sonner"
 import { 
   Receipt, 
@@ -15,7 +16,6 @@ import {
   Download,
   Plus,
   Calendar,
-  TrendingUp,
   Clock,
   CheckCircle,
   XCircle,
@@ -23,8 +23,6 @@ import {
   Edit,
   Send
 } from "lucide-react"
-
-const invoices: any[] = []
 
 const invoiceMetrics = [
   {
@@ -93,12 +91,13 @@ const isOverdue = (dueDate: string, status: string) => {
 }
 
 export default function InvoicesPage() {
+  const { payments } = useSettings()
+  
+  // Filter payments to show only invoices
+  const invoices = payments.filter(payment => payment.type === "invoice" && payment.invoice)
+  
   const handleExportInvoices = () => {
     toast.info("Exporting invoice data...")
-  }
-
-  const handleCreateInvoice = () => {
-    toast.info("Opening invoice creation form...")
   }
 
   const handleDateRange = () => {
@@ -130,10 +129,7 @@ export default function InvoicesPage() {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button onClick={handleCreateInvoice}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Invoice
-          </Button>
+          <CreateInvoiceModal />
         </div>
       </div>
 
@@ -210,51 +206,54 @@ export default function InvoicesPage() {
             <CardContent>
               <div className="space-y-4">
                 {invoices.length > 0 ? (
-                  invoices.map((invoice: any) => (
-                    <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className="p-2 bg-muted rounded-full">
-                          {getStatusIcon(invoice.status)}
+                  invoices.map((payment: { invoice: any }) => {
+                    const invoice = payment.invoice
+                    return (
+                      <div key={invoice.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="p-2 bg-muted rounded-full">
+                            {getStatusIcon(invoice.status)}
+                          </div>
+                          <div>
+                            <p className="font-medium">{invoice.id}</p>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <span>{invoice.client}</span>
+                              <span>•</span>
+                              <span>Issued: {invoice.issueDate}</span>
+                              <span>•</span>
+                              <span className={isOverdue(invoice.dueDate, invoice.status) ? "text-red-600 font-medium" : ""}>
+                                Due: {invoice.dueDate}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{invoice.id}</p>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{invoice.client}</span>
-                            <span>•</span>
-                            <span>Issued: {invoice.issueDate}</span>
-                            <span>•</span>
-                            <span className={isOverdue(invoice.dueDate, invoice.status) ? "text-red-600 font-medium" : ""}>
-                              Due: {invoice.dueDate}
-                            </span>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="font-medium text-lg">
+                              ₱{invoice.amount.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {invoice.items.length} item{invoice.items.length !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <Badge className={getStatusColor(invoice.status)}>
+                            {invoice.status}
+                          </Badge>
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => handleViewInvoice(invoice.id)}>
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleEditInvoice(invoice.id)}>
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleDownloadInvoice(invoice.id)}>
+                              <Download className="h-4 w-4" />
+                            </Button>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="font-medium text-lg">
-                            ₱{invoice.amount.toLocaleString()}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {invoice.items.length} item{invoice.items.length !== 1 ? 's' : ''}
-                          </p>
-                        </div>
-                        <Badge className={getStatusColor(invoice.status)}>
-                          {invoice.status}
-                        </Badge>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => handleViewInvoice(invoice.id)}>
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleEditInvoice(invoice.id)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDownloadInvoice(invoice.id)}>
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                    )
+                  })
                 ) : (
                   <div className="text-center py-12">
                     <Receipt className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
@@ -262,10 +261,12 @@ export default function InvoicesPage() {
                     <p className="text-muted-foreground mb-4">
                       Create your first invoice to get started
                     </p>
-                    <Button onClick={handleCreateInvoice}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create Invoice
-                    </Button>
+                    <CreateInvoiceModal trigger={
+                      <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Invoice
+                      </Button>
+                    } />
                   </div>
                 )}
               </div>

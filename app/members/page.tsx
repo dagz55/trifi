@@ -13,10 +13,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AddMemberModal } from "@/components/add-member-modal"
+import { useSettings } from "@/contexts/settings-context"
 import { 
   Users, 
   Search, 
-  Filter, 
   Plus,
   Mail,
   Phone,
@@ -46,9 +47,16 @@ export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [departmentFilter, setDepartmentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
+  const { members, setMembers } = useSettings()
 
-  // TODO: Fetch real member data from your Supabase database
-  const members: Member[] = []
+  const filteredMembers = members.filter(member => {
+    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesDepartment = departmentFilter === "all" || member.department === departmentFilter
+    const matchesStatus = statusFilter === "all" || member.status === statusFilter
+    
+    return matchesSearch && matchesDepartment && matchesStatus
+  })
 
   const memberMetrics = [
     {
@@ -94,16 +102,14 @@ export default function MembersPage() {
     }
   }
 
-  const handleAddMember = () => {
-    toast.success("Add member functionality coming soon!")
-  }
-
   const handleEditMember = (member: Member) => {
-    toast.success(`Edit ${member.name} functionality coming soon!`)
+    toast.info(`Edit functionality for ${member.name} coming soon!`)
   }
 
   const handleDeleteMember = (member: Member) => {
-    toast.success(`Delete ${member.name} functionality coming soon!`)
+    const updatedMembers = members.filter(m => m.id !== member.id)
+    setMembers(updatedMembers)
+    toast.success(`${member.name} removed from team`)
   }
 
   return (
@@ -111,10 +117,7 @@ export default function MembersPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Team Members</h2>
         <div className="flex items-center space-x-2">
-          <Button onClick={handleAddMember}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Member
-          </Button>
+          <AddMemberModal />
         </div>
       </div>
 
@@ -174,21 +177,29 @@ export default function MembersPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {members.length === 0 ? (
+          {filteredMembers.length === 0 ? (
             <div className="flex items-center justify-center h-[400px] text-muted-foreground">
               <div className="text-center">
                 <Users className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <p className="text-xl font-medium">No members found</p>
-                <p className="text-sm mb-4">Connect your database to see team members</p>
-                <Button onClick={handleAddMember}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add First Member
-                </Button>
+                <p className="text-xl font-medium">
+                  {members.length === 0 ? "No members found" : "No members match your filters"}
+                </p>
+                <p className="text-sm mb-4">
+                  {members.length === 0 ? "Add your first team member to get started" : "Try adjusting your search or filters"}
+                </p>
+                {members.length === 0 && (
+                  <AddMemberModal trigger={
+                    <Button>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add First Member
+                    </Button>
+                  } />
+                )}
               </div>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {members.map((member) => (
+              {filteredMembers.map((member) => (
                 <Card key={member.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">

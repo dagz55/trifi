@@ -2,12 +2,14 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AddProjectModal } from "@/components/add-project-modal"
+import { useSettings } from "@/contexts/settings-context"
 import { 
   Folder, 
   Calendar, 
@@ -21,34 +23,6 @@ import {
   MoreHorizontal
 } from "lucide-react"
 
-const projects: any[] = []
-
-const projectMetrics = [
-  {
-    title: "Active Projects",
-    value: "0",
-    change: "0",
-    icon: Folder,
-  },
-  {
-    title: "Total Budget",
-    value: "₱0",
-    change: "₱0",
-    icon: DollarSign,
-  },
-  {
-    title: "Team Members",
-    value: "0",
-    change: "0",
-    icon: Users,
-  },
-  {
-    title: "Completion Rate",
-    value: "0%",
-    change: "0%",
-    icon: TrendingUp,
-  },
-]
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -79,10 +53,42 @@ const getPriorityColor = (priority: string) => {
 export default function ProjectsPage() {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { projects } = useSettings();
 
   const filteredProjects = projects.filter((project) =>
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Update metrics based on actual projects
+  const updatedProjectMetrics = [
+    {
+      title: "Active Projects",
+      value: projects.filter(p => p.status === "In Progress").length.toString(),
+      change: projects.length.toString(),
+      icon: Folder,
+    },
+    {
+      title: "Total Budget",
+      value: "₱" + projects.reduce((sum, p) => {
+        const budget = p.budget?.replace(/[₱,]/g, '') || '0';
+        return sum + (parseFloat(budget) || 0);
+      }, 0).toLocaleString(),
+      change: `₱${projects.length * 50000}`,
+      icon: DollarSign,
+    },
+    {
+      title: "Team Members",
+      value: projects.reduce((sum, p) => sum + (p.team?.length || 0), 0).toString(),
+      change: projects.length.toString(),
+      icon: Users,
+    },
+    {
+      title: "Completion Rate",
+      value: projects.length > 0 ? `${Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)}%` : "0%",
+      change: `${projects.filter(p => p.status === "Completed").length}`,
+      icon: TrendingUp,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -104,10 +110,7 @@ export default function ProjectsPage() {
             <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
-          <Button onClick={() => toast.success("New project creation started")}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Project
-          </Button>
+          <AddProjectModal />
         </div>
       </div>
 
@@ -120,7 +123,7 @@ export default function ProjectsPage() {
 
       {/* Project Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {projectMetrics.map((metric) => (
+        {updatedProjectMetrics.map((metric) => (
           <Card key={metric.title}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -161,7 +164,7 @@ export default function ProjectsPage() {
                 startDate: string;
                 endDate: string;
                 team: { name: string; role: string }[];
-              }, index: number) => (
+              }) => (
               <Card key={project.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -252,10 +255,12 @@ export default function ProjectsPage() {
                 <p className="text-muted-foreground mb-4">
                   Create your first project to get started
                 </p>
-                <Button onClick={() => toast.success("New project creation started")}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Project
-                </Button>
+                <AddProjectModal trigger={
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Project
+                  </Button>
+                } />
               </div>
             )}
           </div>
