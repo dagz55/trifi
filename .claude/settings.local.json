@@ -1,0 +1,27 @@
+<<<<<<< HEAD
+||||||| parent of 6b53694 (Update Claude settings for deployment workflow)
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}
+=======
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)"
+    ],
+    "deny": []
+  }
+}
+>>>>>>> 6b53694 (Update Claude settings for deployment workflow)
