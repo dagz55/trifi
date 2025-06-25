@@ -28,121 +28,18 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
-const members = [
-  {
-    id: 1,
-    name: "Maria Santos",
-    email: "maria.santos@trifi.ph",
-    phone: "+63 917 123 4567",
-    role: "CEO",
-    department: "Executive",
-    status: "active",
-    joinDate: "2019-01-15",
-    location: "Makati City, PH",
-    avatar: "/avatars/maria.jpg",
-  },
-  {
-    id: 2,
-    name: "Carlos Reyes",
-    email: "carlos.reyes@trifi.ph",
-    phone: "+63 917 234 5678",
-    role: "CTO",
-    department: "Technology",
-    status: "active",
-    joinDate: "2019-03-20",
-    location: "Makati City, PH",
-    avatar: "/avatars/carlos.jpg",
-  },
-  {
-    id: 3,
-    name: "Ana Cruz",
-    email: "ana.cruz@trifi.ph",
-    phone: "+63 917 345 6789",
-    role: "Head of Operations",
-    department: "Operations",
-    status: "active",
-    joinDate: "2020-06-10",
-    location: "Cebu City, PH",
-    avatar: "/avatars/ana.jpg",
-  },
-  {
-    id: 4,
-    name: "Luis Garcia",
-    email: "luis.garcia@trifi.ph",
-    phone: "+63 917 456 7890",
-    role: "Sales Manager",
-    department: "Sales",
-    status: "active",
-    joinDate: "2021-02-15",
-    location: "Davao City, PH",
-    avatar: "/avatars/luis.jpg",
-  },
-  {
-    id: 5,
-    name: "Sofia Dela Cruz",
-    email: "sofia.delacruz@trifi.ph",
-    phone: "+63 917 567 8901",
-    role: "Senior Developer",
-    department: "Technology",
-    status: "inactive",
-    joinDate: "2022-08-01",
-    location: "Makati City, PH",
-    avatar: "/avatars/sofia.jpg",
-  },
-]
-
-const memberMetrics = [
-  {
-    title: "Total Members",
-    value: "156",
-    change: "+8",
-    icon: Users,
-    color: "text-blue-600",
-  },
-  {
-    title: "Active Members",
-    value: "142",
-    change: "+5",
-    icon: UserCheck,
-    color: "text-green-600",
-  },
-  {
-    title: "Inactive Members",
-    value: "14",
-    change: "+3",
-    icon: UserX,
-    color: "text-red-600",
-  },
-  {
-    title: "Departments",
-    value: "8",
-    change: "+1",
-    icon: Crown,
-    color: "text-purple-600",
-  },
-]
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "active":
-      return "bg-green-100 text-green-800"
-    case "inactive":
-      return "bg-red-100 text-red-800"
-    case "pending":
-      return "bg-yellow-100 text-yellow-800"
-    default:
-      return "bg-gray-100 text-gray-800"
-  }
-}
-
-const getRoleColor = (role: string) => {
-  if (role.toLowerCase().includes("ceo") || role.toLowerCase().includes("cto")) {
-    return "bg-purple-100 text-purple-800"
-  }
-  if (role.toLowerCase().includes("head") || role.toLowerCase().includes("manager")) {
-    return "bg-blue-100 text-blue-800"
-  }
-  return "bg-gray-100 text-gray-800"
+// TODO: Replace with actual data from your database/API
+interface Member {
+  id: number
+  name: string
+  email: string
+  phone: string
+  role: string
+  department: string
+  status: string
+  joinDate: string
+  location: string
+  avatar?: string
 }
 
 export default function MembersPage() {
@@ -150,99 +47,105 @@ export default function MembersPage() {
   const [departmentFilter, setDepartmentFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
 
-  const handleFilter = () => {
-    toast.info("Opening advanced filters...")
-  }
+  // TODO: Fetch real member data from your Supabase database
+  const members: Member[] = []
 
-  const handleInviteMember = () => {
-    toast.info("Opening invite member form...")
-  }
+  const memberMetrics = [
+    {
+      title: "Total Members",
+      value: members.length.toString(),
+      change: "0",
+      icon: Users,
+      color: "text-blue-600",
+    },
+    {
+      title: "Active Members",
+      value: members.filter(m => m.status === "active").length.toString(),
+      change: "0",
+      icon: UserCheck,
+      color: "text-green-600",
+    },
+    {
+      title: "Inactive Members",
+      value: members.filter(m => m.status === "inactive").length.toString(),
+      change: "0",
+      icon: UserX,
+      color: "text-red-600",
+    },
+    {
+      title: "Departments",
+      value: new Set(members.map(m => m.department)).size.toString(),
+      change: "0",
+      icon: Crown,
+      color: "text-purple-600",
+    },
+  ]
 
-  const handleMessageMember = (memberName: string) => {
-    toast.success(`Opening chat with ${memberName}`)
-  }
-
-  const handleCallMember = (memberName: string, phone: string) => {
-    toast.success(`Calling ${memberName} at ${phone}`)
-  }
-
-  const handleMemberActions = (action: string, memberName: string) => {
-    switch (action) {
-      case "view-profile":
-        toast.info(`Viewing ${memberName}'s profile`)
-        break
-      case "edit-member":
-        toast.info(`Editing ${memberName}'s details`)
-        break
-      case "deactivate":
-        toast.warning(`Deactivating ${memberName}`)
-        break
-      case "remove":
-        toast.error(`Removing ${memberName} from team`)
-        break
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800"
+      case "inactive":
+        return "bg-red-100 text-red-800"
+      case "pending":
+        return "bg-yellow-100 text-yellow-800"
       default:
-        break
+        return "bg-gray-100 text-gray-800"
     }
   }
 
-  const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          member.role.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesDepartment = departmentFilter === "all" || 
-                              member.department.toLowerCase() === departmentFilter
-    const matchesStatus = statusFilter === "all" || member.status === statusFilter
+  const handleAddMember = () => {
+    toast.success("Add member functionality coming soon!")
+  }
 
-    return matchesSearch && matchesDepartment && matchesStatus
-  })
+  const handleEditMember = (member: Member) => {
+    toast.success(`Edit ${member.name} functionality coming soon!`)
+  }
+
+  const handleDeleteMember = (member: Member) => {
+    toast.success(`Delete ${member.name} functionality coming soon!`)
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Members</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleFilter}>
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
-          </Button>
-          <Button onClick={handleInviteMember}>
+    <div className="flex-1 space-y-4 p-4 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <h2 className="text-3xl font-bold tracking-tight">Team Members</h2>
+        <div className="flex items-center space-x-2">
+          <Button onClick={handleAddMember}>
             <Plus className="mr-2 h-4 w-4" />
-            Invite Member
+            Add Member
           </Button>
         </div>
       </div>
 
-      {/* Member Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {memberMetrics.map((metric) => (
-          <Card key={metric.title}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{metric.title}</p>
-                  <p className={`text-2xl font-bold ${metric.color}`}>{metric.value}</p>
-                </div>
-                <metric.icon className={`h-8 w-8 ${metric.color}`} />
-              </div>
-              <Badge variant="secondary" className="mt-2">
-                {metric.change}
-              </Badge>
+        {memberMetrics.map((metric, index) => (
+          <Card key={index}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
+              <metric.icon className={`h-4 w-4 ${metric.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{metric.value}</div>
+              <p className="text-xs text-muted-foreground">
+                +{metric.change} from last month
+              </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Search and Filters */}
       <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px] relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search members..." 
-                className="w-full pl-10"
+        <CardHeader>
+          <CardTitle>Team Directory</CardTitle>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search members..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-8"
               />
             </div>
             <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
@@ -251,11 +154,10 @@ export default function MembersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
-                <SelectItem value="executive">Executive</SelectItem>
-                <SelectItem value="technology">Technology</SelectItem>
-                <SelectItem value="operations">Operations</SelectItem>
-                <SelectItem value="sales">Sales</SelectItem>
-                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="Technology">Technology</SelectItem>
+                <SelectItem value="Operations">Operations</SelectItem>
+                <SelectItem value="Sales">Sales</SelectItem>
+                <SelectItem value="Executive">Executive</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -270,115 +172,85 @@ export default function MembersPage() {
               </SelectContent>
             </Select>
           </div>
+        </CardHeader>
+        <CardContent>
+          {members.length === 0 ? (
+            <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+              <div className="text-center">
+                <Users className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                <p className="text-xl font-medium">No members found</p>
+                <p className="text-sm mb-4">Connect your database to see team members</p>
+                <Button onClick={handleAddMember}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add First Member
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {members.map((member) => (
+                <Card key={member.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Avatar>
+                          <AvatarImage src={member.avatar} />
+                          <AvatarFallback>
+                            {member.name.split(" ").map(n => n[0]).join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h3 className="font-medium">{member.name}</h3>
+                          <p className="text-sm text-muted-foreground">{member.role}</p>
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEditMember(member)}>
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleDeleteMember(member)}>
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Mail className="mr-2 h-3 w-3" />
+                        {member.email}
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Phone className="mr-2 h-3 w-3" />
+                        {member.phone}
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <MapPin className="mr-2 h-3 w-3" />
+                        {member.location}
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 flex items-center justify-between">
+                      <Badge className={getStatusColor(member.status)}>
+                        {member.status}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {member.department}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Members Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredMembers.map((member) => (
-          <Card key={member.id}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={member.avatar} alt={member.name} />
-                    <AvatarFallback>
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold">{member.name}</h3>
-                    <Badge className={getRoleColor(member.role)} variant="secondary">
-                      {member.role}
-                    </Badge>
-                  </div>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleMemberActions("view-profile", member.name)}>
-                      View Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleMemberActions("edit-member", member.name)}>
-                      Edit Member
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleMemberActions("deactivate", member.name)}>
-                      Deactivate
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleMemberActions("remove", member.name)}>
-                      Remove
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="h-4 w-4" />
-                  <span>{member.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Phone className="h-4 w-4" />
-                  <span>{member.phone}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{member.location}</span>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">{member.department}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Joined {member.joinDate}
-                    </p>
-                  </div>
-                  <Badge className={getStatusColor(member.status)}>
-                    {member.status}
-                  </Badge>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => handleMessageMember(member.name)}
-                >
-                  <Mail className="mr-2 h-4 w-4" />
-                  Message
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => handleCallMember(member.name, member.phone)}
-                >
-                  <Phone className="mr-2 h-4 w-4" />
-                  Call
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredMembers.length === 0 && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No members match your filters</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 } 

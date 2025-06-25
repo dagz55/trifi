@@ -1,75 +1,80 @@
 "use client"
 
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { Card, CardContent } from "@/components/ui/card"
-import { useTheme } from "next-themes"
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
-const data = [
-  { month: "Jan", revenue: 2000 },
-  { month: "Feb", revenue: 2200 },
-  { month: "Mar", revenue: 2700 },
-  { month: "Apr", revenue: 2400 },
-  { month: "May", revenue: 2800 },
-  { month: "Jun", revenue: 3200 },
-  { month: "Jul", revenue: 3100 },
-  { month: "Aug", revenue: 3400 },
-  { month: "Sep", revenue: 3700 },
-  { month: "Oct", revenue: 3500 },
-  { month: "Nov", revenue: 3800 },
-  { month: "Dec", revenue: 4200 },
-]
+// TODO: Replace with actual data from your database/API
+interface RevenueChartProps {
+  comparisonPeriod: string
+}
 
-export function RevenueChart() {
-  const { theme } = useTheme()
+export function RevenueChart({ comparisonPeriod }: RevenueChartProps) {
+  const [selectedView, setSelectedView] = useState("monthly")
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="rounded-lg border bg-background p-2 shadow-sm">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="flex flex-col">
-              <span className="text-[0.70rem] uppercase text-muted-foreground">Month</span>
-              <span className="font-bold text-muted-foreground">{label}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[0.70rem] uppercase text-muted-foreground">Revenue</span>
-              <span className="font-bold">₱{payload[0].value?.toLocaleString()}</span>
+  // TODO: Fetch real revenue data from your Supabase database
+  const revenueData: any[] = []
+
+  if (revenueData.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-base font-normal">Revenue Chart</CardTitle>
+          <Select value={selectedView} onValueChange={setSelectedView}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="quarterly">Quarterly</SelectItem>
+              <SelectItem value="yearly">Yearly</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-[350px] text-muted-foreground">
+            <div className="text-center">
+              <p className="text-lg font-medium">No revenue data available</p>
+              <p className="text-sm">Connect your database to see revenue metrics</p>
             </div>
           </div>
-        </div>
-      )
-    }
-    return null
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
-    <ResponsiveContainer width="100%" height={350}>
-      <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-        <XAxis
-          dataKey="month"
-          stroke={theme === "dark" ? "#888888" : "#333333"}
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          stroke={theme === "dark" ? "#888888" : "#333333"}
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `₱${value}`}
-        />
-        <Tooltip
-          content={CustomTooltip}
-        />
-        <Line
-          type="monotone"
-          dataKey="revenue"
-          stroke={theme === "dark" ? "#adfa1d" : "#0ea5e9"}
-          strokeWidth={2}
-          dot={false}
-        />
-      </LineChart>
-    </ResponsiveContainer>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-normal">Revenue Chart</CardTitle>
+        <Select value={selectedView} onValueChange={setSelectedView}>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="monthly">Monthly</SelectItem>
+            <SelectItem value="quarterly">Quarterly</SelectItem>
+            <SelectItem value="yearly">Yearly</SelectItem>
+          </SelectContent>
+        </Select>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={350}>
+          <LineChart data={revenueData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Line 
+              type="monotone" 
+              dataKey="revenue" 
+              stroke="#10b981" 
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   )
 }

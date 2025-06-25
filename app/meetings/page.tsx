@@ -1,7 +1,10 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { toast } from "sonner"
 import { 
   Video, 
   Calendar, 
@@ -12,72 +15,31 @@ import {
   ExternalLink
 } from "lucide-react"
 
-const meetings = [
-  {
-    id: 1,
-    title: "Quarterly Financial Review",
-    date: "2024-01-25",
-    time: "10:00 AM - 11:30 AM",
-    type: "In-person",
-    location: "Conference Room A",
-    attendees: ["Maria Santos", "Carlos Reyes", "Ana Cruz"],
-    status: "upcoming",
-  },
-  {
-    id: 2,
-    title: "Product Development Sync",
-    date: "2024-01-25",
-    time: "2:00 PM - 3:00 PM",
-    type: "Video Call",
-    location: "Zoom Meeting",
-    attendees: ["Carlos Reyes", "Sofia Dela Cruz", "Luis Garcia"],
-    status: "upcoming",
-  },
-  {
-    id: 3,
-    title: "Client Presentation - BPI Bank",
-    date: "2024-01-26",
-    time: "9:00 AM - 10:00 AM",
-    type: "Video Call",
-    location: "Microsoft Teams",
-    attendees: ["Maria Santos", "Ana Cruz"],
-    status: "upcoming",
-  },
-  {
-    id: 4,
-    title: "Weekly Team Standup",
-    date: "2024-01-24",
-    time: "9:00 AM - 9:30 AM",
-    type: "Video Call",
-    location: "Google Meet",
-    attendees: ["Carlos Reyes", "Sofia Dela Cruz", "Diego Morales"],
-    status: "completed",
-  },
-]
+const meetings: any[] = []
 
 const meetingMetrics = [
   {
     title: "This Week",
-    value: "8",
-    change: "+2",
+    value: "0",
+    change: "0",
     icon: Calendar,
   },
   {
     title: "Today",
-    value: "3",
-    change: "+1",
+    value: "0",
+    change: "0",
     icon: Clock,
   },
   {
     title: "Participants",
-    value: "24",
-    change: "+5",
+    value: "0",
+    change: "0",
     icon: Users,
   },
   {
     title: "Video Calls",
-    value: "6",
-    change: "+3",
+    value: "0",
+    change: "0",
     icon: Video,
   },
 ]
@@ -107,11 +69,23 @@ const getTypeColor = (type: string) => {
 }
 
 export default function MeetingsPage() {
+  const handleScheduleMeeting = () => {
+    toast.info("Opening meeting scheduler...")
+  }
+
+  const handleJoinMeeting = (meetingTitle: string) => {
+    toast.info(`Joining meeting: ${meetingTitle}`)
+  }
+
+  const handleViewRecording = (meetingTitle: string) => {
+    toast.info(`Opening recording for: ${meetingTitle}`)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Meetings</h1>
-        <Button>
+        <Button onClick={handleScheduleMeeting}>
           <Plus className="mr-2 h-4 w-4" />
           Schedule Meeting
         </Button>
@@ -172,10 +146,10 @@ export default function MeetingsPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <div className="flex -space-x-2">
-                      {meeting.attendees.slice(0, 3).map((attendee, index) => (
+                      {meeting.attendees.slice(0, 3).map((attendee: string, index: number) => (
                         <Avatar key={index} className="h-8 w-8 border-2 border-background">
                           <AvatarFallback className="text-xs">
-                            {attendee.split(' ').map(n => n[0]).join('')}
+                            {attendee.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                       ))}
@@ -196,13 +170,26 @@ export default function MeetingsPage() {
                     </Badge>
                   </div>
                   
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleJoinMeeting(meeting.title)}>
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Join
                   </Button>
                 </div>
               </div>
             ))}
+            {meetings.filter(m => m.status === 'upcoming').length === 0 && (
+              <div className="text-center py-8">
+                <Video className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No upcoming meetings</h3>
+                <p className="text-muted-foreground mb-4">
+                  Schedule your first meeting to get started
+                </p>
+                <Button onClick={handleScheduleMeeting}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Schedule Meeting
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -239,12 +226,17 @@ export default function MeetingsPage() {
                   <Badge className={getStatusColor(meeting.status)}>
                     {meeting.status}
                   </Badge>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => handleViewRecording(meeting.title)}>
                     View Recording
                   </Button>
                 </div>
               </div>
             ))}
+            {meetings.filter(m => m.status === 'completed').length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No completed meetings yet</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

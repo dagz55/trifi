@@ -1,13 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 
-const budgetCategories = [
-  { name: "Housing", spent: 2000, budget: 2500 },
-  { name: "Transportation", spent: 450, budget: 500 },
-  { name: "Food", spent: 800, budget: 1000 },
-  { name: "Utilities", spent: 300, budget: 350 },
-  { name: "Entertainment", spent: 250, budget: 300 },
-]
+const budgetCategories: { name: string; spent: number; budget: number }[] = []
 
 export function BudgetTracker() {
   const totalBudget = budgetCategories.reduce((sum, category) => sum + category.budget, 0)

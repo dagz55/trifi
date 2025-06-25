@@ -1,9 +1,12 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "sonner"
 import { 
   CreditCard, 
   Search, 
@@ -20,99 +23,36 @@ import {
   Banknote
 } from "lucide-react"
 
-const payments = [
-  {
-    id: "PAY-2024-001",
-    recipient: "Office Supplies Inc.",
-    amount: 45000,
-    method: "Bank Transfer",
-    status: "completed",
-    date: "2024-01-20",
-    category: "Office Expenses",
-    reference: "OS-INV-2024-15",
-  },
-  {
-    id: "PAY-2024-002",
-    recipient: "Software Licensing Co.",
-    amount: 125000,
-    method: "Credit Card",
-    status: "completed",
-    date: "2024-01-18",
-    category: "Software & Tools",
-    reference: "LIC-ANNUAL-2024",
-  },
-  {
-    id: "PAY-2024-003",
-    recipient: "Marketing Agency SA",
-    amount: 85000,
-    method: "Digital Wallet",
-    status: "pending",
-    date: "2024-01-22",
-    category: "Marketing",
-    reference: "MKT-CAM-Q1-2024",
-  },
-  {
-    id: "PAY-2024-004",
-    recipient: "Cloud Services Provider",
-    amount: 32000,
-    method: "Automatic Debit",
-    status: "scheduled",
-    date: "2024-01-25",
-    category: "Infrastructure",
-    reference: "CLOUD-SUB-JAN24",
-  },
-]
+const payments: any[] = []
 
-const paymentMethods = [
-  {
-    type: "Bank Transfer",
-    account: "****1234",
-    bank: "Banco Nacional",
-    isDefault: true,
-    icon: Building,
-  },
-  {
-    type: "Credit Card",
-    account: "****5678",
-    bank: "Visa",
-    isDefault: false,
-    icon: CreditCard,
-  },
-  {
-    type: "Digital Wallet",
-    account: "wallet@trifi.mx",
-    bank: "TriFi Wallet",
-    isDefault: false,
-    icon: Smartphone,
-  },
-]
+const paymentMethods: any[] = []
 
 const paymentMetrics = [
   {
     title: "Total Payments",
-    value: "₱2,850,000",
-    change: "+₱350K",
+    value: "₱0",
+    change: "₱0",
     icon: CreditCard,
     color: "text-blue-600",
   },
   {
     title: "Pending Payments",
-    value: "₱185,000",
-    change: "+₱25K",
+    value: "₱0",
+    change: "₱0",
     icon: Clock,
     color: "text-orange-600",
   },
   {
     title: "Completed",
-    value: "₱2,665,000",
-    change: "+₱325K",
+    value: "₱0",
+    change: "₱0",
     icon: CheckCircle,
     color: "text-green-600",
   },
   {
     title: "Payment Methods",
-    value: "5",
-    change: "+1",
+    value: "0",
+    change: "0",
     icon: Banknote,
     color: "text-purple-600",
   },
@@ -149,16 +89,28 @@ const getStatusIcon = (status: string) => {
 }
 
 export default function PaymentsPage() {
+  const handleExportPayments = () => {
+    toast.info("Exporting payment data...")
+  }
+
+  const handleNewPayment = () => {
+    toast.info("Opening new payment form...")
+  }
+
+  const handleAddPaymentMethod = () => {
+    toast.info("Opening add payment method form...")
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExportPayments}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button>
+          <Button onClick={handleNewPayment}>
             <Plus className="mr-2 h-4 w-4" />
             New Payment
           </Button>
@@ -191,32 +143,40 @@ export default function PaymentsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Payment Methods</CardTitle>
-              <Button size="sm" variant="outline">
+              <Button size="sm" variant="outline" onClick={handleAddPaymentMethod}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Method
               </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {paymentMethods.map((method, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-muted rounded-full">
-                        <method.icon className="h-4 w-4" />
+                {paymentMethods.length > 0 ? (
+                  paymentMethods.map((method: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-muted rounded-full">
+                          <method.icon className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{method.type}</p>
+                          <p className="text-xs text-muted-foreground">{method.account}</p>
+                          <p className="text-xs text-muted-foreground">{method.bank}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">{method.type}</p>
-                        <p className="text-xs text-muted-foreground">{method.account}</p>
-                        <p className="text-xs text-muted-foreground">{method.bank}</p>
-                      </div>
+                      {method.isDefault && (
+                        <Badge variant="secondary" className="text-xs">
+                          Default
+                        </Badge>
+                      )}
                     </div>
-                    {method.isDefault && (
-                      <Badge variant="secondary" className="text-xs">
-                        Default
-                      </Badge>
-                    )}
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <p className="text-sm text-muted-foreground">No payment methods added</p>
+                    <p className="text-xs text-muted-foreground mt-1">Add a payment method to get started</p>
                   </div>
-                ))}
+                )}
               </div>
             </CardContent>
           </Card>
@@ -250,7 +210,8 @@ export default function PaymentsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {payments.map((payment) => (
+                {payments.length > 0 ? (
+                  payments.map((payment: any) => (
                   <div key={payment.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-muted rounded-full">
@@ -281,7 +242,20 @@ export default function PaymentsPage() {
                       </Badge>
                     </div>
                   </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <Banknote className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="text-lg font-semibold mb-2">No payments yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Create your first payment to get started
+                    </p>
+                    <Button onClick={handleNewPayment}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      New Payment
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

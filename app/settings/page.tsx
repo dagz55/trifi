@@ -1,6 +1,6 @@
 "use client"
 
-import { useSettings } from "@/contexts/settings-context"
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,196 +12,341 @@ import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Laptop, Smartphone, Tablet } from "lucide-react"
-import { useState } from "react"
+import { Separator } from "@/components/ui/separator"
+import {
+  User,
+  Bell,
+  Shield,
+  Palette,
+  Monitor,
+  Database,
+  Download,
+  Trash2,
+  Settings as SettingsIcon,
+  AlertCircle,
+  CheckCircle,
+  Loader2,
+  Laptop,
+  Smartphone,
+  Tablet,
+  Lock,
+  Camera,
+  Save,
+  RefreshCw,
+  RotateCcw
+} from "lucide-react"
 import { toast } from "sonner"
-
-const defaultAvatars = [
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9439775.jpg-4JVJWOjPksd3DtnBYJXoWHA5lc1DU9.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/375238645_11475210.jpg-lU8bOe6TLt5Rv51hgjg8NT8PsDBmvN.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/375238208_11475222.jpg-poEIzVHAGiIfMFQ7EiF8PUG1u0Zkzz.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/dd.jpg-4MCwPC2Bec6Ume26Yo1kao3CnONxDg.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9334178.jpg-Y74tW6XFO68g7N36SE5MSNDNVKLQ08.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5295.jpg-fLw0wGGZp8wuTzU5dnyfjZDwAHN98a.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9720029.jpg-Yf9h2a3kT7rYyCb648iLIeHThq5wEy.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/27470341_7294795.jpg-XE0zf7R8tk4rfA1vm4fAHeZ1QoVEOo.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/799.jpg-0tEi4Xvg5YsFoGoQfQc698q4Dygl1S.jpeg",
-  "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/9334228.jpg-eOsHCkvVrVAwcPHKYSs5sQwVKsqWpC.jpeg",
-]
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useSettings } from "@/contexts/settings-context"
+import { testSupabaseConnection } from "@/lib/supabase"
 
 export default function SettingsPage() {
-  const { settings, updateSettings, updateNotificationSettings, updatePrivacySettings } = useSettings()
-  const [selectedAvatar, setSelectedAvatar] = useState(settings.avatar)
+  const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("account")
+  const [testingConnection, setTestingConnection] = useState(false)
+  const [connectionStatus, setConnectionStatus] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null)
+  
+  const {
+    settings,
+    updateSettings,
+    updateNotificationSettings,
+    updatePrivacySettings,
+    clearBusinessMetrics,
+    clearTransactions,
+    clearProjects,
+    clearInvestments,
+    clearPayments,
+    clearMeetings,
+    clearMembers,
+    clearNotifications,
+    clearOrganizationData,
+    clearAllData
+  } = useSettings()
+  
+  // Demo user data
+  const [userData, setUserData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    timezone: "utc+8",
+    avatar: "",
+    language: "en",
+    currency: "php",
+    dateFormat: "mm-dd-yyyy",
+    theme: "system",
+    fontSize: 16,
+    emailNotifications: false,
+    pushNotifications: false,
+    smsNotifications: false,
+    accountActivity: false,
+    newFeatures: false,
+    marketing: false,
+    frequency: "real-time",
+    analyticsSharing: false,
+    personalizedAds: false,
+    visibility: "private",
+    dataRetention: "1-year"
+  })
 
-  const handleSaveAccount = () => {
-    updateSettings({
-      avatar: selectedAvatar,
-      fullName: settings.fullName,
-      email: settings.email,
-      phone: settings.phone,
-      timezone: settings.timezone,
-    })
-    toast.success("Account settings saved successfully")
+  const updateUserData = (updates: Partial<typeof userData>) => {
+    setUserData(prev => ({ ...prev, ...updates }))
   }
 
-  const handleSaveNotifications = () => {
-    updateNotificationSettings(settings.notifications)
-    toast.success("Notification settings saved successfully")
+  const handleSave = async (section: string) => {
+    setIsLoading(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      toast.success(`${section} settings saved successfully`)
+    } catch (error) {
+      toast.error(`Failed to save ${section} settings`)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleSavePrivacy = () => {
-    updatePrivacySettings(settings.privacy)
-    toast.success("Privacy settings saved successfully")
+  const handleClearData = () => {
+    if (confirm("Are you sure you want to clear all application data? This action cannot be undone.")) {
+      clearAllData()
+    }
+  }
+
+  const handleResetAll = async () => {
+    setIsLoading(true)
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      clearAllData()
+      
+      // Reset user data to defaults
+      setUserData({
+        fullName: "",
+        email: "",
+        phone: "",
+        timezone: "utc+8",
+        avatar: "",
+        language: "en",
+        currency: "php",
+        dateFormat: "mm-dd-yyyy",
+        theme: "system",
+        fontSize: 16,
+        emailNotifications: false,
+        pushNotifications: false,
+        smsNotifications: false,
+        accountActivity: false,
+        newFeatures: false,
+        marketing: false,
+        frequency: "real-time",
+        analyticsSharing: false,
+        personalizedAds: false,
+        visibility: "private",
+        dataRetention: "1-year"
+      })
+    } catch (error) {
+      toast.error("Failed to reset application")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleTestSupabaseConnection = async () => {
+    setTestingConnection(true)
+    setConnectionStatus(null)
+    
+    try {
+      const result = await testSupabaseConnection()
+      setConnectionStatus(result)
+      
+      if (result.success) {
+        toast.success("Supabase connection successful!")
+      } else {
+        toast.error("Supabase connection failed")
+      }
+    } catch (error) {
+      setConnectionStatus({
+        success: false,
+        message: `Connection test failed: ${error}`
+      })
+      toast.error("Connection test failed")
+    } finally {
+      setTestingConnection(false)
+    }
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
-      <Tabs defaultValue="account" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="privacy">Privacy</TabsTrigger>
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex items-center space-x-2">
+        <SettingsIcon className="h-8 w-8" />
+        <h1 className="text-3xl font-bold">Settings</h1>
+      </div>
+
+      <Alert className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          This is a demo settings page. Changes are saved locally and will be lost when you refresh the page.
+        </AlertDescription>
+      </Alert>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="account" className="flex items-center space-x-2">
+            <User className="h-4 w-4" />
+            <span>Account</span>
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center space-x-2">
+            <Shield className="h-4 w-4" />
+            <span>Security</span>
+          </TabsTrigger>
+          <TabsTrigger value="preferences" className="flex items-center space-x-2">
+            <SettingsIcon className="h-4 w-4" />
+            <span>Preferences</span>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center space-x-2">
+            <Bell className="h-4 w-4" />
+            <span>Notifications</span>
+          </TabsTrigger>
+          <TabsTrigger value="privacy" className="flex items-center space-x-2">
+            <Shield className="h-4 w-4" />
+            <span>Privacy</span>
+          </TabsTrigger>
+          <TabsTrigger value="data" className="flex items-center space-x-2">
+            <Database className="h-4 w-4" />
+            <span>Data</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>Account Settings</CardTitle>
-              <CardDescription>Manage your account information</CardDescription>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="h-5 w-5" />
+                <span>Account Settings</span>
+              </CardTitle>
+              <CardDescription>Manage your account information and profile</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Avatar Section */}
               <div className="space-y-4">
-                <Label>Current Avatar</Label>
+                <Label>Profile Picture</Label>
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-20 w-20">
-                    <AvatarImage src={selectedAvatar} alt={settings.fullName} />
-                    <AvatarFallback>
-                      {settings.fullName
+                    <AvatarImage src={userData.avatar} alt={userData.fullName} />
+                    <AvatarFallback className="text-lg">
+                      {userData.fullName
                         .split(" ")
                         .map((n) => n[0])
-                        .join("")}
+                        .join("") || "U"}
                     </AvatarFallback>
                   </Avatar>
-                </div>
-                <Label>Choose a new avatar</Label>
-                <div className="flex gap-4 overflow-x-auto pb-2">
-                  {defaultAvatars.map((avatar, index) => (
-                    <Avatar
-                      key={index}
-                      className={`h-20 w-20 rounded-lg cursor-pointer hover:ring-2 hover:ring-primary shrink-0 ${
-                        selectedAvatar === avatar ? "ring-2 ring-primary" : ""
-                      }`}
-                      onClick={() => setSelectedAvatar(avatar)}
-                    >
-                      <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} className="object-cover" />
-                      <AvatarFallback>{index + 1}</AvatarFallback>
-                    </Avatar>
-                  ))}
-                </div>
-                <div>
-                  <Label htmlFor="custom-avatar">Or upload a custom avatar</Label>
-                  <Input id="custom-avatar" type="file" accept="image/*" className="mt-1" />
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm" className="flex items-center space-x-2" onClick={() => toast.info("Photo upload functionality would be implemented here")}>
+                      <Palette className="h-4 w-4" />
+                      <span>Change Photo</span>
+                    </Button>
+                    <p className="text-sm text-muted-foreground">
+                      JPG, GIF or PNG. 1MB max.
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="full-name">Full Name</Label>
-                <Input
-                  id="full-name"
-                  value={settings.fullName}
-                  onChange={(e) => updateSettings({ fullName: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={settings.email}
-                  onChange={(e) => updateSettings({ email: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={settings.phone}
-                  onChange={(e) => updateSettings({ phone: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
-                <Select value={settings.timezone} onValueChange={(value) => updateSettings({ timezone: value })}>
-                  <SelectTrigger id="timezone">
-                    <SelectValue placeholder="Select Timezone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="utc-12">International Date Line West (UTC-12)</SelectItem>
-                    <SelectItem value="utc-11">Samoa Standard Time (UTC-11)</SelectItem>
-                    <SelectItem value="utc-10">Hawaii-Aleutian Standard Time (UTC-10)</SelectItem>
-                    <SelectItem value="utc-9">Alaska Standard Time (UTC-9)</SelectItem>
-                    <SelectItem value="utc-8">Pacific Time (UTC-8)</SelectItem>
-                    <SelectItem value="utc-7">Mountain Time (UTC-7)</SelectItem>
-                    <SelectItem value="utc-6">Central Time (UTC-6)</SelectItem>
-                    <SelectItem value="utc-5">Eastern Time (UTC-5)</SelectItem>
-                    <SelectItem value="utc-4">Atlantic Time (UTC-4)</SelectItem>
-                    <SelectItem value="utc-3">Argentina Standard Time (UTC-3)</SelectItem>
-                    <SelectItem value="utc-2">South Georgia Time (UTC-2)</SelectItem>
-                    <SelectItem value="utc-1">Azores Time (UTC-1)</SelectItem>
-                    <SelectItem value="utc+0">Greenwich Mean Time (UTC+0)</SelectItem>
-                    <SelectItem value="utc+1">Central European Time (UTC+1)</SelectItem>
-                    <SelectItem value="utc+2">Eastern European Time (UTC+2)</SelectItem>
-                    <SelectItem value="utc+3">Moscow Time (UTC+3)</SelectItem>
-                    <SelectItem value="utc+4">Gulf Standard Time (UTC+4)</SelectItem>
-                    <SelectItem value="utc+5">Pakistan Standard Time (UTC+5)</SelectItem>
-                    <SelectItem value="utc+5.5">Indian Standard Time (UTC+5:30)</SelectItem>
-                    <SelectItem value="utc+6">Bangladesh Standard Time (UTC+6)</SelectItem>
-                    <SelectItem value="utc+7">Indochina Time (UTC+7)</SelectItem>
-                    <SelectItem value="utc+8">China Standard Time (UTC+8)</SelectItem>
-                    <SelectItem value="utc+9">Japan Standard Time (UTC+9)</SelectItem>
-                    <SelectItem value="utc+10">Australian Eastern Standard Time (UTC+10)</SelectItem>
-                    <SelectItem value="utc+11">Solomon Islands Time (UTC+11)</SelectItem>
-                    <SelectItem value="utc+12">New Zealand Standard Time (UTC+12)</SelectItem>
-                  </SelectContent>
-                </Select>
+
+              {/* Form Fields */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="full-name">Full Name</Label>
+                  <Input
+                    id="full-name"
+                    value={userData.fullName}
+                    onChange={(e) => updateUserData({ fullName: e.target.value })}
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={userData.email}
+                    onChange={(e) => updateUserData({ email: e.target.value })}
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={userData.phone}
+                    onChange={(e) => updateUserData({ phone: e.target.value })}
+                    placeholder="+63 XXX XXX XXXX"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Timezone</Label>
+                  <Select value={userData.timezone} onValueChange={(value) => updateUserData({ timezone: value })}>
+                    <SelectTrigger id="timezone">
+                      <SelectValue placeholder="Select Timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="utc+8">Philippines Standard Time (UTC+8)</SelectItem>
+                      <SelectItem value="utc-8">Pacific Time (UTC-8)</SelectItem>
+                      <SelectItem value="utc-5">Eastern Time (UTC-5)</SelectItem>
+                      <SelectItem value="utc+0">Greenwich Mean Time (UTC+0)</SelectItem>
+                      <SelectItem value="utc+1">Central European Time (UTC+1)</SelectItem>
+                      <SelectItem value="utc+9">Japan Standard Time (UTC+9)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveAccount}>Save Account Settings</Button>
+              <Button onClick={() => handleSave("Account")} disabled={isLoading} className="flex items-center space-x-2">
+                {isLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                <span>{isLoading ? "Saving..." : "Save Changes"}</span>
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
 
         <TabsContent value="security">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <Card className="md:col-span-2">
               <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
-                <CardDescription>Manage your account's security settings</CardDescription>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="h-5 w-5" />
+                  <span>Security Settings</span>
+                </CardTitle>
+                <CardDescription>Manage your account's security and authentication</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="current-password">Current Password</Label>
-                  <Input id="current-password" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <Input id="new-password" type="password" />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="current-password">Current Password</Label>
+                    <Input id="current-password" type="password" placeholder="Enter current password" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input id="new-password" type="password" placeholder="Enter new password" />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm-password">Confirm New Password</Label>
-                  <Input id="confirm-password" type="password" />
+                  <Input id="confirm-password" type="password" placeholder="Confirm new password" />
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <Label htmlFor="two-factor">Two-Factor Authentication</Label>
+                    <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+                  </div>
                   <Switch id="two-factor" />
-                  <Label htmlFor="two-factor">Enable Two-Factor Authentication</Label>
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={() => toast.success("Security settings saved successfully")}>Save Security Settings</Button>
+                <Button onClick={() => handleSave("Security")} disabled={isLoading}>
+                  Save Security Settings
+                </Button>
               </CardFooter>
             </Card>
 
@@ -212,16 +357,19 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { date: "2023-07-20", time: "14:30 UTC", ip: "192.168.1.1", location: "New York, USA" },
-                  { date: "2023-07-19", time: "09:15 UTC", ip: "10.0.0.1", location: "London, UK" },
-                  { date: "2023-07-18", time: "22:45 UTC", ip: "172.16.0.1", location: "Tokyo, Japan" },
+                  { date: "Dec 15, 2024", time: "2:30 PM", location: "Manila, Philippines", device: "Chrome on Windows" },
+                  { date: "Dec 14, 2024", time: "9:15 AM", location: "Manila, Philippines", device: "Safari on iPhone" },
+                  { date: "Dec 13, 2024", time: "6:45 PM", location: "Manila, Philippines", device: "Firefox on Mac" },
                 ].map((login, index) => (
-                  <div key={index} className="flex justify-between items-center text-sm">
-                    <span>
-                      {login.date} {login.time}
-                    </span>
-                    <span>{login.ip}</span>
-                    <span>{login.location}</span>
+                  <div key={index} className="flex justify-between items-center p-3 border rounded-lg">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">{login.device}</p>
+                      <p className="text-xs text-muted-foreground">{login.location}</p>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <p className="text-sm">{login.date}</p>
+                      <p className="text-xs text-muted-foreground">{login.time}</p>
+                    </div>
                   </div>
                 ))}
               </CardContent>
@@ -234,22 +382,32 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {[
-                  { device: "Laptop", browser: "Chrome", os: "Windows 10", icon: Laptop },
-                  { device: "Smartphone", browser: "Safari", os: "iOS 15", icon: Smartphone },
-                  { device: "Tablet", browser: "Firefox", os: "Android 12", icon: Tablet },
+                  { device: "Desktop", browser: "Chrome", os: "Windows 11", icon: Monitor, current: true },
+                  { device: "Mobile", browser: "Safari", os: "iOS 17", icon: Smartphone, current: false },
+                  { device: "Tablet", browser: "Firefox", os: "Android", icon: Tablet, current: false },
                 ].map((session, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                    <span className="flex items-center">
-                      <session.icon className="mr-2 h-4 w-4" />
-                      {session.device}
-                    </span>
-                    <span>{session.browser}</span>
-                    <span>{session.os}</span>
+                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <session.icon className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium">{session.device}</p>
+                        <p className="text-xs text-muted-foreground">{session.browser} on {session.os}</p>
+                      </div>
+                    </div>
+                    {session.current ? (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Current</span>
+                    ) : (
+                      <Button variant="outline" size="sm" onClick={() => toast.success("Session terminated")}>
+                        End Session
+                      </Button>
+                    )}
                   </div>
                 ))}
               </CardContent>
               <CardFooter>
-                <Button variant="outline" onClick={() => toast.success("All other sessions have been logged out")}>Log Out All Other Sessions</Button>
+                <Button variant="outline" onClick={() => toast.success("All other sessions have been logged out")}>
+                  Log Out All Other Sessions
+                </Button>
               </CardFooter>
             </Card>
           </div>
@@ -258,96 +416,102 @@ export default function SettingsPage() {
         <TabsContent value="preferences">
           <Card>
             <CardHeader>
-              <CardTitle>Preferences</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <SettingsIcon className="h-5 w-5" />
+                <span>Preferences</span>
+              </CardTitle>
               <CardDescription>Customize your dashboard experience</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="language">Language</Label>
-                  <Select defaultValue="en">
-                    <SelectTrigger id="language">
-                      <SelectValue placeholder="Select Language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="es">Español</SelectItem>
-                      <SelectItem value="fr">Français</SelectItem>
-                      <SelectItem value="de">Deutsch</SelectItem>
-                      <SelectItem value="zh">中文</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <CardContent className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Language & Region */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Language & Region</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="language">Language</Label>
+                      <Select value={userData.language} onValueChange={(value) => updateUserData({ language: value })}>
+                        <SelectTrigger id="language">
+                          <SelectValue placeholder="Select Language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="en">English</SelectItem>
+                          <SelectItem value="es">Español</SelectItem>
+                          <SelectItem value="fr">Français</SelectItem>
+                          <SelectItem value="tl">Filipino</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">Currency</Label>
+                      <Select value={userData.currency} onValueChange={(value) => updateUserData({ currency: value })}>
+                        <SelectTrigger id="currency">
+                          <SelectValue placeholder="Select Currency" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="php">PHP (₱)</SelectItem>
+                          <SelectItem value="usd">USD ($)</SelectItem>
+                          <SelectItem value="eur">EUR (€)</SelectItem>
+                          <SelectItem value="gbp">GBP (£)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="date-format">Date Format</Label>
+                      <Select value={userData.dateFormat} onValueChange={(value) => updateUserData({ dateFormat: value })}>
+                        <SelectTrigger id="date-format">
+                          <SelectValue placeholder="Select Date Format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="mm-dd-yyyy">MM/DD/YYYY</SelectItem>
+                          <SelectItem value="dd-mm-yyyy">DD/MM/YYYY</SelectItem>
+                          <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currency">Currency</Label>
-                  <Select defaultValue="php">
-                    <SelectTrigger id="currency">
-                      <SelectValue placeholder="Select Currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="php">PHP (₱)</SelectItem>
-                      <SelectItem value="usd">USD ($)</SelectItem>
-                      <SelectItem value="eur">EUR (€)</SelectItem>
-                      <SelectItem value="gbp">GBP (£)</SelectItem>
-                      <SelectItem value="jpy">JPY (¥)</SelectItem>
-                    </SelectContent>
-                  </Select>
+
+                {/* Appearance */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Appearance</h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Theme</Label>
+                      <RadioGroup value={userData.theme} onValueChange={(value) => updateUserData({ theme: value })}>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="light" id="theme-light" />
+                          <Label htmlFor="theme-light">Light</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="dark" id="theme-dark" />
+                          <Label htmlFor="theme-dark">Dark</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="system" id="theme-system" />
+                          <Label htmlFor="theme-system">System</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="font-size">Font Size: {userData.fontSize}px</Label>
+                      <Slider 
+                        value={[userData.fontSize]} 
+                        onValueChange={([value]) => updateUserData({ fontSize: value })}
+                        max={24} 
+                        min={12} 
+                        step={1} 
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="date-format">Date Format</Label>
-                  <Select defaultValue="mm-dd-yyyy">
-                    <SelectTrigger id="date-format">
-                      <SelectValue placeholder="Select Date Format" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mm-dd-yyyy">MM-DD-YYYY</SelectItem>
-                      <SelectItem value="dd-mm-yyyy">DD-MM-YYYY</SelectItem>
-                      <SelectItem value="yyyy-mm-dd">YYYY-MM-DD</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="font-size">Font Size</Label>
-                  <Slider defaultValue={[16]} max={24} min={12} step={1} />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Theme</Label>
-                <RadioGroup defaultValue="system">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="light" id="theme-light" />
-                    <Label htmlFor="theme-light">Light</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="dark" id="theme-dark" />
-                    <Label htmlFor="theme-dark">Dark</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="system" id="theme-system" />
-                    <Label htmlFor="theme-system">System</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-              <div className="space-y-2">
-                <Label>Dashboard Layout</Label>
-                <RadioGroup defaultValue="default">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="default" id="layout-default" />
-                    <Label htmlFor="layout-default">Default</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="compact" id="layout-compact" />
-                    <Label htmlFor="layout-compact">Compact</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="expanded" id="layout-expanded" />
-                    <Label htmlFor="layout-expanded">Expanded</Label>
-                  </div>
-                </RadioGroup>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => toast.success("Preferences saved successfully")}>Save Preferences</Button>
+              <Button onClick={() => handleSave("Preferences")} disabled={isLoading}>
+                Save Preferences
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -355,83 +519,99 @@ export default function SettingsPage() {
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>Notification Settings</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Bell className="h-5 w-5" />
+                <span>Notification Settings</span>
+              </CardTitle>
               <CardDescription>Manage how you receive notifications</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Notification Channels</Label>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="email-notifications"
-                      defaultChecked={settings.notifications.email}
-                      onCheckedChange={(checked) =>
-                        updateNotificationSettings({ ...settings.notifications, email: checked as boolean })
-                      }
-                    />
-                    <Label htmlFor="email-notifications">Email Notifications</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="push-notifications"
-                      defaultChecked={settings.notifications.push}
-                      onCheckedChange={(checked) =>
-                        updateNotificationSettings({ ...settings.notifications, push: checked as boolean })
-                      }
-                    />
-                    <Label htmlFor="push-notifications">Push Notifications</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="sms-notifications"
-                      defaultChecked={settings.notifications.sms}
-                      onCheckedChange={(checked) => updateNotificationSettings({ ...settings.notifications, sms: checked as boolean })}
-                    />
-                    <Label htmlFor="sms-notifications">SMS Notifications</Label>
+            <CardContent className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Notification Channels */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Notification Channels</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="email-notifications">Email Notifications</Label>
+                        <p className="text-sm text-muted-foreground">Receive notifications via email</p>
+                      </div>
+                      <Switch
+                        id="email-notifications"
+                        checked={userData.emailNotifications}
+                        onCheckedChange={(checked) => updateUserData({ emailNotifications: checked })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="push-notifications">Push Notifications</Label>
+                        <p className="text-sm text-muted-foreground">Receive browser push notifications</p>
+                      </div>
+                      <Switch
+                        id="push-notifications"
+                        checked={userData.pushNotifications}
+                        onCheckedChange={(checked) => updateUserData({ pushNotifications: checked })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="sms-notifications">SMS Notifications</Label>
+                        <p className="text-sm text-muted-foreground">Receive text message alerts</p>
+                      </div>
+                      <Switch
+                        id="sms-notifications"
+                        checked={userData.smsNotifications}
+                        onCheckedChange={(checked) => updateUserData({ smsNotifications: checked })}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Notification Types</Label>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="account-activity"
-                      defaultChecked={settings.notifications.accountActivity}
-                      onCheckedChange={(checked) =>
-                        updateNotificationSettings({ ...settings.notifications, accountActivity: checked as boolean })
-                      }
-                    />
-                    <Label htmlFor="account-activity">Account Activity</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="new-features"
-                      defaultChecked={settings.notifications.newFeatures}
-                      onCheckedChange={(checked) =>
-                        updateNotificationSettings({ ...settings.notifications, newFeatures: checked as boolean })
-                      }
-                    />
-                    <Label htmlFor="new-features">New Features and Updates</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="marketing"
-                      defaultChecked={settings.notifications.marketing}
-                      onCheckedChange={(checked) =>
-                        updateNotificationSettings({ ...settings.notifications, marketing: checked as boolean })
-                      }
-                    />
-                    <Label htmlFor="marketing">Marketing and Promotions</Label>
+
+                {/* Notification Types */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Notification Types</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="account-activity">Account Activity</Label>
+                        <p className="text-sm text-muted-foreground">Login, purchases, and payments</p>
+                      </div>
+                      <Switch
+                        id="account-activity"
+                        checked={userData.accountActivity}
+                        onCheckedChange={(checked) => updateUserData({ accountActivity: checked })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="new-features">New Features</Label>
+                        <p className="text-sm text-muted-foreground">Updates and new features</p>
+                      </div>
+                      <Switch
+                        id="new-features"
+                        checked={userData.newFeatures}
+                        onCheckedChange={(checked) => updateUserData({ newFeatures: checked })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="marketing">Marketing</Label>
+                        <p className="text-sm text-muted-foreground">Promotions and offers</p>
+                      </div>
+                      <Switch
+                        id="marketing"
+                        checked={userData.marketing}
+                        onCheckedChange={(checked) => updateUserData({ marketing: checked })}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="notification-frequency">Notification Frequency</Label>
-                <Select
-                  value={settings.notifications.frequency}
-                  onValueChange={(value) => updateNotificationSettings({ ...settings.notifications, frequency: value as "real-time" | "daily" | "weekly" })}
-                >
-                  <SelectTrigger id="notification-frequency">
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Frequency</h3>
+                <Select value={userData.frequency} onValueChange={(value) => updateUserData({ frequency: value })}>
+                  <SelectTrigger>
                     <SelectValue placeholder="Select Frequency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -441,17 +621,11 @@ export default function SettingsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="quiet-hours-start">Quiet Hours</Label>
-                <div className="flex items-center space-x-2">
-                  <Input id="quiet-hours-start" type="time" defaultValue="22:00" />
-                  <span>to</span>
-                  <Input id="quiet-hours-end" type="time" defaultValue="07:00" />
-                </div>
-              </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSaveNotifications}>Save Notification Settings</Button>
+              <Button onClick={() => handleSave("Notifications")} disabled={isLoading}>
+                Save Notification Settings
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -459,71 +633,87 @@ export default function SettingsPage() {
         <TabsContent value="privacy">
           <Card>
             <CardHeader>
-              <CardTitle>Privacy Settings</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <Shield className="h-5 w-5" />
+                <span>Privacy Settings</span>
+              </CardTitle>
               <CardDescription>Manage your privacy and data settings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Data Sharing */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">Data Sharing</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
+                  <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="analytics-sharing">Share analytics data</Label>
+                      <div>
+                        <Label htmlFor="analytics-sharing">Analytics Data</Label>
+                        <p className="text-sm text-muted-foreground">Share anonymous usage data</p>
+                      </div>
                       <Switch
                         id="analytics-sharing"
-                        checked={settings.privacy.analyticsSharing}
-                        onCheckedChange={(checked) =>
-                          updatePrivacySettings({ ...settings.privacy, analyticsSharing: checked })
-                        }
+                        checked={userData.analyticsSharing}
+                        onCheckedChange={(checked) => updateUserData({ analyticsSharing: checked })}
                       />
                     </div>
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="personalized-ads">Allow personalized ads</Label>
+                      <div>
+                        <Label htmlFor="personalized-ads">Personalized Ads</Label>
+                        <p className="text-sm text-muted-foreground">Allow targeted advertisements</p>
+                      </div>
                       <Switch
                         id="personalized-ads"
-                        checked={settings.privacy.personalizedAds}
-                        onCheckedChange={(checked) =>
-                          updatePrivacySettings({ ...settings.privacy, personalizedAds: checked })
-                        }
+                        checked={userData.personalizedAds}
+                        onCheckedChange={(checked) => updateUserData({ personalizedAds: checked })}
                       />
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Account Visibility */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">Account Visibility</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <RadioGroup
-                      value={settings.privacy.visibility}
-                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, visibility: value as "public" | "private" })}
+                      value={userData.visibility}
+                      onValueChange={(value) => updateUserData({ visibility: value })}
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="public" id="visibility-public" />
-                        <Label htmlFor="visibility-public">Public</Label>
+                        <div>
+                          <Label htmlFor="visibility-public">Public</Label>
+                          <p className="text-sm text-muted-foreground">Your profile is visible to others</p>
+                        </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="private" id="visibility-private" />
-                        <Label htmlFor="visibility-private">Private</Label>
+                        <div>
+                          <Label htmlFor="visibility-private">Private</Label>
+                          <p className="text-sm text-muted-foreground">Your profile is hidden from others</p>
+                        </div>
                       </div>
                     </RadioGroup>
                   </CardContent>
                 </Card>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Data Retention */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg">Data Retention</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Select
-                      value={settings.privacy.dataRetention}
-                      onValueChange={(value) => updatePrivacySettings({ ...settings.privacy, dataRetention: value as "6-months" | "1-year" | "2-years" | "indefinite" })}
+                      value={userData.dataRetention}
+                      onValueChange={(value) => updateUserData({ dataRetention: value })}
                     >
-                      <SelectTrigger id="data-retention">
-                        <SelectValue placeholder="Select Data Retention Period" />
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select retention period" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="6-months">6 Months</SelectItem>
@@ -534,25 +724,178 @@ export default function SettingsPage() {
                     </Select>
                   </CardContent>
                 </Card>
+
+                {/* Data Actions */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Third-Party Integrations</CardTitle>
+                    <CardTitle className="text-lg">Data Actions</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Connected: Google Analytics, Facebook Pixel</p>
-                    <Button variant="outline" onClick={() => toast.success("Integration settings opened")}>Manage Integrations</Button>
+                  <CardContent className="space-y-3">
+                    <Button variant="outline" className="w-full" onClick={() => toast.success("Data download will be ready in 24 hours")}>
+                      Download My Data
+                    </Button>
+                    <Button variant="destructive" className="w-full" onClick={() => toast.error("Account deletion requires email confirmation")}>
+                      Delete My Account
+                    </Button>
                   </CardContent>
                 </Card>
               </div>
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={() => toast.success("Data download initiated")}>Download Your Data</Button>
-                <Button variant="destructive" onClick={() => toast.error("Account deletion requires confirmation")}>Delete My Account</Button>
-              </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleSavePrivacy}>Save Privacy Settings</Button>
+              <Button onClick={() => handleSave("Privacy")} disabled={isLoading}>
+                Save Privacy Settings
+              </Button>
             </CardFooter>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="data">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Database className="h-5 w-5" />
+                  <span>Data Management</span>
+                </CardTitle>
+                <CardDescription>Clear mock data and reset your application to a clean state</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Use these tools to remove demo data and start with a clean application. This will help you get a fresh start without any mock information.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Clear Application Data</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Remove all mock transactions, projects, and other demo data from the application.
+                    </p>
+                    <Button variant="destructive" onClick={handleClearData}>
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Clear All Data
+                    </Button>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Database Connection</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Test the connection to your Supabase database to ensure proper configuration.
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <Button 
+                        onClick={handleTestSupabaseConnection} 
+                        disabled={testingConnection}
+                        variant="outline"
+                      >
+                        {testingConnection ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Testing Connection...
+                          </>
+                        ) : (
+                          <>
+                            <Database className="mr-2 h-4 w-4" />
+                            Test Supabase Connection
+                          </>
+                        )}
+                      </Button>
+
+                      {connectionStatus && (
+                        <Alert>
+                          {connectionStatus.success ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <AlertCircle className="h-4 w-4 text-red-600" />
+                          )}
+                          <AlertDescription className={connectionStatus.success ? "text-green-700" : "text-red-700"}>
+                            {connectionStatus.message}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <h4 className="text-sm font-medium mb-2">Export Data</h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Download your application data for backup or migration purposes.
+                    </p>
+                    <Button variant="outline" disabled>
+                      <Download className="mr-2 h-4 w-4" />
+                      Export Data (Coming Soon)
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-destructive">
+                  <RotateCcw className="h-5 w-5" />
+                  <span>Complete Reset</span>
+                </CardTitle>
+                <CardDescription>Reset the entire application to its original clean state</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>Warning:</strong> This will clear ALL demo data from every section of the application. This action cannot be undone.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium">This will reset:</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 ml-4">
+                      <li>• All business metrics and financial data</li>
+                      <li>• Notifications and alerts history</li>
+                      <li>• Chat conversations and message history</li>
+                      <li>• Investment portfolios and holdings</li>
+                      <li>• Transaction and payment history</li>
+                      <li>• Analytics charts and reports</li>
+                      <li>• Organization and member data</li>
+                      <li>• Projects and task information</li>
+                      <li>• User preferences and settings</li>
+                    </ul>
+                  </div>
+
+                  <div className="flex space-x-3">
+                    <Button 
+                      variant="destructive" 
+                      onClick={handleResetAll}
+                      disabled={isLoading}
+                      className="flex-1"
+                    >
+                      {isLoading ? (
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                      )}
+                      {isLoading ? "Resetting..." : "Reset Everything"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => toast.info("Application backup feature would be available in production")}
+                      disabled={isLoading}
+                    >
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Backup First
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

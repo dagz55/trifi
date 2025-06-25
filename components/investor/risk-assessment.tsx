@@ -1,73 +1,10 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, AlertTriangle, TrendingUp, PieChart } from "lucide-react"
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts"
-
-const riskMetrics = [
-  { category: "Market Risk", score: 75, description: "Exposure to market volatility" },
-  { category: "Credit Risk", score: 25, description: "Risk of default on investments" },
-  { category: "Liquidity Risk", score: 40, description: "Ability to quickly convert to cash" },
-  { category: "Concentration Risk", score: 60, description: "Diversification across assets" },
-  { category: "Currency Risk", score: 30, description: "Foreign exchange exposure" },
-  { category: "Interest Rate Risk", score: 45, description: "Sensitivity to rate changes" },
-]
-
-const portfolioRisk = {
-  overall: 52,
-  volatility: "Medium",
-  sharpeRatio: 1.25,
-  maxDrawdown: "-12.5%",
-  beta: 0.95,
-  var: "-₱15,420",
-}
-
-const riskRecommendations = [
-  {
-    type: "warning",
-    title: "High Concentration in Tech Sector",
-    description: "45% of your portfolio is in technology stocks. Consider diversifying into other sectors.",
-    priority: "High",
-  },
-  {
-    type: "info",
-    title: "Low Bond Allocation",
-    description: "Only 15% in bonds. Consider increasing fixed-income allocation for stability.",
-    priority: "Medium",
-  },
-  {
-    type: "success",
-    title: "Good Geographic Diversification",
-    description: "Your international exposure of 25% provides good geographic diversification.",
-    priority: "Low",
-  },
-]
-
-const scenarioAnalysis = [
-  { scenario: "Market Crash (-30%)", impact: "-₱180,000", recovery: "18 months" },
-  { scenario: "Interest Rate Spike (+3%)", impact: "-₱45,000", recovery: "8 months" },
-  { scenario: "Sector Rotation", impact: "-₱25,000", recovery: "4 months" },
-  { scenario: "Currency Devaluation", impact: "-₱15,000", recovery: "6 months" },
-]
+import { Button } from "@/components/ui/button"
+import { Shield, AlertTriangle, TrendingUp, PieChart, Plus, BarChart3 } from "lucide-react"
 
 export function RiskAssessment() {
-  const getRiskColor = (score: number) => {
-    if (score >= 80) return "text-red-500"
-    if (score >= 60) return "text-orange-500"
-    if (score >= 40) return "text-yellow-500"
-    return "text-green-500"
-  }
-
-  const getRiskLevel = (score: number) => {
-    if (score >= 80) return "High Risk"
-    if (score >= 60) return "Medium-High Risk"
-    if (score >= 40) return "Medium Risk"
-    return "Low Risk"
-  }
-
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -77,11 +14,8 @@ export function RiskAssessment() {
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{portfolioRisk.overall}/100</div>
-            <p className="text-xs text-muted-foreground">
-              <span className={getRiskColor(portfolioRisk.overall)}>{getRiskLevel(portfolioRisk.overall)} Risk</span>
-            </p>
-            <Progress value={portfolioRisk.overall} className="mt-2" />
+            <div className="text-2xl font-bold">--/100</div>
+            <p className="text-xs text-muted-foreground">No portfolio to assess</p>
           </CardContent>
         </Card>
 
@@ -91,8 +25,8 @@ export function RiskAssessment() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{portfolioRisk.sharpeRatio}</div>
-            <p className="text-xs text-muted-foreground">Risk-adjusted return</p>
+            <div className="text-2xl font-bold">--</div>
+            <p className="text-xs text-muted-foreground">Add investments to calculate</p>
           </CardContent>
         </Card>
 
@@ -102,8 +36,8 @@ export function RiskAssessment() {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-500">{portfolioRisk.maxDrawdown}</div>
-            <p className="text-xs text-muted-foreground">Worst decline from peak</p>
+            <div className="text-2xl font-bold">--</div>
+            <p className="text-xs text-muted-foreground">No historical data</p>
           </CardContent>
         </Card>
 
@@ -113,8 +47,8 @@ export function RiskAssessment() {
             <PieChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-500">{portfolioRisk.var}</div>
-            <p className="text-xs text-muted-foreground">1-day potential loss</p>
+            <div className="text-2xl font-bold">--</div>
+            <p className="text-xs text-muted-foreground">Start investing to calculate</p>
           </CardContent>
         </Card>
       </div>
@@ -125,15 +59,20 @@ export function RiskAssessment() {
             <CardTitle>Risk Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={riskMetrics}>
-                  <PolarGrid />
-                  <PolarAngleAxis dataKey="category" />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                  <Radar name="Risk Score" dataKey="score" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
-                </RadarChart>
-              </ResponsiveContainer>
+            <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+              <div className="text-center space-y-4">
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto" />
+                <div>
+                  <h3 className="text-lg font-medium">No Risk Data</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Build a portfolio to see risk analysis
+                  </p>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Start Investing
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -143,17 +82,27 @@ export function RiskAssessment() {
             <CardTitle>Risk Metrics Detail</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {riskMetrics.map((metric) => (
-                <div key={metric.category} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{metric.category}</span>
-                    <Badge className={`${getRiskColor(metric.score)} bg-transparent border`}>{metric.score}/100</Badge>
+            <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+              <div className="text-center space-y-4">
+                <Shield className="h-12 w-12 text-muted-foreground mx-auto" />
+                <div>
+                  <h3 className="text-lg font-medium">No Risk Metrics</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Your risk metrics will appear here
+                  </p>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <p>We'll analyze:</p>
+                    <ul className="text-left space-y-1">
+                      <li>• Market risk exposure</li>
+                      <li>• Credit risk assessment</li>
+                      <li>• Liquidity considerations</li>
+                      <li>• Concentration risk</li>
+                      <li>• Currency risk</li>
+                      <li>• Interest rate sensitivity</li>
+                    </ul>
                   </div>
-                  <Progress value={metric.score} className="h-2" />
-                  <p className="text-xs text-muted-foreground">{metric.description}</p>
                 </div>
-              ))}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -164,36 +113,20 @@ export function RiskAssessment() {
           <CardTitle>Risk Recommendations</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {riskRecommendations.map((rec, index) => (
-              <Alert
-                key={index}
-                className={
-                  rec.type === "warning"
-                    ? "border-yellow-500"
-                    : rec.type === "success"
-                      ? "border-green-500"
-                      : "border-blue-500"
-                }
-              >
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{rec.title}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{rec.description}</p>
-                    </div>
-                    <Badge
-                      variant={
-                        rec.priority === "High" ? "destructive" : rec.priority === "Medium" ? "default" : "secondary"
-                      }
-                    >
-                      {rec.priority}
-                    </Badge>
-                  </div>
-                </AlertDescription>
-              </Alert>
-            ))}
+          <div className="h-[200px] flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+            <div className="text-center space-y-4">
+              <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto" />
+              <div>
+                <h3 className="text-lg font-medium">No Recommendations Yet</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  We'll provide personalized risk recommendations based on your portfolio
+                </p>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Build Portfolio
+                </Button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -203,22 +136,25 @@ export function RiskAssessment() {
           <CardTitle>Stress Test Scenarios</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            {scenarioAnalysis.map((scenario, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <h4 className="font-medium">{scenario.scenario}</h4>
-                <div className="mt-2 space-y-1">
-                  <p className="text-sm">
-                    <span className="text-muted-foreground">Potential Impact:</span>
-                    <span className="ml-2 font-medium text-red-500">{scenario.impact}</span>
-                  </p>
-                  <p className="text-sm">
-                    <span className="text-muted-foreground">Est. Recovery:</span>
-                    <span className="ml-2 font-medium">{scenario.recovery}</span>
-                  </p>
+          <div className="h-[200px] flex items-center justify-center border-2 border-dashed border-muted rounded-lg">
+            <div className="text-center space-y-4">
+              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto" />
+              <div>
+                <h3 className="text-lg font-medium">No Stress Test Data</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Stress testing will be available once you have investments
+                </p>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>We'll simulate scenarios like:</p>
+                  <ul className="text-left space-y-1">
+                    <li>• Market crashes</li>
+                    <li>• Interest rate changes</li>
+                    <li>• Sector rotations</li>
+                    <li>• Currency fluctuations</li>
+                  </ul>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </CardContent>
       </Card>

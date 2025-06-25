@@ -1,142 +1,141 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { useTheme } from "next-themes"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 
-const customerSegmentationData = [
-  { segment: "High Value", count: 1200 },
-  { segment: "Medium Value", count: 5300 },
-  { segment: "Low Value", count: 8500 },
-  { segment: "At Risk", count: 1700 },
-  { segment: "Lost", count: 800 },
-]
+// TODO: Replace with actual data from your database/API
+interface AnalyticsTabProps {
+  comparisonPeriod: string
+}
 
-const retentionRateData = [
-  { month: "Jan", rate: 95 },
-  { month: "Feb", rate: 93 },
-  { month: "Mar", rate: 94 },
-  { month: "Apr", rate: 95 },
-  { month: "May", rate: 97 },
-  { month: "Jun", rate: 98 },
-]
+export function AnalyticsTab({ comparisonPeriod }: AnalyticsTabProps) {
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState("last_month")
 
-const channelPerformanceData = [
-  { channel: "Direct", acquisitions: 1200, revenue: 50000 },
-  { channel: "Organic Search", acquisitions: 2500, revenue: 75000 },
-  { channel: "Paid Search", acquisitions: 1800, revenue: 60000 },
-  { channel: "Social Media", acquisitions: 1500, revenue: 45000 },
-  { channel: "Email", acquisitions: 900, revenue: 30000 },
-]
+  // TODO: Fetch real analytics data from your Supabase database
+  const customerSegmentationData: any[] = []
+  const retentionRateData: any[] = []
+  const channelPerformanceData: any[] = []
 
-export function AnalyticsTab() {
-  const { theme } = useTheme()
-  const [timeFrame, setTimeFrame] = useState("last_30_days")
+  const EmptyState = ({ title, description }: { title: string; description: string }) => (
+    <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+      <div className="text-center">
+        <p className="text-lg font-medium">{title}</p>
+        <p className="text-sm">{description}</p>
+      </div>
+    </div>
+  )
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-semibold">Detailed Analytics</h3>
-        <Select value={timeFrame} onValueChange={setTimeFrame}>
-          <SelectTrigger className="w-[180px]">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium">Advanced Analytics</h3>
+          <p className="text-sm text-muted-foreground">
+            Detailed insights into customer behavior and performance metrics
+          </p>
+        </div>
+        <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>
+          <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Select time frame" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="last_7_days">Last 7 Days</SelectItem>
-            <SelectItem value="last_30_days">Last 30 Days</SelectItem>
-            <SelectItem value="last_90_days">Last 90 Days</SelectItem>
-            <SelectItem value="last_12_months">Last 12 Months</SelectItem>
+            <SelectItem value="last_week">Last Week</SelectItem>
+            <SelectItem value="last_month">Last Month</SelectItem>
+            <SelectItem value="last_quarter">Last Quarter</SelectItem>
+            <SelectItem value="last_year">Last Year</SelectItem>
           </SelectContent>
         </Select>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Customer Segmentation</CardTitle>
+            <CardTitle>Customer Segmentation</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={customerSegmentationData}>
-                <XAxis dataKey="segment" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill={theme === "dark" ? "#adfa1d" : "#0ea5e9"} />
-              </BarChart>
-            </ResponsiveContainer>
+            {customerSegmentationData.length === 0 ? (
+              <EmptyState 
+                title="No segmentation data" 
+                description="Connect your database to see customer segments" 
+              />
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={customerSegmentationData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {customerSegmentationData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={`hsl(${index * 45}, 70%, 60%)`} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
-        <Card className="col-span-3">
+
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Customer Retention Rate</CardTitle>
+            <CardTitle>Customer Retention Rate</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={retentionRateData}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="rate" stroke={theme === "dark" ? "#adfa1d" : "#0ea5e9"} />
-              </LineChart>
-            </ResponsiveContainer>
+            {retentionRateData.length === 0 ? (
+              <EmptyState 
+                title="No retention data" 
+                description="Connect your database to see retention metrics" 
+              />
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={retentionRateData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="rate" stroke="#10b981" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Channel Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Channel Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {channelPerformanceData.length === 0 ? (
+            <EmptyState 
+              title="No channel data" 
+              description="Connect your database to see channel performance metrics" 
+            />
+          ) : (
+            <ResponsiveContainer width="100%" height={350}>
               <BarChart data={channelPerformanceData}>
+                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="channel" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
+                <YAxis />
                 <Tooltip />
-                <Bar yAxisId="left" dataKey="acquisitions" fill={theme === "dark" ? "#adfa1d" : "#0ea5e9"} />
-                <Bar yAxisId="right" dataKey="revenue" fill={theme === "dark" ? "#1e40af" : "#3b82f6"} />
+                <Legend />
+                <Bar dataKey="acquisitions" fill="#3b82f6" name="Acquisitions" />
+                <Bar dataKey="revenue" fill="#10b981" name="Revenue (₱)" />
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Key Metrics</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Customer Lifetime Value</p>
-              <p className="text-2xl font-bold">₱1,250</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Net Promoter Score</p>
-              <p className="text-2xl font-bold">72</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Customer Acquisition Cost</p>
-              <p className="text-2xl font-bold">₱75</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Average Order Value</p>
-              <p className="text-2xl font-bold">₱1,250</p>
-            </div>
-            <Card className="p-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Cost Per Acquisition</p>
-                <p className="text-2xl font-bold">₱75</p>
-              </div>
-            </Card>
-            <Card className="p-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Customer Lifetime Value</p>
-                <p className="text-2xl font-bold">₱120</p>
-              </div>
-            </Card>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

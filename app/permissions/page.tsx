@@ -1,7 +1,10 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { toast } from "sonner"
 import { 
   Shield, 
   Users, 
@@ -14,64 +17,7 @@ import {
   Key
 } from "lucide-react"
 
-const roles = [
-  {
-    id: 1,
-    name: "Administrator",
-    description: "Full access to all features and settings",
-    users: 3,
-    permissions: {
-      dashboard: { read: true, write: true, delete: true },
-      analytics: { read: true, write: true, delete: true },
-      projects: { read: true, write: true, delete: true },
-      finances: { read: true, write: true, delete: true },
-      settings: { read: true, write: true, delete: true },
-    },
-    color: "bg-red-100 text-red-800"
-  },
-  {
-    id: 2,
-    name: "Manager",
-    description: "Access to most features with some restrictions",
-    users: 8,
-    permissions: {
-      dashboard: { read: true, write: true, delete: false },
-      analytics: { read: true, write: true, delete: false },
-      projects: { read: true, write: true, delete: false },
-      finances: { read: true, write: false, delete: false },
-      settings: { read: true, write: false, delete: false },
-    },
-    color: "bg-blue-100 text-blue-800"
-  },
-  {
-    id: 3,
-    name: "Developer",
-    description: "Access to technical features and project management",
-    users: 15,
-    permissions: {
-      dashboard: { read: true, write: false, delete: false },
-      analytics: { read: true, write: false, delete: false },
-      projects: { read: true, write: true, delete: false },
-      finances: { read: false, write: false, delete: false },
-      settings: { read: false, write: false, delete: false },
-    },
-    color: "bg-green-100 text-green-800"
-  },
-  {
-    id: 4,
-    name: "Viewer",
-    description: "Read-only access to basic features",
-    users: 25,
-    permissions: {
-      dashboard: { read: true, write: false, delete: false },
-      analytics: { read: true, write: false, delete: false },
-      projects: { read: true, write: false, delete: false },
-      finances: { read: false, write: false, delete: false },
-      settings: { read: false, write: false, delete: false },
-    },
-    color: "bg-gray-100 text-gray-800"
-  },
-]
+const roles: any[] = []
 
 const permissionCategories = [
   { name: "dashboard", label: "Dashboard" },
@@ -84,28 +30,28 @@ const permissionCategories = [
 const permissionMetrics = [
   {
     title: "Total Roles",
-    value: "4",
-    change: "+1",
+    value: "0",
+    change: "0",
     icon: Crown,
     color: "text-purple-600",
   },
   {
     title: "Active Users",
-    value: "51",
-    change: "+3",
+    value: "0",
+    change: "0",
     icon: Users,
     color: "text-blue-600",
   },
   {
     title: "Permissions",
-    value: "15",
+    value: "0",
     change: "0",
     icon: Key,
     color: "text-green-600",
   },
   {
     title: "Admin Users",
-    value: "3",
+    value: "0",
     change: "0",
     icon: Shield,
     color: "text-red-600",
@@ -113,11 +59,27 @@ const permissionMetrics = [
 ]
 
 export default function PermissionsPage() {
+  const handleCreateRole = () => {
+    toast.info("Opening role creation form...")
+  }
+
+  const handleEditRole = (roleId: string, roleName: string) => {
+    toast.info(`Editing role: ${roleName}`)
+  }
+
+  const handleDeleteRole = (roleId: string, roleName: string) => {
+    toast.warning(`Confirming deletion of role: ${roleName}`)
+  }
+
+  const handlePermissionChange = (roleId: string, category: string, permission: string, value: boolean) => {
+    toast.info(`${value ? 'Granted' : 'Revoked'} ${permission} permission for ${category}`)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Permissions</h1>
-        <Button>
+        <Button onClick={handleCreateRole}>
           <Plus className="mr-2 h-4 w-4" />
           Create Role
         </Button>
@@ -150,59 +112,73 @@ export default function PermissionsPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {roles.map((role) => (
-              <div key={role.id} className="border rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Shield className="h-6 w-6 text-muted-foreground" />
-                    <div>
-                      <h3 className="font-semibold text-lg">{role.name}</h3>
-                      <p className="text-sm text-muted-foreground">{role.description}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge className={role.color}>
-                      {role.users} users
-                    </Badge>
-                    <Button variant="outline" size="sm">
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-5">
-                  {permissionCategories.map((category) => (
-                    <div key={category.name} className="space-y-3">
-                      <h4 className="font-medium text-sm">{category.label}</h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Read</span>
-                          <Switch 
-                            checked={role.permissions[category.name as keyof typeof role.permissions].read} 
-                            disabled
-                          />
-                        </div>
-                                                 <div className="flex items-center justify-between">
-                           <span className="text-sm text-muted-foreground">Write</span>
-                           <Switch 
-                             checked={role.permissions[category.name as keyof typeof role.permissions].write} 
-                             disabled
-                           />
-                         </div>
-                         <div className="flex items-center justify-between">
-                           <span className="text-sm text-muted-foreground">Delete</span>
-                           <Switch 
-                             checked={role.permissions[category.name as keyof typeof role.permissions].delete} 
-                             disabled
-                           />
-                         </div>
+            {roles.length > 0 ? (
+              roles.map((role: any) => (
+                <div key={role.id} className="border rounded-lg p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-6 w-6 text-muted-foreground" />
+                      <div>
+                        <h3 className="font-semibold text-lg">{role.name}</h3>
+                        <p className="text-sm text-muted-foreground">{role.description}</p>
                       </div>
                     </div>
-                  ))}
+                    <div className="flex items-center gap-3">
+                      <Badge className={role.color}>
+                        {role.users} users
+                      </Badge>
+                      <Button variant="outline" size="sm" onClick={() => handleEditRole(role.id, role.name)}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-5">
+                    {permissionCategories.map((category) => (
+                      <div key={category.name} className="space-y-3">
+                        <h4 className="font-medium text-sm">{category.label}</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">Read</span>
+                            <Switch 
+                              checked={role.permissions[category.name as keyof typeof role.permissions].read} 
+                              onCheckedChange={(value) => handlePermissionChange(role.id, category.name, 'read', value)}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <span className="text-sm text-muted-foreground">Write</span>
+                             <Switch 
+                               checked={role.permissions[category.name as keyof typeof role.permissions].write} 
+                               onCheckedChange={(value) => handlePermissionChange(role.id, category.name, 'write', value)}
+                             />
+                           </div>
+                           <div className="flex items-center justify-between">
+                             <span className="text-sm text-muted-foreground">Delete</span>
+                             <Switch 
+                               checked={role.permissions[category.name as keyof typeof role.permissions].delete} 
+                               onCheckedChange={(value) => handlePermissionChange(role.id, category.name, 'delete', value)}
+                             />
+                           </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <Shield className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No roles configured</h3>
+                <p className="text-muted-foreground mb-4">
+                  Create your first role to start managing permissions
+                </p>
+                <Button onClick={handleCreateRole}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Role
+                </Button>
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>
@@ -227,44 +203,58 @@ export default function PermissionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {roles.map((role) => (
-                  <tr key={role.id} className="border-b hover:bg-muted/50">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4" />
-                        <span className="font-medium">{role.name}</span>
-                        <Badge className={role.color} variant="secondary">
-                          {role.users}
-                        </Badge>
-                      </div>
-                    </td>
-                    {permissionCategories.map((category) => (
-                      <td key={category.name} className="text-center py-3 px-4">
-                        <div className="flex justify-center gap-1">
-                          {role.permissions[category.name as keyof typeof role.permissions].read && (
-                            <Eye className="h-4 w-4 text-green-600" />
-                          )}
-                          {role.permissions[category.name as keyof typeof role.permissions].write && (
-                            <Edit className="h-4 w-4 text-blue-600" />
-                          )}
-                          {role.permissions[category.name as keyof typeof role.permissions].delete && (
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          )}
+                {roles.length > 0 ? (
+                  roles.map((role: any) => (
+                    <tr key={role.id} className="border-b hover:bg-muted/50">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          <Shield className="h-4 w-4" />
+                          <span className="font-medium">{role.name}</span>
+                          <Badge className={role.color} variant="secondary">
+                            {role.users}
+                          </Badge>
                         </div>
                       </td>
-                    ))}
-                    <td className="text-center py-3 px-4">
-                      <div className="flex justify-center gap-1">
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      {permissionCategories.map((category) => (
+                        <td key={category.name} className="text-center py-3 px-4">
+                          <div className="flex justify-center gap-1">
+                            {role.permissions[category.name as keyof typeof role.permissions].read && (
+                              <Eye className="h-4 w-4 text-green-600" />
+                            )}
+                            {role.permissions[category.name as keyof typeof role.permissions].write && (
+                              <Edit className="h-4 w-4 text-blue-600" />
+                            )}
+                            {role.permissions[category.name as keyof typeof role.permissions].delete && (
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            )}
+                          </div>
+                        </td>
+                      ))}
+                      <td className="text-center py-3 px-4">
+                        <div className="flex justify-center gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => handleEditRole(role.id, role.name)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteRole(role.id, role.name)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={permissionCategories.length + 2} className="text-center py-12">
+                      <div className="flex flex-col items-center">
+                        <Key className="h-16 w-16 mb-4 text-muted-foreground opacity-50" />
+                        <h3 className="text-lg font-semibold mb-2">No permission data</h3>
+                        <p className="text-muted-foreground">
+                          Permission matrix will appear here once roles are created
+                        </p>
                       </div>
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

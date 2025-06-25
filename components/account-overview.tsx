@@ -1,10 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-const accounts = [
-  { name: "Checking", balance: 5240.23 },
-  { name: "Savings", balance: 12750.89 },
-  { name: "Investment", balance: 7890.45 },
-]
+const accounts: { name: string; balance: number }[] = []
 
 export function AccountOverview() {
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0)

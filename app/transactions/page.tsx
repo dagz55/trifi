@@ -7,114 +7,37 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { 
-  ArrowUpRight, 
   ArrowDownLeft, 
-  Search, 
-  Filter, 
+  ArrowUpRight, 
   Download,
+  Filter,
   Plus,
-  Calendar,
+  Search,
   TrendingUp,
   TrendingDown,
   Wallet
 } from "lucide-react"
 import { toast } from "sonner"
+import { useUser } from '@clerk/nextjs'
+import { AddTransactionModal } from "@/components/add-transaction-modal"
+import { DateRangePicker } from "@/components/date-range-picker"
+import { AdvancedFiltersModal } from "@/components/advanced-filters-modal"
+import { DateRange } from "react-day-picker"
 
-const transactions = [
-  {
-    id: "TXN001",
-    type: "income",
-    description: "Client Payment - TriFi App Development",
-    amount: 150000,
-    date: "2024-01-15",
-    time: "14:30",
-    status: "completed",
-    category: "Revenue",
-    account: "Business Checking",
-    reference: "INV-2024-001",
-  },
-  {
-    id: "TXN002",
-    type: "expense",
-    description: "Office Rent Payment",
-    amount: 45000,
-    date: "2024-01-12",
-    time: "09:15",
-    status: "completed",
-    category: "Operating Expenses",
-    account: "Business Checking",
-    reference: "RENT-JAN-2024",
-  },
-  {
-    id: "TXN003",
-    type: "income",
-    description: "Investment Return - Bonds",
-    amount: 25000,
-    date: "2024-01-10",
-    time: "16:45",
-    status: "completed",
-    category: "Investment Income",
-    account: "Investment",
-    reference: "BOND-RET-001",
-  },
-  {
-    id: "TXN004",
-    type: "expense",
-    description: "Software License - Adobe Creative Suite",
-    amount: 12500,
-    date: "2024-01-08",
-    time: "11:20",
-    status: "pending",
-    category: "Software & Tools",
-    account: "Business Checking",
-    reference: "SUB-ADOBE-2024",
-  },
-  {
-    id: "TXN005",
-    type: "transfer",
-    description: "Transfer to Savings Account",
-    amount: 75000,
-    date: "2024-01-05",
-    time: "13:00",
-    status: "completed",
-    category: "Transfer",
-    account: "Checking → Savings",
-    reference: "TRF-SAV-001",
-  },
-]
-
-const transactionMetrics = [
-  {
-    title: "Total Income",
-    value: "₱2,450,000",
-    change: "+12.5%",
-    icon: TrendingUp,
-    color: "text-green-600",
-  },
-  {
-    title: "Total Expenses",
-    value: "₱1,850,000",
-    change: "+8.2%",
-    icon: TrendingDown,
-    color: "text-red-600",
-  },
-  {
-    title: "Net Income",
-    value: "₱600,000",
-    change: "+18.3%",
-    icon: Wallet,
-    color: "text-blue-600",
-  },
-  {
-    title: "Transactions",
-    value: "1,247",
-    change: "+156",
-    icon: ArrowUpRight,
-    color: "text-purple-600",
-  },
-]
+// Transaction interface
+interface Transaction {
+  id: string
+  type: "income" | "expense" | "transfer"
+  description: string
+  amount: number
+  date: string
+  time: string
+  status: "completed" | "pending" | "failed"
+  category: string
+  account: string
+  reference: string
+}
 
 const getTransactionIcon = (type: string) => {
   switch (type) {
@@ -151,16 +74,69 @@ const formatAmount = (amount: number, type: string) => {
 }
 
 export default function TransactionsPage() {
+  const { user } = useUser()
+  
+  // TODO: Replace with actual data from your database/API
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [typeFilter, setTypeFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [advancedFilters, setAdvancedFilters] = useState({
+    minAmount: "",
+    maxAmount: "",
+    accounts: [] as string[],
+    categories: [] as string[],
+    statuses: [] as string[],
+    reference: "",
+  })
+
+  // Modal states
+  const [addTransactionModalOpen, setAddTransactionModalOpen] = useState(false)
+  const [advancedFiltersModalOpen, setAdvancedFiltersModalOpen] = useState(false)
+
+  // Placeholder metrics - TODO: Calculate from actual transaction data
+  const transactionMetrics = [
+    {
+      title: "Total Income",
+      value: "₱0",
+      change: "0%",
+      icon: TrendingUp,
+      color: "text-green-600",
+    },
+    {
+      title: "Total Expenses",
+      value: "₱0",
+      change: "0%",
+      icon: TrendingDown,
+      color: "text-red-600",
+    },
+    {
+      title: "Net Income",
+      value: "₱0",
+      change: "0%",
+      icon: Wallet,
+      color: "text-blue-600",
+    },
+    {
+      title: "Transactions",
+      value: transactions.length.toString(),
+      change: "0",
+      icon: ArrowUpRight,
+      color: "text-purple-600",
+    },
+  ]
 
   const handleExportTransactions = () => {
+    if (filteredTransactions.length === 0) {
+      toast.error("No transactions to export")
+      return
+    }
+    
     toast.success("Exporting transactions as CSV...")
-    // Implement export functionality
     const csvContent = "data:text/csv;charset=utf-8," + 
       "ID,Type,Description,Amount,Date,Status,Category\n" +
-      transactions.map(t => `${t.id},${t.type},${t.description},${t.amount},${t.date},${t.status},${t.category}`).join("\n")
+      filteredTransactions.map(t => `${t.id},${t.type},${t.description},${t.amount},${t.date},${t.status},${t.category}`).join("\n")
     
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement("a")
@@ -172,28 +148,101 @@ export default function TransactionsPage() {
   }
 
   const handleAddTransaction = () => {
-    toast.info("Opening add transaction form...")
-    // Navigate to add transaction form or open modal
+    setAddTransactionModalOpen(true)
   }
 
-  const handleDateRangeFilter = () => {
-    toast.info("Opening date range picker...")
-    // Open date range picker
+  const handleTransactionAdded = (newTransaction: any) => {
+    setTransactions([newTransaction, ...transactions])
+    toast.success("Transaction added successfully!")
   }
 
-  const handleMoreFilters = () => {
-    toast.info("Opening advanced filters...")
-    // Open advanced filters modal
+  const handleAdvancedFiltersApply = (filters: any) => {
+    setAdvancedFilters(filters)
+    toast.success("Advanced filters applied!")
   }
 
   const filteredTransactions = transactions.filter(transaction => {
+    // Basic filters
     const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           transaction.category.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = typeFilter === "all" || transaction.type === typeFilter
     const matchesStatus = statusFilter === "all" || transaction.status === statusFilter
 
-    return matchesSearch && matchesType && matchesStatus
+    // Date range filter
+    let matchesDateRange = true
+    if (dateRange?.from) {
+      const transactionDate = new Date(transaction.date)
+      matchesDateRange = transactionDate >= dateRange.from
+      if (dateRange.to) {
+        matchesDateRange = matchesDateRange && transactionDate <= dateRange.to
+      }
+    }
+
+    // Advanced filters
+    let matchesAdvanced = true
+    
+    // Amount range
+    if (advancedFilters.minAmount) {
+      const minAmount = parseFloat(advancedFilters.minAmount.replace(/,/g, ""))
+      matchesAdvanced = matchesAdvanced && transaction.amount >= minAmount
+    }
+    if (advancedFilters.maxAmount) {
+      const maxAmount = parseFloat(advancedFilters.maxAmount.replace(/,/g, ""))
+      matchesAdvanced = matchesAdvanced && transaction.amount <= maxAmount
+    }
+
+    // Accounts filter
+    if (advancedFilters.accounts.length > 0) {
+      matchesAdvanced = matchesAdvanced && advancedFilters.accounts.includes(transaction.account)
+    }
+
+    // Categories filter
+    if (advancedFilters.categories.length > 0) {
+      matchesAdvanced = matchesAdvanced && advancedFilters.categories.includes(transaction.category)
+    }
+
+    // Statuses filter
+    if (advancedFilters.statuses.length > 0) {
+      matchesAdvanced = matchesAdvanced && advancedFilters.statuses.includes(transaction.status)
+    }
+
+    // Reference filter
+    if (advancedFilters.reference) {
+      matchesAdvanced = matchesAdvanced && transaction.reference.toLowerCase().includes(advancedFilters.reference.toLowerCase())
+    }
+
+    return matchesSearch && matchesType && matchesStatus && matchesDateRange && matchesAdvanced
   })
+
+  const getActiveFiltersCount = () => {
+    let count = 0
+    if (searchTerm) count++
+    if (typeFilter !== "all") count++
+    if (statusFilter !== "all") count++
+    if (dateRange?.from) count++
+    if (advancedFilters.minAmount || advancedFilters.maxAmount) count++
+    if (advancedFilters.accounts.length > 0) count++
+    if (advancedFilters.categories.length > 0) count++
+    if (advancedFilters.statuses.length > 0) count++
+    if (advancedFilters.reference) count++
+    return count
+  }
+
+  if (!user) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -266,13 +315,26 @@ export default function TransactionsPage() {
                 <SelectItem value="failed">Failed</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" onClick={handleDateRangeFilter}>
-              <Calendar className="mr-2 h-4 w-4" />
-              Date Range
-            </Button>
-            <Button variant="outline" onClick={handleMoreFilters}>
+            <DateRangePicker 
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+              className="w-[280px]"
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => setAdvancedFiltersModalOpen(true)}
+              className="relative"
+            >
               <Filter className="mr-2 h-4 w-4" />
               More Filters
+              {getActiveFiltersCount() > 0 && (
+                <Badge 
+                  variant="secondary" 
+                  className="ml-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                >
+                  {getActiveFiltersCount()}
+                </Badge>
+              )}
             </Button>
           </div>
         </CardContent>
@@ -294,41 +356,52 @@ export default function TransactionsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {filteredTransactions.map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-muted rounded-full">
-                        {getTransactionIcon(transaction.type)}
-                      </div>
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>{transaction.date}</span>
-                          <span>•</span>
-                          <span>{transaction.time}</span>
-                          <span>•</span>
-                          <span>{transaction.account}</span>
+                {filteredTransactions.length > 0 ? (
+                  filteredTransactions.map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 bg-muted rounded-full">
+                          {getTransactionIcon(transaction.type)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{transaction.description}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{transaction.date}</span>
+                            <span>•</span>
+                            <span>{transaction.time}</span>
+                            <span>•</span>
+                            <span>{transaction.account}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className={`font-medium ${
-                          transaction.type === "expense" ? "text-red-600" : "text-green-600"
-                        }`}>
-                          {formatAmount(transaction.amount, transaction.type)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className={`font-medium ${
+                            transaction.type === "expense" ? "text-red-600" : "text-green-600"
+                          }`}>
+                            {formatAmount(transaction.amount, transaction.type)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                        </div>
+                        <Badge className={getStatusColor(transaction.status)}>
+                          {transaction.status}
+                        </Badge>
                       </div>
-                      <Badge className={getStatusColor(transaction.status)}>
-                        {transaction.status}
-                      </Badge>
                     </div>
-                  </div>
-                ))}
-                {filteredTransactions.length === 0 && (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">No transactions match your filters</p>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+                      <Wallet className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">No transactions yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Get started by adding your first transaction
+                    </p>
+                    <Button onClick={handleAddTransaction}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add First Transaction
+                    </Button>
                   </div>
                 )}
               </div>
@@ -340,35 +413,36 @@ export default function TransactionsPage() {
           <Card>
             <CardContent className="p-6">
               <div className="space-y-4">
-                {filteredTransactions.filter(t => t.type === "income").map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-muted rounded-full">
-                        {getTransactionIcon(transaction.type)}
-                      </div>
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>{transaction.date}</span>
-                          <span>•</span>
-                          <span>{transaction.account}</span>
+                {filteredTransactions.filter(t => t.type === "income").length > 0 ? (
+                  filteredTransactions.filter(t => t.type === "income").map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 bg-muted rounded-full">
+                          {getTransactionIcon(transaction.type)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{transaction.description}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{transaction.date}</span>
+                            <span>•</span>
+                            <span>{transaction.account}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="font-medium text-green-600">
-                          {formatAmount(transaction.amount, transaction.type)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-medium text-green-600">
+                            {formatAmount(transaction.amount, transaction.type)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                        </div>
+                        <Badge className={getStatusColor(transaction.status)}>
+                          {transaction.status}
+                        </Badge>
                       </div>
-                      <Badge className={getStatusColor(transaction.status)}>
-                        {transaction.status}
-                      </Badge>
                     </div>
-                  </div>
-                ))}
-                {filteredTransactions.filter(t => t.type === "income").length === 0 && (
+                  ))
+                ) : (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">No income transactions found</p>
                   </div>
@@ -382,35 +456,36 @@ export default function TransactionsPage() {
           <Card>
             <CardContent className="p-6">
               <div className="space-y-4">
-                {filteredTransactions.filter(t => t.type === "expense").map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-muted rounded-full">
-                        {getTransactionIcon(transaction.type)}
-                      </div>
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>{transaction.date}</span>
-                          <span>•</span>
-                          <span>{transaction.account}</span>
+                {filteredTransactions.filter(t => t.type === "expense").length > 0 ? (
+                  filteredTransactions.filter(t => t.type === "expense").map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 bg-muted rounded-full">
+                          {getTransactionIcon(transaction.type)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{transaction.description}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{transaction.date}</span>
+                            <span>•</span>
+                            <span>{transaction.account}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="font-medium text-red-600">
-                          {formatAmount(transaction.amount, transaction.type)}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-medium text-red-600">
+                            {formatAmount(transaction.amount, transaction.type)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                        </div>
+                        <Badge className={getStatusColor(transaction.status)}>
+                          {transaction.status}
+                        </Badge>
                       </div>
-                      <Badge className={getStatusColor(transaction.status)}>
-                        {transaction.status}
-                      </Badge>
                     </div>
-                  </div>
-                ))}
-                {filteredTransactions.filter(t => t.type === "expense").length === 0 && (
+                  ))
+                ) : (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">No expense transactions found</p>
                   </div>
@@ -424,35 +499,36 @@ export default function TransactionsPage() {
           <Card>
             <CardContent className="p-6">
               <div className="space-y-4">
-                {filteredTransactions.filter(t => t.type === "transfer").map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2 bg-muted rounded-full">
-                        {getTransactionIcon(transaction.type)}
-                      </div>
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span>{transaction.date}</span>
-                          <span>•</span>
-                          <span>{transaction.account}</span>
+                {filteredTransactions.filter(t => t.type === "transfer").length > 0 ? (
+                  filteredTransactions.filter(t => t.type === "transfer").map((transaction) => (
+                    <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className="p-2 bg-muted rounded-full">
+                          {getTransactionIcon(transaction.type)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{transaction.description}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{transaction.date}</span>
+                            <span>•</span>
+                            <span>{transaction.account}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="font-medium text-blue-600">
-                          ₱{transaction.amount.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="font-medium text-blue-600">
+                            {formatAmount(transaction.amount, transaction.type)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                        </div>
+                        <Badge className={getStatusColor(transaction.status)}>
+                          {transaction.status}
+                        </Badge>
                       </div>
-                      <Badge className={getStatusColor(transaction.status)}>
-                        {transaction.status}
-                      </Badge>
                     </div>
-                  </div>
-                ))}
-                {filteredTransactions.filter(t => t.type === "transfer").length === 0 && (
+                  ))
+                ) : (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground">No transfer transactions found</p>
                   </div>
@@ -462,6 +538,20 @@ export default function TransactionsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      <AddTransactionModal
+        open={addTransactionModalOpen}
+        onOpenChange={setAddTransactionModalOpen}
+        onTransactionAdded={handleTransactionAdded}
+      />
+
+      <AdvancedFiltersModal
+        open={advancedFiltersModalOpen}
+        onOpenChange={setAdvancedFiltersModalOpen}
+        onFiltersApply={handleAdvancedFiltersApply}
+        currentFilters={advancedFilters}
+      />
     </div>
   )
 } 

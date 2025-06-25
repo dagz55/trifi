@@ -1,18 +1,30 @@
 "use client"
 
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { OverviewTab } from "@/components/analytics/overview-tab"
 import { AnalyticsTab } from "@/components/analytics/analytics-tab"
 import { ReportsTab } from "@/components/analytics/reports-tab"
 import { NotificationsTab } from "@/components/analytics/notifications-tab"
+import { ExportDataModal } from "@/components/export-data-modal"
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
+import { DateRange } from "react-day-picker"
 
 export default function AnalyticsPage() {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+
+  // Mock accounts data for export functionality
+  const mockAccounts = [
+    { name: "Checking", balance: 0 },
+    { name: "Savings", balance: 0 },
+    { name: "Investment", balance: 0 },
+  ]
+
   const handleExportData = () => {
-    // Implement export functionality here
-    console.log("Exporting data...")
+    setIsExportModalOpen(true)
   }
 
   return (
@@ -20,7 +32,11 @@ export default function AnalyticsPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
         <div className="flex items-center space-x-2">
-          <DateRangePicker />
+          <DateRangePicker 
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            className="w-[280px]"
+          />
           <Button onClick={handleExportData} className="flex items-center gap-2">
             <Download className="h-4 w-4" />
             Export Data
@@ -35,18 +51,25 @@ export default function AnalyticsPage() {
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
-          <OverviewTab />
+          <OverviewTab dateRange={dateRange} />
         </TabsContent>
         <TabsContent value="analytics" className="space-y-4">
-          <AnalyticsTab />
+          <AnalyticsTab dateRange={dateRange} />
         </TabsContent>
         <TabsContent value="reports" className="space-y-4">
-          <ReportsTab />
+          <ReportsTab dateRange={dateRange} />
         </TabsContent>
         <TabsContent value="notifications" className="space-y-4">
-          <NotificationsTab />
+          <NotificationsTab dateRange={dateRange} />
         </TabsContent>
       </Tabs>
+
+      {/* Export Data Modal */}
+      <ExportDataModal
+        open={isExportModalOpen}
+        onOpenChange={setIsExportModalOpen}
+        accounts={mockAccounts}
+      />
     </div>
   )
 }

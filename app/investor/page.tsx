@@ -10,12 +10,17 @@ import { InvestorProfile } from "@/components/investor/investor-profile"
 import { TransactionHistory } from "@/components/investor/transaction-history"
 import { RiskAssessment } from "@/components/investor/risk-assessment"
 import { Plus, Download } from "lucide-react"
+import { toast } from "sonner"
 
 export default function InvestorPage() {
   const [activeTab, setActiveTab] = useState("portfolio")
 
   const handleExportData = () => {
-    console.log("Exporting investor data...")
+    toast.info("Exporting investor portfolio data...")
+  }
+
+  const handleNewInvestment = () => {
+    toast.info("Opening new investment form...")
   }
 
   return (
@@ -27,7 +32,7 @@ export default function InvestorPage() {
             <Download className="mr-2 h-4 w-4" />
             Export Portfolio
           </Button>
-          <Button>
+          <Button onClick={handleNewInvestment}>
             <Plus className="mr-2 h-4 w-4" />
             New Investment
           </Button>

@@ -7,6 +7,9 @@ import { Wallet, Plus, Send, CreditCard, MoreHorizontal } from "lucide-react"
 import { AddMoneyModal } from "./add-money-modal"
 import { SendMoneyModal } from "./send-money-modal"
 import { RequestMoneyModal } from "./request-money-modal"
+import { ViewStatementModal } from "./view-statement-modal"
+import { AccountSettingsModal } from "./account-settings-modal"
+import { ExportDataModal } from "./export-data-modal"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,17 +17,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const initialAccounts = [
-  { name: "Checking", balance: 7500 },
-  { name: "Savings", balance: 560000 },
-  { name: "Investment", balance: 5879000 },
-]
+const initialAccounts: { name: string; balance: number }[] = []
 
 export function AccountsOverview() {
   const [accounts, setAccounts] = useState(initialAccounts)
   const [isAddMoneyModalOpen, setIsAddMoneyModalOpen] = useState(false)
   const [isSendMoneyModalOpen, setIsSendMoneyModalOpen] = useState(false)
   const [isRequestMoneyModalOpen, setIsRequestMoneyModalOpen] = useState(false)
+  const [isViewStatementModalOpen, setIsViewStatementModalOpen] = useState(false)
+  const [isAccountSettingsModalOpen, setIsAccountSettingsModalOpen] = useState(false)
+  const [isExportDataModalOpen, setIsExportDataModalOpen] = useState(false)
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0)
 
@@ -49,18 +51,15 @@ export function AccountsOverview() {
   }
 
   const handleViewStatement = () => {
-    console.log("Viewing account statement...")
-    // Navigate to account statement page
+    setIsViewStatementModalOpen(true)
   }
 
   const handleAccountSettings = () => {
-    console.log("Opening account settings...")
-    // Navigate to account settings page
+    setIsAccountSettingsModalOpen(true)
   }
 
   const handleExportData = () => {
-    console.log("Exporting account data...")
-    // Export account data as CSV/PDF
+    setIsExportDataModalOpen(true)
   }
 
   return (
@@ -110,6 +109,7 @@ export function AccountsOverview() {
           </DropdownMenu>
         </div>
       </CardContent>
+      
       <AddMoneyModal
         isOpen={isAddMoneyModalOpen}
         onClose={() => setIsAddMoneyModalOpen(false)}
@@ -125,6 +125,21 @@ export function AccountsOverview() {
         isOpen={isRequestMoneyModalOpen}
         onClose={() => setIsRequestMoneyModalOpen(false)}
         onRequestMoney={handleRequestMoney}
+      />
+      
+      <ViewStatementModal
+        open={isViewStatementModalOpen}
+        onOpenChange={setIsViewStatementModalOpen}
+        accounts={accounts}
+      />
+      <AccountSettingsModal
+        open={isAccountSettingsModalOpen}
+        onOpenChange={setIsAccountSettingsModalOpen}
+      />
+      <ExportDataModal
+        open={isExportDataModalOpen}
+        onOpenChange={setIsExportDataModalOpen}
+        accounts={accounts}
       />
     </Card>
   )

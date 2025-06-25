@@ -1,0 +1,235 @@
+"use client"
+
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DateRangePicker } from "@/components/date-range-picker"
+import { Calendar, Download, Filter, Eye, TrendingUp, TrendingDown, FileText } from "lucide-react"
+import { format } from "date-fns"
+import { DateRange } from "react-day-picker"
+import { toast } from "sonner"
+import { Separator } from "@/components/ui/separator"
+import { Search } from "lucide-react"
+
+interface ViewStatementModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  accounts: Array<{ name: string; balance: number }>
+}
+
+interface StatementTransaction {
+  id: string
+  date: string
+  description: string
+  type: "credit" | "debit"
+  amount: number
+  account: string
+  balance: number
+  reference: string
+}
+
+export function ViewStatementModal({ open, onOpenChange, accounts }: ViewStatementModalProps) {
+  const [selectedAccount, setSelectedAccount] = useState("all")
+  const [selectedType, setSelectedType] = useState("all")
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [searchTerm, setSearchTerm] = useState("")
+
+  // TODO: Fetch real statement data from your Supabase database
+  const statementData: StatementTransaction[] = []
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-PH', {
+      style: 'currency',
+      currency: 'PHP'
+    }).format(amount)
+  }
+
+  const getTransactionTypeColor = (type: "credit" | "debit") => {
+    return type === "credit" 
+      ? "bg-green-100 text-green-800" 
+      : "bg-red-100 text-red-800"
+  }
+
+  const getTransactionTypeSign = (type: "credit" | "debit") => {
+    return type === "credit" ? "+" : "-"
+  }
+
+  const filteredTransactions = statementData.filter(transaction => {
+    const matchesAccount = selectedAccount === "all" || transaction.account.toLowerCase() === selectedAccount.toLowerCase()
+    const matchesType = selectedType === "all" || transaction.type === selectedType
+    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         transaction.reference.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    let matchesDateRange = true
+    if (dateRange?.from) {
+      const statementDate = new Date(transaction.date)
+      matchesDateRange = statementDate >= dateRange.from
+      if (dateRange.to) {
+        matchesDateRange = matchesDateRange && statementDate <= dateRange.to
+      }
+    }
+
+    return matchesAccount && matchesType && matchesSearch && matchesDateRange
+  })
+
+  const getTotalCredits = () => {
+    return filteredTransactions
+      .filter(s => s.type === "credit")
+      .reduce((sum, s) => sum + s.amount, 0)
+  }
+
+  const getTotalDebits = () => {
+    return filteredTransactions
+      .filter(s => s.type === "debit")
+      .reduce((sum, s) => sum + s.amount, 0)
+  }
+
+  const handleDownloadStatement = () => {
+    // TODO: Implement actual statement download
+    console.log("Download statement functionality coming soon!")
+  }
+
+  const handleEmailStatement = () => {
+    toast.success("Statement sent to your registered email address")
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            Account Statement
+          </DialogTitle>
+          <DialogDescription>
+            View and download your account statements
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4">
+            <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select account" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Accounts</SelectItem>
+                <SelectItem value="checking">Checking</SelectItem>
+                <SelectItem value="savings">Savings</SelectItem>
+                <SelectItem value="investment">Investment</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="All types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="credit">Credit</SelectItem>
+                <SelectItem value="debit">Debit</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <div className="flex-1 min-w-[200px] relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search descriptions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Button onClick={handleDownloadStatement} variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Download
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Statement Content */}
+          <div className="overflow-auto max-h-[400px]">
+            {filteredTransactions.length === 0 ? (
+              <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                <div className="text-center">
+                  <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-xl font-medium">No statement data available</p>
+                  <p className="text-sm">Connect your database to view account statements</p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {filteredTransactions.map((transaction) => (
+                  <Card key={transaction.id} className="hover:bg-muted/50 transition-colors">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div>
+                              <p className="font-medium">{transaction.description}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {transaction.account} • {transaction.reference}
+                              </p>
+                            </div>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(transaction.date).toLocaleDateString('en-PH', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className="flex items-center gap-2">
+                            <Badge className={getTransactionTypeColor(transaction.type)}>
+                              {transaction.type}
+                            </Badge>
+                            <p className={`font-bold text-lg ${
+                              transaction.type === "credit" ? "text-green-600" : "text-red-600"
+                            }`}>
+                              {getTransactionTypeSign(transaction.type)}{formatCurrency(transaction.amount)}
+                            </p>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Balance: {formatCurrency(transaction.balance)}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter className="flex justify-between">
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleEmailStatement}>
+              📧 Email Statement
+            </Button>
+          </div>
+          <Button onClick={() => onOpenChange(false)}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+} 

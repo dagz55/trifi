@@ -3,11 +3,7 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 
-const savingsGoals = [
-  { name: "Emergency Fund", current: 10000, target: 25000 },
-  { name: "Vacation", current: 3000, target: 5000 },
-  { name: "New Car", current: 15000, target: 35000 },
-]
+const savingsGoals: { name: string; current: number; target: number }[] = []
 
 export function SavingsGoals() {
   return (

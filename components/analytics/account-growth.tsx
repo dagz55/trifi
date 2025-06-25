@@ -1,51 +1,78 @@
 "use client"
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
-import { Card, CardContent } from "@/components/ui/card"
-import { useTheme } from "next-themes"
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
-const data = [
-  { month: "Jan", newAccounts: 100, totalAccounts: 1000 },
-  { month: "Feb", newAccounts: 120, totalAccounts: 1120 },
-  { month: "Mar", newAccounts: 150, totalAccounts: 1270 },
-  { month: "Apr", newAccounts: 180, totalAccounts: 1450 },
-  { month: "May", newAccounts: 200, totalAccounts: 1650 },
-  { month: "Jun", newAccounts: 220, totalAccounts: 1870 },
-]
+// TODO: Replace with actual data from your database/API
+interface AccountGrowthProps {
+  comparisonPeriod: string
+}
 
-export function AccountGrowth() {
-  const { theme } = useTheme()
+export function AccountGrowth({ comparisonPeriod }: AccountGrowthProps) {
+  const [selectedMetric, setSelectedMetric] = useState("newAccounts")
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <Card className="border-none shadow-lg">
-          <CardContent className="p-2">
-            <p className="text-sm font-semibold">{label}</p>
-            <p className="text-sm text-muted-foreground">New Accounts: {payload[0].value}</p>
-            <p className="text-sm text-muted-foreground">Total Accounts: {payload[1].value}</p>
-          </CardContent>
-        </Card>
-      )
-    }
-    return null
+  // TODO: Fetch real data from your Supabase database
+  const accountGrowthData: any[] = []
+
+  if (accountGrowthData.length === 0) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-base font-normal">Account Growth</CardTitle>
+          <Select value={selectedMetric} onValueChange={setSelectedMetric}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newAccounts">New Accounts</SelectItem>
+              <SelectItem value="totalAccounts">Total Accounts</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+            <div className="text-center">
+              <p className="text-lg font-medium">No data available</p>
+              <p className="text-sm">Connect your database to see account growth metrics</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
-    <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
-        <XAxis
-          dataKey="month"
-          stroke={theme === "dark" ? "#888888" : "#333333"}
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis stroke={theme === "dark" ? "#888888" : "#333333"} fontSize={12} tickLine={false} axisLine={false} />
-        <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="newAccounts" fill={theme === "dark" ? "#adfa1d" : "#0ea5e9"} radius={[4, 4, 0, 0]} />
-        <Bar dataKey="totalAccounts" fill={theme === "dark" ? "#1e40af" : "#3b82f6"} radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-normal">Account Growth</CardTitle>
+        <Select value={selectedMetric} onValueChange={setSelectedMetric}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newAccounts">New Accounts</SelectItem>
+            <SelectItem value="totalAccounts">Total Accounts</SelectItem>
+          </SelectContent>
+        </Select>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={accountGrowthData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Line 
+              type="monotone" 
+              dataKey={selectedMetric} 
+              stroke="#8884d8" 
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   )
 }

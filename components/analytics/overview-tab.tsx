@@ -9,8 +9,13 @@ import { AccountGrowth } from "@/components/analytics/account-growth"
 import { TopProducts } from "@/components/analytics/top-products"
 import { UserActivity } from "@/components/analytics/user-activity"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DateRange } from "react-day-picker"
 
-export function OverviewTab() {
+interface OverviewTabProps {
+  dateRange?: DateRange | undefined
+}
+
+export function OverviewTab({ dateRange }: OverviewTabProps) {
   const [comparisonPeriod, setComparisonPeriod] = useState("previous_month")
 
   return (

@@ -1,12 +1,6 @@
 import { CreditCard, ShoppingCart, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react"
 
-const transactions = [
-  { id: 1, title: "Online Purchase", amount: -89.99, date: "2023-06-15", icon: ShoppingCart, type: "expense" },
-  { id: 2, title: "Salary Deposit", amount: 3500, date: "2023-06-01", icon: Wallet, type: "income" },
-  { id: 3, title: "Grocery Shopping", amount: -156.23, date: "2023-06-10", icon: ShoppingCart, type: "expense" },
-  { id: 4, title: "ATM Withdrawal", amount: -200, date: "2023-06-05", icon: CreditCard, type: "expense" },
-  { id: 5, title: "Freelance Payment", amount: 750, date: "2023-06-12", icon: Wallet, type: "income" },
-]
+const transactions: any[] = []
 
 export function List02() {
   return (
@@ -18,7 +12,8 @@ export function List02() {
         </h2>
       </div>
       <div className="space-y-4 mb-6">
-        {transactions.map((transaction) => (
+        {transactions.length > 0 ? (
+          transactions.map((transaction: any) => (
           <div key={transaction.id} className="flex items-center justify-between">
             <div className="flex items-center">
               <div className={`p-2 rounded-full mr-3 ${transaction.type === "income" ? "bg-green-100" : "bg-red-100"}`}>
@@ -44,7 +39,14 @@ export function List02() {
               )}
             </div>
           </div>
-        ))}
+          ))
+        ) : (
+          <div className="text-center py-8">
+            <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-sm text-gray-500 dark:text-gray-400">No transactions yet</p>
+            <p className="text-xs text-gray-400 mt-1">Your transactions will appear here</p>
+          </div>
+        )}
       </div>
       <button className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
         View All Transactions

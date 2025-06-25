@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,12 +22,6 @@ interface Contact {
   phoneNumber: string
 }
 
-const contacts: Contact[] = [
-  { id: "1", name: "John Doe", phoneNumber: "+63 917 123 4567" },
-  { id: "2", name: "Jane Smith", phoneNumber: "+63 917 987 6543" },
-  { id: "3", name: "Alice Johnson", phoneNumber: "+63 917 555 1234" },
-]
-
 interface RequestMoneyModalProps {
   isOpen: boolean
   onClose: () => void
@@ -30,17 +30,44 @@ interface RequestMoneyModalProps {
 
 export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }: RequestMoneyModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [selectedContact, setSelectedContact] = useState<string>("")
   const [amount, setAmount] = useState("")
   const [otp, setOtp] = useState("")
+  const [showOtpInput, setShowOtpInput] = useState(false)
 
-  const handleContinue = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      onRequestMoney(Number.parseFloat(amount), selectedContact)
-      onClose()
+  // TODO: Fetch real contacts from your database/API
+  const contacts: Contact[] = []
+
+  const handleRequestMoney = () => {
+    if (!selectedContact || !amount) {
+      alert("Please select a contact and enter an amount")
+      return
     }
+    
+    const contact = contacts.find(c => c.id === selectedContact)
+    if (!contact) {
+      alert("Contact not found")
+      return
+    }
+    
+    setShowOtpInput(true)
+  }
+
+  const handleConfirmRequest = () => {
+    if (!otp) {
+      alert("Please enter OTP")
+      return
+    }
+    
+    const contact = contacts.find(c => c.id === selectedContact)
+    onRequestMoney(parseFloat(amount), contact || null)
+    
+    // Reset form
+    setSelectedContact("")
+    setAmount("")
+    setOtp("")
+    setShowOtpInput(false)
+    onClose()
   }
 
   const renderStepContent = () => {
@@ -49,32 +76,24 @@ export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }: RequestMo
         return (
           <div className="space-y-4">
             <Label htmlFor="contact">Select Contact</Label>
-            <Select onValueChange={(value) => setSelectedContact(contacts.find((c) => c.id === value) || null)}>
-              <SelectTrigger id="contact">
+            <Select value={selectedContact} onValueChange={setSelectedContact}>
+              <SelectTrigger>
                 <SelectValue placeholder="Select a contact" />
               </SelectTrigger>
               <SelectContent>
                 {contacts.map((contact) => (
                   <SelectItem key={contact.id} value={contact.id}>
-                    {contact.name}
+                    {contact.name} ({contact.phoneNumber})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {selectedContact && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Contact Details:</p>
-                <p className="text-sm">Name: {selectedContact.name}</p>
-                <p className="text-sm">ID: {selectedContact.id}</p>
-                <p className="text-sm">Phone: {selectedContact.phoneNumber}</p>
-              </div>
-            )}
           </div>
         )
       case 1:
         return (
           <div className="space-y-4">
-            <Label htmlFor="amount">Amount to Request</Label>
+            <Label htmlFor="amount">Amount (₱)</Label>
             <Input
               id="amount"
               type="number"
@@ -97,7 +116,7 @@ export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }: RequestMo
             <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
             <p className="text-lg font-medium">Money Request Sent</p>
             <p className="text-sm text-muted-foreground">
-              ₱{amount} has been requested from {selectedContact?.name}.
+              ₱{amount} has been requested from {contacts.find(c => c.id === selectedContact)?.name}.
             </p>
           </div>
         )
@@ -106,22 +125,42 @@ export function RequestMoneyModal({ isOpen, onClose, onRequestMoney }: RequestMo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{steps[currentStep]}</DialogTitle>
+          <DialogTitle>Request Money</DialogTitle>
+          <DialogDescription>
+            Send a money request to someone in your contacts.
+          </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 space-y-4">
-          {renderStepContent()}
-          <div className="flex justify-between">
-            {currentStep > 0 && currentStep < steps.length - 1 && (
-              <Button variant="outline" onClick={() => setCurrentStep(currentStep - 1)}>
-                Back
-              </Button>
-            )}
-            <Button onClick={handleContinue} className="ml-auto">
-              {currentStep === steps.length - 1 ? "Close" : "Continue"}
-            </Button>
-          </div>
+        
+        <div className="space-y-4">
+          {contacts.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-lg font-medium">No contacts available</p>
+              <p className="text-sm">Connect your database to see contacts</p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                {renderStepContent()}
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                {showOtpInput ? (
+                  <Button onClick={handleConfirmRequest}>
+                    Confirm Request
+                  </Button>
+                ) : (
+                  <Button onClick={handleRequestMoney}>
+                    Send Request
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

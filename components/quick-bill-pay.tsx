@@ -5,18 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PaymentModal } from "./payment-modal"
 
-const initialBills = [
-  { id: 1, name: "Electricity Bill", amount: 85, dueDate: "2023-07-15" },
-  { id: 2, name: "Internet Service", amount: 60, dueDate: "2023-07-18" },
-  { id: 3, name: "Credit Card Payment", amount: 500, dueDate: "2023-07-25" },
-  { id: 4, name: "Water Bill", amount: 45, dueDate: "2023-07-30" },
-]
+interface Bill {
+  id: number
+  name: string
+  amount: number
+  dueDate: string
+}
+
+const initialBills: Bill[] = []
 
 export function QuickBillPay() {
-  const [bills, setBills] = useState(initialBills)
-  const [selectedBill, setSelectedBill] = useState(null)
+  const [bills, setBills] = useState<Bill[]>(initialBills)
+  const [selectedBill, setSelectedBill] = useState<Bill | null>(null)
 
-  const handlePaymentSuccess = (paidBillId) => {
+  const handlePaymentSuccess = (paidBillId: number) => {
     setBills(bills.filter((bill) => bill.id !== paidBillId))
     setSelectedBill(null)
   }

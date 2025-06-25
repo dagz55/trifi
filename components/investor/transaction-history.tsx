@@ -9,104 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Search, Download } from "lucide-react"
 
-const transactions = [
-  {
-    id: "TXN001",
-    date: "2023-07-20",
-    type: "Buy",
-    asset: "AAPL",
-    assetName: "Apple Inc.",
-    quantity: 50,
-    price: 195.5,
-    total: 9775.0,
-    status: "Completed",
-    fees: 9.95,
-  },
-  {
-    id: "TXN002",
-    date: "2023-07-18",
-    type: "Sell",
-    asset: "MSFT",
-    assetName: "Microsoft Corp.",
-    quantity: 25,
-    price: 340.2,
-    total: 8505.0,
-    status: "Completed",
-    fees: 9.95,
-  },
-  {
-    id: "TXN003",
-    date: "2023-07-15",
-    type: "Buy",
-    asset: "GOOGL",
-    assetName: "Alphabet Inc.",
-    quantity: 10,
-    price: 125.8,
-    total: 1258.0,
-    status: "Completed",
-    fees: 9.95,
-  },
-  {
-    id: "TXN004",
-    date: "2023-07-12",
-    type: "Dividend",
-    asset: "VTI",
-    assetName: "Vanguard Total Stock Market ETF",
-    quantity: 100,
-    price: 2.45,
-    total: 245.0,
-    status: "Completed",
-    fees: 0,
-  },
-  {
-    id: "TXN005",
-    date: "2023-07-10",
-    type: "Buy",
-    asset: "TSLA",
-    assetName: "Tesla Inc.",
-    quantity: 15,
-    price: 280.75,
-    total: 4211.25,
-    status: "Pending",
-    fees: 9.95,
-  },
-  {
-    id: "TXN006",
-    date: "2023-07-08",
-    type: "Sell",
-    asset: "AMZN",
-    assetName: "Amazon.com Inc.",
-    quantity: 8,
-    price: 135.25,
-    total: 1082.0,
-    status: "Completed",
-    fees: 9.95,
-  },
-  {
-    id: "TXN007",
-    date: "2023-07-05",
-    type: "Buy",
-    asset: "SPY",
-    assetName: "SPDR S&P 500 ETF Trust",
-    quantity: 20,
-    price: 445.3,
-    total: 8906.0,
-    status: "Completed",
-    fees: 9.95,
-  },
-  {
-    id: "TXN008",
-    date: "2023-07-03",
-    type: "Dividend",
-    asset: "JNJ",
-    assetName: "Johnson & Johnson",
-    quantity: 30,
-    price: 1.13,
-    total: 33.9,
-    status: "Completed",
-    fees: 0,
-  },
-]
+const transactions: any[] = []
 
 export function TransactionHistory() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -215,7 +118,8 @@ export function TransactionHistory() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTransactions.map((transaction) => (
+                {filteredTransactions.length > 0 ? (
+                  filteredTransactions.map((transaction: any) => (
                   <TableRow key={transaction.id}>
                     <TableCell className="font-medium">{transaction.date}</TableCell>
                     <TableCell>
@@ -235,7 +139,20 @@ export function TransactionHistory() {
                       <Badge className={getStatusColor(transaction.status)}>{transaction.status}</Badge>
                     </TableCell>
                   </TableRow>
-                ))}
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-12">
+                      <div className="flex flex-col items-center">
+                        <div className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50">📊</div>
+                        <h3 className="text-lg font-semibold mb-2">No investment transactions yet</h3>
+                        <p className="text-muted-foreground">
+                          Your investment transactions will appear here once you start trading
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>

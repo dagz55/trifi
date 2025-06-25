@@ -21,79 +21,31 @@ import {
   MoreHorizontal
 } from "lucide-react"
 
-const projects = [
-  {
-    id: 1,
-    name: "Mobile Banking App",
-    status: "In Progress",
-    progress: 75,
-    budget: "₱2,500,000",
-    spent: "₱1,875,000",
-    startDate: "2024-01-15",
-    endDate: "2024-06-30",
-    team: [
-      { name: "Ana Cruz", role: "PM" },
-      { name: "Carlos Reyes", role: "Dev" },
-      { name: "Maria Santos", role: "Design" },
-    ],
-    priority: "High",
-  },
-  {
-    id: 2,
-    name: "Risk Management System",
-    status: "Planning",
-    progress: 25,
-    budget: "₱3,200,000",
-    spent: "₱800,000",
-    startDate: "2024-03-01",
-    endDate: "2024-09-15",
-    team: [
-      { name: "Luis Garcia", role: "PM" },
-      { name: "Sofia Dela Cruz", role: "Dev" },
-    ],
-    priority: "Medium",
-  },
-  {
-    id: 3,
-    name: "Compliance Dashboard",
-    status: "Completed",
-    progress: 100,
-    budget: "₱1,800,000",
-    spent: "₱1,650,000",
-    startDate: "2023-10-01",
-    endDate: "2024-02-28",
-    team: [
-      { name: "Diego Santos", role: "PM" },
-      { name: "Carmen Reyes", role: "Dev" },
-      { name: "Roberto Cruz", role: "QA" },
-    ],
-    priority: "Low",
-  },
-]
+const projects: any[] = []
 
 const projectMetrics = [
   {
     title: "Active Projects",
-    value: "8",
-    change: "+2",
+    value: "0",
+    change: "0",
     icon: Folder,
   },
   {
     title: "Total Budget",
-    value: "₱15,800,000",
-    change: "+₱2.1M",
+    value: "₱0",
+    change: "₱0",
     icon: DollarSign,
   },
   {
     title: "Team Members",
-    value: "24",
-    change: "+3",
+    value: "0",
+    change: "0",
     icon: Users,
   },
   {
     title: "Completion Rate",
-    value: "78%",
-    change: "+5%",
+    value: "0%",
+    change: "0%",
     icon: TrendingUp,
   },
 ]
@@ -197,7 +149,19 @@ export default function ProjectsPage() {
 
         <TabsContent value="all" className="space-y-4">
           <div className="grid gap-4">
-            {projects.map((project) => (
+            {projects.length > 0 ? (
+              projects.map((project: {
+                id: number;
+                name: string;
+                status: string;
+                priority: string;
+                progress: number;
+                budget: string;
+                spent: string;
+                startDate: string;
+                endDate: string;
+                team: { name: string; role: string }[];
+              }, index: number) => (
               <Card key={project.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
@@ -263,11 +227,11 @@ export default function ProjectsPage() {
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Team</h4>
                     <div className="flex items-center gap-2">
-                      {project.team.map((member, index) => (
+                      {project.team.map((member: { name: string; role: string }, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <Avatar className="h-8 w-8">
                             <AvatarFallback className="text-xs">
-                              {member.name.split(' ').map(n => n[0]).join('')}
+                              {member.name.split(' ').map((n: string) => n[0]).join('')}
                             </AvatarFallback>
                           </Avatar>
                           <div className="text-sm">
@@ -280,7 +244,20 @@ export default function ProjectsPage() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            ))
+            ) : (
+              <div className="text-center py-12">
+                <Folder className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No projects yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Create your first project to get started
+                </p>
+                <Button onClick={() => toast.success("New project creation started")}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Project
+                </Button>
+              </div>
+            )}
           </div>
         </TabsContent>
 
