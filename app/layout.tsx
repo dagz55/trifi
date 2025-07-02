@@ -20,9 +20,9 @@ import { AuthProvider } from "@/contexts/auth-context"
 // })
 
 export const metadata = {
-  title: "TriFi - TriGo Finance & Accounting App",
-  description: "TriGo Finance & Accounting - Complete financial management solution",
-    generator: 'v0.dev'
+  title: "TriFi - Advanced Financial Management Platform",
+  description: "Professional financial management with Apple-style design and enterprise features",
+  generator: 'TriFi Platform',
 }
 
 export default async function RootLayout({
@@ -33,7 +33,7 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body className="font-sans">
+        <body className="font-sans antialiased">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -45,23 +45,38 @@ export default async function RootLayout({
                 <TooltipProvider delayDuration={0}>
                   {/* Signed Out - Full screen landing page */}
                   <SignedOut>
-                    <main className="w-full">{children}</main>
+                    <main className="w-full animate-fade-in">{children}</main>
                   </SignedOut>
                   
                   {/* Signed In - Dashboard with sidebar and nav */}
                   <SignedIn>
-                    <div className="min-h-screen flex">
+                    <div className="min-h-screen flex bg-gradient-to-br from-background via-background to-muted/20">
                       <Sidebar />
-                      <div className="flex-1">
+                      <div className="flex-1 flex flex-col">
                         <TopNav />
-                        <div className="container mx-auto p-6 max-w-7xl">
-                          <main className="w-full">{children}</main>
+                        <div className="flex-1 page-transition">
+                          <div className="container mx-auto p-6 max-w-7xl">
+                            <main className="w-full animate-fade-in">{children}</main>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </SignedIn>
                   
-                  <Toaster />
+                  <Toaster 
+                    position="top-right"
+                    richColors
+                    expand={false}
+                    closeButton
+                    toastOptions={{
+                      style: {
+                        background: 'var(--glass-bg)',
+                        backdropFilter: 'var(--glass-backdrop)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: '12px',
+                      },
+                    }}
+                  />
                 </TooltipProvider>
               </AuthProvider>
             </SettingsProvider>

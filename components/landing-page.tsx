@@ -17,7 +17,10 @@ import {
   Shield, 
   TrendingUp, 
   Users, 
-  Wallet 
+  Wallet,
+  Zap,
+  Smartphone,
+  Globe
 } from "lucide-react"
 import { SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useState } from "react"
@@ -29,32 +32,38 @@ export function LandingPage() {
     {
       icon: BarChart3,
       title: "Financial Analytics",
-      description: "Get comprehensive insights into your financial performance with real-time analytics and reporting."
+      description: "Get comprehensive insights into your financial performance with real-time analytics and AI-powered reporting.",
+      gradient: "gradient-blue"
     },
     {
       icon: Calculator,
       title: "Smart Accounting",
-      description: "Automate your accounting processes with AI-powered categorization and reconciliation."
+      description: "Automate your accounting processes with intelligent categorization and seamless reconciliation.",
+      gradient: "gradient-green"
     },
     {
       icon: CreditCard,
       title: "Payment Management",
-      description: "Streamline payments, invoicing, and money transfers with secure, integrated solutions."
+      description: "Streamline payments, invoicing, and money transfers with secure, integrated solutions.",
+      gradient: "gradient-purple"
     },
     {
       icon: Building2,
       title: "Organization Management",
-      description: "Manage your company structure, departments, and organizational hierarchy efficiently."
+      description: "Manage your company structure, departments, and organizational hierarchy efficiently.",
+      gradient: "gradient-blue"
     },
     {
       icon: FileText,
       title: "Invoice & Billing",
-      description: "Create professional invoices, track payments, and manage billing cycles seamlessly."
+      description: "Create professional invoices, track payments, and manage billing cycles seamlessly.",
+      gradient: "gradient-green"
     },
     {
       icon: PieChart,
       title: "Budget Tracking",
-      description: "Monitor expenses, set budgets, and track financial goals with detailed breakdowns."
+      description: "Monitor expenses, set budgets, and track financial goals with detailed breakdowns.",
+      gradient: "gradient-purple"
     }
   ]
 
@@ -62,17 +71,20 @@ export function LandingPage() {
     {
       icon: Shield,
       title: "Bank-Level Security",
-      description: "Your financial data is protected with enterprise-grade encryption and security measures."
+      description: "Your financial data is protected with enterprise-grade encryption and security measures.",
+      color: "status-green"
     },
     {
       icon: TrendingUp,
       title: "Real-Time Insights",
-      description: "Make informed decisions with live financial data and predictive analytics."
+      description: "Make informed decisions with live financial data and predictive analytics.",
+      color: "status-blue"
     },
     {
       icon: Users,
       title: "Team Collaboration",
-      description: "Work together with your team on financial planning and management tasks."
+      description: "Work together with your team on financial planning and management tasks.",
+      color: "status-purple"
     }
   ]
 
@@ -148,53 +160,67 @@ export function LandingPage() {
     window.open('mailto:sales@trifi.com?subject=Enterprise%20Plan%20Inquiry', '_blank')
   }
 
-  const handleFooterLink = (section: string) => {
-    // Scroll to relevant section or show modal
-    const element = document.getElementById(section.toLowerCase())
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+  const testimonials = [
+    {
+      name: "Maria Santos",
+      role: "CFO, TechStart Inc.",
+      content: "TriFi transformed our financial management. The real-time insights and automated reporting saved us 20+ hours per week.",
+      avatar: "MS"
+    },
+    {
+      name: "John Rodriguez", 
+      role: "Business Owner",
+      content: "The Apple-style interface makes complex financial tasks feel simple. Our team adopted it immediately.",
+      avatar: "JR"
+    },
+    {
+      name: "Ana dela Cruz",
+      role: "Accounting Manager",
+      content: "Best financial platform we've used. The automation features and Philippine peso support are perfect for our business.",
+      avatar: "AC"
     }
-  }
+  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="nav-blur border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-white" />
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 gradient-blue rounded-2xl flex items-center justify-center shadow-apple">
+              <DollarSign className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">TriFi</span>
+            <span className="text-2xl font-bold tracking-tight">TriFi</span>
           </div>
           <div className="flex items-center space-x-4">
             <SignInButton mode="modal">
-              <Button variant="ghost">Sign In</Button>
+              <Button variant="ghost" className="apple-button">Sign In</Button>
             </SignInButton>
             <SignUpButton mode="modal">
-              <Button>Get Started</Button>
+              <Button className="apple-button gradient-blue text-white border-0">Get Started</Button>
             </SignUpButton>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge variant="secondary" className="mb-4">
+      <section className="container mx-auto px-4 py-20 text-center">
+        <div className="max-w-5xl mx-auto animate-fade-in">
+          <Badge variant="secondary" className="mb-6 px-4 py-2 rounded-full text-sm">
+            <Zap className="h-4 w-4 mr-2" />
             Complete Financial Management Solution
           </Badge>
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <h1 className="text-6xl md:text-7xl font-bold tracking-tighter mb-8">
             Take Control of Your
-            <span className="text-blue-600"> Finances</span>
+            <span className="gradient-blue bg-clip-text text-transparent"> Finances</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
             TriFi is your all-in-one financial management platform. Track expenses, manage invoices, 
             analyze performance, and grow your business with powerful tools designed for modern organizations.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <SignUpButton mode="modal">
-              <Button size="lg" className="text-lg px-8">
+              <Button size="lg" className="apple-button gradient-blue text-white border-0 text-lg px-8 py-4 h-auto">
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -202,23 +228,39 @@ export function LandingPage() {
             <Button 
               size="lg" 
               variant="outline" 
-              className="text-lg px-8"
+              className="apple-button text-lg px-8 py-4 h-auto"
               onClick={handleWatchDemo}
             >
               <Play className="mr-2 h-5 w-5" />
               Watch Demo
             </Button>
           </div>
+          
+          {/* Trust indicators */}
+          <div className="mt-16 flex items-center justify-center space-x-8 text-muted-foreground">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-5 w-5" />
+              <span className="text-sm">Bank-Level Security</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Globe className="h-5 w-5" />
+              <span className="text-sm">Philippines Focused</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Smartphone className="h-5 w-5" />
+              <span className="text-sm">Mobile Ready</span>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <section id="features" className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16 animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Everything You Need to Manage Your Finances
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             From basic accounting to advanced analytics, TriFi provides all the tools you need to 
             make informed financial decisions.
           </p>
@@ -226,61 +268,96 @@ export function LandingPage() {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-blue-600" />
+            <Card key={index} className="glass-card apple-hover animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+              <CardHeader className="pb-4">
+                <div className={`w-14 h-14 ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 shadow-apple`}>
+                  <feature.icon className="h-7 w-7 text-white" />
                 </div>
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
+                <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">{feature.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="bg-white py-16">
+      {/* Testimonials Section */}
+      <section className="bg-muted/30 py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight mb-6">
+              Trusted by Financial Professionals
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              See what business leaders are saying about TriFi
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="glass-card apple-hover">
+                <CardContent className="pt-6">
+                  <p className="text-muted-foreground mb-6 leading-relaxed italic">
+                    "{testimonial.content}"
+                  </p>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 gradient-blue rounded-full flex items-center justify-center text-white font-bold">
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <p className="font-semibold">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight mb-6">
               Choose Your Plan
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Start with our free plan and upgrade as your business grows. All plans include our core features.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {pricingPlans.map((plan, index) => (
-              <Card key={index} className={`relative ${plan.recommended ? 'border-blue-500 shadow-xl scale-105' : 'border-gray-200 shadow-lg'}`}>
+              <Card key={index} className={`glass-card relative ${plan.recommended ? 'border-primary shadow-apple-lg scale-105' : 'apple-hover'}`}>
                 {plan.recommended && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white px-3 py-1">Most Popular</Badge>
+                    <Badge className="gradient-blue text-white px-4 py-2 shadow-apple">Most Popular</Badge>
                   </div>
                 )}
                 <CardHeader className="text-center pb-8">
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                    <span className="text-gray-600">{plan.period}</span>
+                  <div className="mt-6">
+                    <span className="text-5xl font-bold tracking-tight">{plan.price}</span>
+                    <span className="text-muted-foreground text-lg">{plan.period}</span>
                   </div>
-                  <p className="text-gray-600 mt-2">{plan.description}</p>
+                  <p className="text-muted-foreground mt-4">{plan.description}</p>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-start">
-                        <Check className="h-5 w-5 text-green-600 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
+                        <Check className="h-5 w-5 status-green mr-3 mt-0.5 flex-shrink-0" />
+                        <span className="text-muted-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   {plan.name === "Enterprise" ? (
                     <Button 
-                      className="w-full" 
+                      className="w-full apple-button" 
                       variant={plan.buttonVariant}
                       onClick={handleContactSales}
                     >
@@ -288,7 +365,7 @@ export function LandingPage() {
                     </Button>
                   ) : (
                     <SignUpButton mode="modal">
-                      <Button className="w-full" variant={plan.buttonVariant}>
+                      <Button className={`w-full apple-button ${plan.recommended ? 'gradient-blue text-white border-0' : ''}`} variant={plan.buttonVariant}>
                         {plan.buttonText}
                       </Button>
                     </SignUpButton>
@@ -301,13 +378,13 @@ export function LandingPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="bg-gray-50 py-16">
+      <section className="bg-muted/30 py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight mb-6">
               Why Choose TriFi?
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Built for businesses of all sizes with enterprise-grade features and security.
             </p>
           </div>
@@ -315,11 +392,11 @@ export function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
               <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="h-8 w-8 text-white" />
+                <div className="w-20 h-20 gradient-blue rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-apple">
+                  <benefit.icon className="h-10 w-10 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
+                <h3 className="text-2xl font-semibold mb-4">{benefit.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{benefit.description}</p>
               </div>
             ))}
           </div>
@@ -327,22 +404,22 @@ export function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <section className="container mx-auto px-4 py-20 text-center">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             Ready to Transform Your Financial Management?
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-xl text-muted-foreground mb-12">
             Join thousands of businesses that trust TriFi to manage their finances efficiently and securely.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <SignUpButton mode="modal">
-              <Button size="lg" className="text-lg px-8">
+              <Button size="lg" className="apple-button gradient-blue text-white border-0 text-lg px-8 py-4 h-auto">
                 Get Started Free
               </Button>
             </SignUpButton>
             <SignInButton mode="modal">
-              <Button size="lg" variant="outline" className="text-lg px-8">
+              <Button size="lg" variant="outline" className="apple-button text-lg px-8 py-4 h-auto">
                 Sign In
               </Button>
             </SignInButton>
@@ -351,171 +428,82 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-card border-t py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 gradient-blue rounded-xl flex items-center justify-center">
                   <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold">TriFi</span>
               </div>
-              <p className="text-gray-400">
+              <p className="text-muted-foreground leading-relaxed">
                 Your trusted partner for comprehensive financial management and business growth.
               </p>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <button 
-                    onClick={() => handleFooterLink('features')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Features
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => handleFooterLink('pricing')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Pricing
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('/api', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    API
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={handleWatchDemo}
-                    className="hover:text-white transition-colors"
-                  >
-                    Demo
-                  </button>
-                </li>
+              <ul className="space-y-3 text-muted-foreground">
+                <li><a href="#features" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><a href="/api" className="hover:text-foreground transition-colors">API</a></li>
+                <li><button onClick={handleWatchDemo} className="hover:text-foreground transition-colors">Demo</button></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <button 
-                    onClick={() => window.open('mailto:info@trifi.com?subject=About%20TriFi', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    About
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('/blog', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Blog
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('mailto:careers@trifi.com?subject=Career%20Inquiry', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Careers
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('mailto:contact@trifi.com?subject=Contact%20Inquiry', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Contact
-                  </button>
-                </li>
+              <ul className="space-y-3 text-muted-foreground">
+                <li><a href="mailto:info@trifi.com" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="/blog" className="hover:text-foreground transition-colors">Blog</a></li>
+                <li><a href="mailto:careers@trifi.com" className="hover:text-foreground transition-colors">Careers</a></li>
+                <li><a href="mailto:contact@trifi.com" className="hover:text-foreground transition-colors">Contact</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <button 
-                    onClick={() => window.open('/help', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Help Center
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('/docs', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Documentation
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('https://community.trifi.com', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Community
-                  </button>
-                </li>
-                <li>
-                  <button 
-                    onClick={() => window.open('https://status.trifi.com', '_blank')}
-                    className="hover:text-white transition-colors"
-                  >
-                    Status
-                  </button>
-                </li>
+              <ul className="space-y-3 text-muted-foreground">
+                <li><a href="/help" className="hover:text-foreground transition-colors">Help Center</a></li>
+                <li><a href="/docs" className="hover:text-foreground transition-colors">Documentation</a></li>
+                <li><a href="https://community.trifi.com" className="hover:text-foreground transition-colors">Community</a></li>
+                <li><a href="https://status.trifi.com" className="hover:text-foreground transition-colors">Status</a></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 TriFi. All rights reserved.</p>
+          <div className="border-t border-border mt-12 pt-8 text-center text-muted-foreground">
+            <p>&copy; 2025 TriFi. All rights reserved. Built with ♥ for Filipino businesses.</p>
           </div>
         </div>
       </footer>
 
       {/* Video Demo Modal */}
       {isVideoModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">TriFi Demo</h3>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-apple-xl">
+            <div className="flex justify-between items-center p-6 border-b border-border/50">
+              <h3 className="text-xl font-semibold">TriFi Demo</h3>
               <Button 
                 variant="ghost" 
                 onClick={() => setIsVideoModalOpen(false)}
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 rounded-lg apple-button"
               >
-                ×
+                ✕
               </Button>
             </div>
-            <div className="p-6 text-center">
-              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center mb-4">
+            <div className="p-6">
+              <div className="aspect-video bg-muted rounded-2xl flex items-center justify-center">
                 <div className="text-center">
-                  <Play className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Demo video coming soon!</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    In the meantime, you can sign up for a free trial to explore all features.
+                  <Play className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground text-lg">Demo video coming soon!</p>
+                  <p className="text-muted-foreground text-sm mt-2">
+                    Experience the power of TriFi's Apple-style financial management platform
                   </p>
                 </div>
               </div>
-              <SignUpButton mode="modal">
-                <Button size="lg" className="w-full">
-                  Start Free Trial Instead
-                </Button>
-              </SignUpButton>
             </div>
           </div>
         </div>

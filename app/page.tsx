@@ -8,13 +8,24 @@ import { LandingPage } from "@/components/landing-page"
 
 function Dashboard() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+    <div className="space-y-8">
+      {/* Header with Apple-style typography and dark purple */}
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight dashboard-heading">
+          Dashboard
+        </h1>
+        <p className="text-dashboard-purple text-lg">
+          Welcome back. Here's what's happening with your finances.
+        </p>
+      </div>
 
-      {/* Database Connection Status */}
-      <DatabaseConnectionStatus />
+      {/* Database Connection Status with improved styling */}
+      <div className="animate-fade-in">
+        <DatabaseConnectionStatus />
+      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* Main Content Grid with Apple-style layout */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 animate-fade-in" style={{ animationDelay: '0.1s' }}>
         <div className="lg:col-span-1">
           <AccountsOverview />
         </div>
@@ -26,7 +37,10 @@ function Dashboard() {
         </div>
       </div>
 
-      <BusinessMetrics />
+      {/* Business Metrics with delay animation */}
+      <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <BusinessMetrics />
+      </div>
     </div>
   )
 }

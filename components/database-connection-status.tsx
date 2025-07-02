@@ -115,7 +115,7 @@ export function DatabaseConnectionStatus() {
 {`NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}
               </pre>
-              <p className="text-xs text-gray-600 mt-2">
+              <p className="text-xs text-readable mt-2">
                 Get these values from your Supabase project dashboard under Settings → API
               </p>
             </div>
@@ -142,7 +142,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}
           <div className="flex-1">
             <p className="text-sm font-medium">{status.message}</p>
             {status.lastChecked && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-readable">
                 Last checked: {status.lastChecked.toLocaleTimeString()}
               </p>
             )}
@@ -168,7 +168,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}
         {status.isConnected && (
           <Alert>
             <Info className="h-4 w-4" />
-            <AlertDescription>
+            <AlertDescription className="text-readable">
               Database is connected and ready. All financial data operations are available.
             </AlertDescription>
           </Alert>

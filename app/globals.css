@@ -2,71 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Apple SF Pro Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 210 40% 98%;
-
-    --ring: 215 20.2% 65.1%;
-
-    --radius: 0.5rem;
+    /* Apple-inspired Light Theme */
+    --background: 255 255 255;
+    --foreground: 28 28 30;
+    --card: 255 255 255;
+    --card-foreground: 28 28 30;
+    --popover: 255 255 255;
+    --popover-foreground: 28 28 30;
+    --primary: 0 122 255;
+    --primary-foreground: 255 255 255;
+    --secondary: 246 246 246;
+    --secondary-foreground: 44 44 46;
+    --muted: 248 248 248;
+    --muted-foreground: 44 44 46;
+    --accent: 242 242 247;
+    --accent-foreground: 28 28 30;
+    --destructive: 255 59 48;
+    --destructive-foreground: 255 255 255;
+    --border: 242 242 247;
+    --input: 242 242 247;
+    --ring: 0 122 255;
+    --radius: 12px;
+    
+    /* Apple-specific variables */
+    --apple-blue: 0 122 255;
+    --apple-green: 52 199 89;
+    --apple-orange: 255 149 0;
+    --apple-red: 255 59 48;
+    --apple-purple: 88 86 214;
+    --apple-pink: 255 45 85;
+    --apple-gray: 72 72 74;
+    --apple-gray-2: 99 99 102;
+    --apple-gray-3: 142 142 147;
+    --apple-gray-4: 174 174 178;
+    --apple-gray-5: 199 199 204;
+    --apple-gray-6: 229 229 234;
+    
+    /* Glassmorphism variables */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-backdrop: blur(20px);
   }
 
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
-
-    --popover: 224 71% 4%;
-    --popover-foreground: 215 20.2% 65.1%;
-
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
-
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 1.2%;
-
-    --secondary: 222.2 47.4% 11.2%;
-    --secondary-foreground: 210 40% 98%;
-
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-
-    --ring: 216 34% 17%;
-
-    --radius: 0.5rem;
+    /* Apple-inspired Dark Theme */
+    --background: 0 0 0;
+    --foreground: 255 255 255;
+    --card: 28 28 30;
+    --card-foreground: 255 255 255;
+    --popover: 28 28 30;
+    --popover-foreground: 255 255 255;
+    --primary: 10 132 255;
+    --primary-foreground: 255 255 255;
+    --secondary: 44 44 46;
+    --secondary-foreground: 229 229 234;
+    --muted: 44 44 46;
+    --muted-foreground: 152 152 157;
+    --accent: 58 58 60;
+    --accent-foreground: 255 255 255;
+    --destructive: 255 69 58;
+    --destructive-foreground: 255 255 255;
+    --border: 58 58 60;
+    --input: 58 58 60;
+    --ring: 10 132 255;
+    
+    /* Dark glassmorphism */
+    --glass-bg: rgba(28, 28, 30, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -74,8 +81,244 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Apple-style typography hierarchy */
+  h1 {
+    @apply text-4xl font-bold tracking-tight text-foreground;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  
+  h2 {
+    @apply text-3xl font-semibold tracking-tight text-foreground;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  h3 {
+    @apply text-2xl font-semibold tracking-tight text-foreground;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  
+  h4 {
+    @apply text-xl font-medium tracking-tight text-foreground;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Apple-style glass components */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl p-6 shadow-lg;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Apple-style hover effects */
+  .apple-hover {
+    @apply transition-all duration-200 ease-out;
+    transform: translateY(0);
+  }
+  
+  .apple-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Apple-style buttons */
+  .apple-button {
+    @apply rounded-xl font-medium transition-all duration-200 ease-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .apple-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .apple-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Apple-style input fields */
+  .apple-input {
+    @apply rounded-xl border-0 bg-muted/50 backdrop-blur-sm;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .apple-input:focus {
+    @apply ring-2 ring-primary/20;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+  }
+  
+  /* Smooth page transitions */
+  .page-transition {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  /* Apple-style navigation */
+  .nav-blur {
+    background: rgba(248, 248, 248, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .dark .nav-blur {
+    background: rgba(28, 28, 30, 0.8);
+  }
+  
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-muted rounded-lg;
+  }
+  
+  /* Apple-style scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(142, 142, 147, 0.3);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(142, 142, 147, 0.5);
+  }
+  
+  /* Refined animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slideInFromRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .animate-slide-in {
+    animation: slideInFromRight 0.3s ease-out;
+  }
+  
+  /* Apple-style focus states */
+  .apple-focus:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.25);
+  }
+  
+  /* Status colors with better contrast */
+  .status-green { color: rgb(52, 199, 89); }
+  .status-red { color: rgb(255, 59, 48); }
+  .status-orange { color: rgb(255, 149, 0); }
+  .status-blue { color: rgb(0, 122, 255); }
+  .status-purple { color: rgb(88, 86, 214); }
+  
+  /* Improved text contrast classes */
+  .text-readable {
+    color: rgb(44, 44, 46); /* Much darker text */
+  }
+  
+  .dark .text-readable {
+    color: rgb(229, 229, 234);
+  }
+  
+  /* Error text with better contrast */
+  .text-error-light {
+    color: rgb(142, 20, 12); /* Even darker red for light mode */
+  }
+  
+  .dark .text-error-light {
+    color: rgb(255, 69, 58);
+  }
+  
+  /* Warning text with better contrast */
+  .text-warning-light {
+    color: rgb(138, 83, 0); /* Even darker orange for light mode */
+  }
+  
+  .dark .text-warning-light {
+    color: rgb(255, 149, 0);
+  }
+  
+  /* Dark purple text for Dashboard */
+  .text-dashboard-purple {
+    color: rgb(79, 70, 229); /* Dark purple/indigo */
+  }
+  
+  .dark .text-dashboard-purple {
+    color: rgb(129, 140, 248); /* Lighter purple for dark mode */
+  }
+  
+  /* Dashboard heading with purple gradient */
+  .dashboard-heading {
+    background: linear-gradient(135deg, rgb(79, 70, 229) 0%, rgb(99, 102, 241) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .dark .dashboard-heading {
+    background: linear-gradient(135deg, rgb(129, 140, 248) 0%, rgb(165, 180, 252) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Gradient backgrounds */
+  .gradient-blue {
+    background: linear-gradient(135deg, rgb(0, 122, 255) 0%, rgb(10, 132, 255) 100%);
+  }
+  
+  .gradient-green {
+    background: linear-gradient(135deg, rgb(52, 199, 89) 0%, rgb(48, 209, 88) 100%);
+  }
+  
+  .gradient-purple {
+    background: linear-gradient(135deg, rgb(88, 86, 214) 0%, rgb(128, 101, 255) 100%);
+  }
+  
+  /* Apple-style shadows */
+  .shadow-apple {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .shadow-apple-lg {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Responsive breakpoints following Apple's guidelines */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1200px;
   }
 }
