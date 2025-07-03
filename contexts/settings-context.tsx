@@ -151,7 +151,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Save settings to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("userSettings", JSON.stringify(settings))
+    if (typeof window !== "undefined") {
+      localStorage.setItem("userSettings", JSON.stringify(settings))
+    }
   }, [settings])
 
   // Data clearing functions

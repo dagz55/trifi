@@ -60,9 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setOrganizations(userOrgs || [])
               
               // Set current organization (first one or from localStorage)
-              const savedOrgId = localStorage.getItem('currentOrganizationId')
-              const savedOrg = userOrgs?.find(org => org.id === savedOrgId)
-              setCurrentOrganization(savedOrg || userOrgs?.[0] || null)
+              if (typeof window !== "undefined") {
+                const savedOrgId = localStorage.getItem('currentOrganizationId')
+                const savedOrg = userOrgs?.find(org => org.id === savedOrgId)
+                setCurrentOrganization(savedOrg || userOrgs?.[0] || null)
+              } else {
+                setCurrentOrganization(userOrgs?.[0] || null)
+              }
             }
           }
         } else {
@@ -70,7 +74,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserProfile(null)
           setCurrentOrganization(null)
           setOrganizations([])
-          localStorage.removeItem('currentOrganizationId')
+          if (typeof window !== "undefined") {
+            localStorage.removeItem('currentOrganizationId')
+          }
         }
       } catch (err) {
         console.error('Error initializing user:', err)
@@ -85,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Save current organization to localStorage when it changes
   useEffect(() => {
-    if (currentOrganization) {
+    if (currentOrganization && typeof window !== "undefined") {
       localStorage.setItem('currentOrganizationId', currentOrganization.id)
     }
   }, [currentOrganization])
