@@ -16,23 +16,34 @@ const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseUrl = sanitizeSupabaseUrl(rawSupabaseUrl)
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Create a placeholder client or null if env vars are missing
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null
-
 // Helper function to check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
   return !!(supabaseUrl && supabaseAnonKey)
 }
 
-// Safe Supabase client getter
+// Safe Supabase client getter - create client lazily to avoid build-time errors
 export function getSupabaseClient() {
-  if (!supabase) {
+  if (!isSupabaseConfigured()) {
     throw new Error('Supabase is not configured. Please check your environment variables.')
   }
-  return supabase
+  return createClient(supabaseUrl!, supabaseAnonKey!)
 }
+
+// Legacy export for backwards compatibility - create lazily to avoid build errors
+let _supabase: ReturnType<typeof createClient> | null = null
+export function getSupabase() {
+  if (_supabase === null && isSupabaseConfigured()) {
+    try {
+      _supabase = getSupabaseClient()
+    } catch {
+      _supabase = null
+    }
+  }
+  return _supabase
+}
+
+// For backwards compatibility
+export const supabase = null // Will be created lazily by getSupabase()
 
 // IMPROVED test connection: try the lightweight `ping` RPC first (if present) then fallback to auth check
 export async function testSupabaseConnection() {

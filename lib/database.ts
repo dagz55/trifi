@@ -167,16 +167,19 @@ export interface Meeting {
 
 // Database service class
 export class DatabaseService {
-  private supabase = getSupabaseClient()
+  // Lazy initialization of Supabase client
+  private getClient() {
+    return getSupabaseClient()
+  }
 
   // Check if database is available
   isAvailable(): boolean {
-    return isSupabaseConfigured() && this.supabase !== null
+    return isSupabaseConfigured()
   }
 
   // Expose Supabase client for advanced operations
   getSupabaseClient() {
-    return this.supabase
+    return this.getClient()
   }
 
   // User Profile Operations
@@ -185,7 +188,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('user_profiles')
       .insert(data)
       .select()
@@ -199,7 +202,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('user_profiles')
       .select('*')
       .eq('clerk_user_id', clerkUserId)
@@ -213,7 +216,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('user_profiles')
       .update(updates)
       .eq('id', id)
@@ -229,7 +232,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('organizations')
       .insert(data)
       .select()
@@ -243,7 +246,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('organizations')
       .select('*')
       .order('created_at', { ascending: false })
@@ -256,7 +259,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('organizations')
       .update(updates)
       .eq('id', id)
@@ -272,7 +275,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('accounts')
       .insert(data)
       .select()
@@ -286,7 +289,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('accounts')
       .select('*, account_types(name, category, icon)')
       .eq('organization_id', organizationId)
@@ -301,7 +304,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('accounts')
       .update({ balance: newBalance })
       .eq('id', id)
@@ -317,7 +320,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('transactions')
       .insert(data)
       .select()
@@ -331,7 +334,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('transactions')
       .select(`
         *,
@@ -355,7 +358,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('projects')
       .insert(data)
       .select()
@@ -369,7 +372,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('projects')
       .select('*')
       .eq('organization_id', organizationId)
@@ -383,7 +386,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('projects')
       .update(updates)
       .eq('id', id)
@@ -399,7 +402,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('invoices')
       .insert(data)
       .select()
@@ -413,7 +416,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('invoices')
       .select('*')
       .eq('organization_id', organizationId)
@@ -427,7 +430,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('invoices')
       .update({ status })
       .eq('id', id)
@@ -443,7 +446,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('payments')
       .insert(data)
       .select()
@@ -457,7 +460,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('payments')
       .select('*')
       .eq('organization_id', organizationId)
@@ -472,7 +475,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    const { data: result, error } = await this.supabase
+    const { data: result, error } = await this.getClient()
       .from('meetings')
       .insert(data)
       .select()
@@ -486,7 +489,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('meetings')
       .select('*')
       .eq('organization_id', organizationId)
@@ -500,7 +503,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('meetings')
       .select('*')
       .eq('organization_id', organizationId)
@@ -518,7 +521,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('account_types')
       .select('*')
       .order('name')
@@ -531,7 +534,7 @@ export class DatabaseService {
       return { data: [], error: { message: 'Database not configured' } }
     }
 
-    let query = this.supabase
+    let query = this.getClient()
       .from('transaction_categories')
       .select('*')
 
@@ -552,7 +555,7 @@ export class DatabaseService {
       return { data: 0, error: { message: 'Database not configured' } }
     }
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getClient()
       .from('accounts')
       .select('balance')
       .eq('organization_id', organizationId)
@@ -569,7 +572,7 @@ export class DatabaseService {
       return { data: null, error: { message: 'Database not configured' } }
     }
 
-    let query = this.supabase
+    let query = this.getClient()
       .from('transactions')
       .select('type, amount')
       .eq('organization_id', organizationId)
