@@ -751,5 +751,20 @@ export class DatabaseService {
   }
 }
 
-// Export a singleton instance
-export const db = new DatabaseService() 
+// Export a lazy singleton instance to avoid initialization issues
+let _db: DatabaseService | null = null
+export function getDatabase(): DatabaseService {
+  if (_db === null) {
+    _db = new DatabaseService()
+  }
+  return _db
+}
+
+// Create a Proxy for backwards compatibility that lazily initializes
+export const db = new Proxy({} as DatabaseService, {
+  get(target, prop) {
+    const instance = getDatabase()
+    const value = (instance as any)[prop]
+    return typeof value === 'function' ? value.bind(instance) : value
+  }
+}) 

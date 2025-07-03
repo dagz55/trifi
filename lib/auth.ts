@@ -153,4 +153,20 @@ export function useAuthWithProfile() {
   }
 }
 
-export const authService = new AuthService() 
+// Export a lazy singleton to avoid initialization issues
+let _authService: AuthService | null = null
+export function getAuthService(): AuthService {
+  if (_authService === null) {
+    _authService = new AuthService()
+  }
+  return _authService
+}
+
+// Create a Proxy for backwards compatibility that lazily initializes
+export const authService = new Proxy({} as AuthService, {
+  get(target, prop) {
+    const instance = getAuthService()
+    const value = (instance as any)[prop]
+    return typeof value === 'function' ? value.bind(instance) : value
+  }
+}) 
