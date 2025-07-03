@@ -12,8 +12,7 @@ import {
   Mail,
   Phone,
   ExternalLink,
-  ChevronDown,
-  ChevronRight
+  ChevronDown
 } from "lucide-react"
 import { toast } from "sonner"
 

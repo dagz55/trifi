@@ -8,12 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Plus } from "lucide-react"
+import { Plus } from "lucide-react"
 import { format } from "date-fns"
-import { cn } from "@/lib/utils"
 import { useSettings } from "@/contexts/settings-context"
+import { DateRangePicker } from "@/components/date-range-picker"
+import { DateRange } from "react-day-picker"
 
 interface AddProjectModalProps {
   trigger?: React.ReactNode
@@ -30,8 +29,7 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
     status: "Planning",
     priority: "Medium",
     budget: "",
-    startDate: undefined as Date | undefined,
-    endDate: undefined as Date | undefined,
+    dateRange: undefined as DateRange | undefined,
     projectManager: "",
     department: "",
   })
@@ -55,8 +53,8 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
         progress: 0,
         budget: formData.budget || "₱0",
         spent: "₱0",
-        startDate: formData.startDate ? format(formData.startDate, "MMM dd, yyyy") : "Not set",
-        endDate: formData.endDate ? format(formData.endDate, "MMM dd, yyyy") : "Not set",
+        startDate: formData.dateRange?.from ? format(formData.dateRange.from, "MMM dd, yyyy") : "Not set",
+        endDate: formData.dateRange?.to ? format(formData.dateRange.to, "MMM dd, yyyy") : "Not set",
         projectManager: formData.projectManager || "Unassigned",
         department: formData.department || "General",
         team: [],
@@ -72,8 +70,7 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
         status: "Planning",
         priority: "Medium",
         budget: "",
-        startDate: undefined,
-        endDate: undefined,
+        dateRange: undefined,
         projectManager: "",
         department: "",
       })
@@ -193,59 +190,12 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Start Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.startDate ? format(formData.startDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.startDate}
-                    onSelect={(date) => setFormData(prev => ({ ...prev, startDate: date }))}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>End Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !formData.endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.endDate ? format(formData.endDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.endDate}
-                    onSelect={(date) => setFormData(prev => ({ ...prev, endDate: date }))}
-                    initialFocus
-                    disabled={(date) => formData.startDate ? date < formData.startDate : false}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+          <div className="space-y-2">
+            <Label>Project Timeline</Label>
+            <DateRangePicker
+              dateRange={formData.dateRange}
+              onDateRangeChange={(range) => setFormData(prev => ({ ...prev, dateRange: range }))}
+            />
           </div>
           
           <div className="space-y-2">

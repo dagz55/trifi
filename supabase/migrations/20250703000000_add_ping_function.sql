@@ -1,0 +1,7 @@
+
+CREATE OR REPLACE FUNCTION ping()
+RETURNS TEXT AS $$
+BEGIN
+    RETURN 'pong';
+END;
+$$ LANGUAGE plpgsql;

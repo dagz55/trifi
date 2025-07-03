@@ -1,27 +1,36 @@
-<<<<<<< HEAD
-||||||| parent of 6b53694 (Update Claude settings for deployment workflow)
 {
   "permissions": {
     "allow": [
+      "Bash(supabase start:*)",
+      "Bash(supabase stop:*)",
+      "Bash(docker system prune:*)",
+      "Bash(supabase db reset:*)",
+      "Bash(docker:*)",
+      "Bash(rm:*)",
+      "Bash(supabase init:*)",
+      "Bash(supabase status:*)",
+      "Bash(killall:*)",
+      "Bash(open:*)",
+      "Bash(osascript:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(npm install)",
+      "Bash(ls:*)",
       "Bash(npm run build:*)",
       "Bash(npm run lint)",
+      "Bash(supabase:*)",
+      "Bash(echo)",
+      "Bash(node:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(rg:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npx supabase migration:*)",
       "Bash(git add:*)"
     ],
     "deny": []
   }
 }
-=======
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm run build:*)",
-      "Bash(npm run lint)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(git pull:*)"
-    ],
-    "deny": []
-  }
-}
->>>>>>> 6b53694 (Update Claude settings for deployment workflow)

@@ -1,14 +1,20 @@
 import { CheckCircle2 } from "lucide-react"
 
-const products = [
-  { name: "Savings Account", revenue: "₱1,200,000", growth: "+12%" },
-  { name: "Credit Card", revenue: "₱980,000", growth: "+8%" },
-  { name: "Personal Loan", revenue: "₱850,000", growth: "+15%" },
-  { name: "Mortgage", revenue: "₱2,300,000", growth: "+5%" },
-  { name: "Investment Fund", revenue: "₱1,800,000", growth: "+20%" },
-]
+// TODO: Replace with real product performance data fetched from your database/API
+const products: any[] = []
 
 export function TopProducts() {
+  if (products.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[200px] text-muted-foreground">
+        <div className="text-center">
+          <p className="text-sm font-medium">No product data available</p>
+          <p className="text-xs">Connect your database to see top product performance</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       {products.map((product) => (

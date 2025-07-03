@@ -17,6 +17,25 @@ export interface UserProfile {
   updated_at?: string
 }
 
+export interface CustomRole {
+  id: string
+  organization_id: string
+  name: string
+  description?: string
+  permissions: {
+    dashboard: { read: boolean; write: boolean; delete: boolean }
+    analytics: { read: boolean; write: boolean; delete: boolean }
+    projects: { read: boolean; write: boolean; delete: boolean }
+    finances: { read: boolean; write: boolean; delete: boolean }
+    settings: { read: boolean; write: boolean; delete: boolean }
+  }
+  is_system?: boolean
+  color?: string
+  created_by?: string
+  created_at?: string
+  updated_at?: string
+}
+
 export interface Organization {
   id: string
   name: string
@@ -598,6 +617,134 @@ export class DatabaseService {
     // This will be called from components that have access to the current organization
     // For now, return empty array - components should pass organizationId explicitly
     return { data: [], error: { message: 'Organization ID required' } }
+  }
+
+  // Role Management Functions
+  async getCustomRoles(organizationId: string): Promise<{ data: CustomRole[] | null, error: any }> {
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('custom_roles')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('created_at', { ascending: true })
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error fetching custom roles:', error)
+      return { data: null, error }
+    }
+  }
+
+  async createCustomRole(organizationId: string, roleData: Omit<CustomRole, 'id' | 'organization_id' | 'created_at' | 'updated_at'>): Promise<{ data: CustomRole | null, error: any }> {
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('custom_roles')
+        .insert([{
+          organization_id: organizationId,
+          ...roleData
+        }])
+        .select()
+        .single()
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error creating custom role:', error)
+      return { data: null, error }
+    }
+  }
+
+  async updateCustomRole(roleId: string, updates: Partial<CustomRole>): Promise<{ data: CustomRole | null, error: any }> {
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('custom_roles')
+        .update(updates)
+        .eq('id', roleId)
+        .select()
+        .single()
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error updating custom role:', error)
+      return { data: null, error }
+    }
+  }
+
+  async deleteCustomRole(roleId: string): Promise<{ data: any, error: any }> {
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('custom_roles')
+        .delete()
+        .eq('id', roleId)
+        .eq('is_system', false) // Prevent deletion of system roles
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error deleting custom role:', error)
+      return { data: null, error }
+    }
+  }
+
+  async assignRoleToMember(memberId: string, roleId: string): Promise<{ data: any, error: any }> {
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('organization_members')
+        .update({ custom_role_id: roleId })
+        .eq('id', memberId)
+        .select()
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error assigning role to member:', error)
+      return { data: null, error }
+    }
+  }
+
+  async getOrganizationMembersWithRoles(organizationId: string): Promise<{ data: any[] | null, error: any }> {
+    if (!isSupabaseConfigured()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    try {
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from('organization_members')
+        .select(`
+          *,
+          user_profiles(full_name, email, avatar_url),
+          custom_roles(name, permissions, color)
+        `)
+        .eq('organization_id', organizationId)
+
+      return { data, error }
+    } catch (error) {
+      console.error('Error fetching organization members with roles:', error)
+      return { data: null, error }
+    }
   }
 }
 

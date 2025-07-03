@@ -4,15 +4,15 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, TrendingUp, TrendingDown, Wallet, Eye, EyeOff, AlertCircle, Database } from "lucide-react"
+import { Plus, Wallet, Eye, EyeOff, AlertCircle, Database } from "lucide-react"
 import { AddMoneyModal } from "@/components/add-money-modal"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/auth-context"
 import { db, Account } from "@/lib/database"
 import { toast } from "sonner"
 import { isSupabaseConfigured } from "@/lib/supabase"
 
 export function AccountsOverview() {
-  const { user } = useUser()
+  const { currentOrganization, loading: authLoading } = useAuth()
   const [accounts, setAccounts] = useState<Account[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showBalance, setShowBalance] = useState(true)
@@ -21,8 +21,13 @@ export function AccountsOverview() {
 
   useEffect(() => {
     const loadAccounts = async () => {
-      if (!user) {
+      if (authLoading) {
+        return // Wait for auth to load
+      }
+      
+      if (!currentOrganization) {
         setIsLoading(false)
+        setDatabaseError('No organization selected. Please create or select an organization.')
         return
       }
       
@@ -37,9 +42,7 @@ export function AccountsOverview() {
           return
         }
         
-        // TODO: Replace with actual organization ID from user context
-        const organizationId = user.publicMetadata?.organizationId as string || 'demo-org'
-        const { data, error } = await db.getAccounts(organizationId)
+        const { data, error } = await db.getAccounts(currentOrganization.id)
         
         if (error) {
           const errorMessage = error.message || 'Unknown error occurred'
@@ -63,7 +66,7 @@ export function AccountsOverview() {
     }
 
     loadAccounts()
-  }, [user])
+  }, [currentOrganization, authLoading])
 
   const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0)
 
@@ -79,9 +82,8 @@ export function AccountsOverview() {
     // TODO: Implement actual add money functionality
     toast.success(`₱${amount} added successfully`)
     // Refresh accounts after adding money
-    if (user && !databaseError) {
-      const organizationId = user.publicMetadata?.organizationId as string || 'demo-org'
-      db.getAccounts(organizationId).then(({ data }) => {
+    if (currentOrganization && !databaseError) {
+      db.getAccounts(currentOrganization.id).then(({ data }) => {
         if (data) setAccounts(data)
       })
     }

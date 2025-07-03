@@ -10,16 +10,12 @@ import { toast } from "sonner"
 import { 
   CreditCard, 
   Search, 
-  Filter, 
   Download,
   Plus,
   Calendar,
-  TrendingUp,
   CheckCircle,
   Clock,
   XCircle,
-  Smartphone,
-  Building,
   Banknote
 } from "lucide-react"
 

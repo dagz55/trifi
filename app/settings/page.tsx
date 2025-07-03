@@ -9,7 +9,6 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
@@ -17,7 +16,6 @@ import {
   User,
   Bell,
   Shield,
-  Palette,
   Monitor,
   Database,
   Download,
@@ -26,10 +24,8 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
-  Laptop,
   Smartphone,
   Tablet,
-  Lock,
   Camera,
   Save,
   RefreshCw,
@@ -39,6 +35,7 @@ import { toast } from "sonner"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useSettings } from "@/contexts/settings-context"
 import { testSupabaseConnection } from "@/lib/supabase"
+import { PhotoUploadModal } from "@/components/photo-upload-modal"
 
 export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -48,21 +45,9 @@ export default function SettingsPage() {
     success: boolean;
     message: string;
   } | null>(null)
+  const [photoUploadModalOpen, setPhotoUploadModalOpen] = useState(false)
   
   const {
-    settings,
-    updateSettings,
-    updateNotificationSettings,
-    updatePrivacySettings,
-    clearBusinessMetrics,
-    clearTransactions,
-    clearProjects,
-    clearInvestments,
-    clearPayments,
-    clearMeetings,
-    clearMembers,
-    clearNotifications,
-    clearOrganizationData,
     clearAllData
   } = useSettings()
   
@@ -95,13 +80,18 @@ export default function SettingsPage() {
     setUserData(prev => ({ ...prev, ...updates }))
   }
 
+  const handlePhotoUploadComplete = (photoUrl: string) => {
+    updateUserData({ avatar: photoUrl })
+    setPhotoUploadModalOpen(false)
+  }
+
   const handleSave = async (section: string) => {
     setIsLoading(true)
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success(`${section} settings saved successfully`)
-    } catch (error) {
+    } catch {
       toast.error(`Failed to save ${section} settings`)
     } finally {
       setIsLoading(false)
@@ -144,7 +134,7 @@ export default function SettingsPage() {
         visibility: "private",
         dataRetention: "1-year"
       })
-    } catch (error) {
+    } catch {
       toast.error("Failed to reset application")
     } finally {
       setIsLoading(false)
@@ -241,8 +231,8 @@ export default function SettingsPage() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="space-y-2">
-                    <Button variant="outline" size="sm" className="flex items-center space-x-2" onClick={() => toast.info("Photo upload functionality would be implemented here")}>
-                      <Palette className="h-4 w-4" />
+                    <Button variant="outline" size="sm" className="flex items-center space-x-2" onClick={() => setPhotoUploadModalOpen(true)}>
+                      <Camera className="h-4 w-4" />
                       <span>Change Photo</span>
                     </Button>
                     <p className="text-sm text-muted-foreground">
@@ -318,7 +308,7 @@ export default function SettingsPage() {
                   <Shield className="h-5 w-5" />
                   <span>Security Settings</span>
                 </CardTitle>
-                <CardDescription>Manage your account's security and authentication</CardDescription>
+                <CardDescription>Manage your account&apos;s security and authentication</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -898,6 +888,14 @@ export default function SettingsPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Photo Upload Modal */}
+      <PhotoUploadModal
+        isOpen={photoUploadModalOpen}
+        onClose={() => setPhotoUploadModalOpen(false)}
+        onUploadComplete={handlePhotoUploadComplete}
+        currentPhotoUrl={userData.avatar}
+      />
     </div>
   )
 }

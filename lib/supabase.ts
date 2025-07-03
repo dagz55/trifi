@@ -1,6 +1,19 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+// NEW: Utility to ensure we pass a clean base URL (no trailing slashes or /rest/v1) to Supabase
+function sanitizeSupabaseUrl(url?: string) {
+  if (!url) return url
+  // Trim whitespace
+  let clean = url.trim()
+  // Remove trailing slashes
+  clean = clean.replace(/\/+$/, "")
+  // Remove accidental /rest/v1 suffix which would break the generated paths
+  clean = clean.replace(/\/rest\/v1$/i, "")
+  return clean
+}
+
+const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseUrl = sanitizeSupabaseUrl(rawSupabaseUrl)
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 // Create a placeholder client or null if env vars are missing
@@ -21,58 +34,40 @@ export function getSupabaseClient() {
   return supabase
 }
 
-// Test connection function
+// IMPROVED test connection: try the lightweight `ping` RPC first (if present) then fallback to auth check
 export async function testSupabaseConnection() {
   try {
     if (!isSupabaseConfigured()) {
-      return { 
-        success: false, 
-        message: 'Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY)' 
+      return {
+        success: false,
+        message: 'Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY)',
       }
     }
 
     const client = getSupabaseClient()
-    
-    // Test connection with a simple RPC call or auth check
-    try {
-      const { data, error } = await client.rpc('ping')
-      
-      if (error) {
-        // If RPC ping fails, try auth session check instead
-        if (error.message.includes('function ping() does not exist') || 
-            error.message.includes('permission denied') || 
-            error.message.includes('insufficient privilege')) {
-          
-          // Try auth session check as fallback
-          const { error: authError } = await client.auth.getSession()
-          return { 
-            success: true, 
-            message: 'Supabase connected successfully (verified through auth check)' 
-          }
-        }
-        
-        return { success: false, message: `Supabase connection error: ${error.message}` }
-      }
-      
-      return { success: true, message: 'Supabase connected successfully and ping responded' }
-      
-    } catch (rpcError) {
-      // If RPC fails entirely, try the auth approach
-      try {
-        const { error: authError } = await client.auth.getSession()
-        return { 
-          success: true, 
-          message: 'Supabase connected successfully (verified through auth session check)' 
-        }
-      } catch (authTestError) {
-        return { 
-          success: false, 
-          message: `Supabase connection failed: ${rpcError}` 
-        }
-      }
+
+    // Attempt to call a lightweight ping RPC if it exists
+    const { data: pingData, error: pingError } = await client.rpc('ping')
+    if (pingError && pingError.code !== '42883') { // 42883 = undefined_function, ignore if ping not created
+      // If we got an error that is NOT function does not exist, treat as failure
+      return { success: false, message: `Supabase connection error: ${pingError.message}` }
     }
-    
-  } catch (error) {
-    return { success: false, message: `Supabase connection failed: ${error}` }
+    if (pingData === 'pong') {
+      return { success: true, message: 'Supabase connected successfully (ping)' }
+    }
+
+    // Fallback – test auth session which is also lightweight and exists by default
+    const { error } = await client.auth.getSession()
+    if (error) {
+      if (error.message.includes('Failed to fetch')) {
+        return { success: false, message: 'Supabase connection error: Unable to reach the Supabase server. Check your URL and network connection.' }
+      }
+      // Other auth errors – connection likely ok
+    }
+
+    return { success: true, message: 'Supabase connected successfully (verified through auth check)' }
+
+  } catch (error: any) {
+    return { success: false, message: `Supabase connection failed: ${error.message}` }
   }
 } 

@@ -7,13 +7,13 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowUpRight, ArrowDownRight, MoreHorizontal, Plus, Receipt, AlertCircle, Database } from "lucide-react"
 import { AddTransactionModal } from "@/components/add-transaction-modal"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/auth-context"
 import { db, Transaction } from "@/lib/database"
 import { toast } from "sonner"
 import { isSupabaseConfigured } from "@/lib/supabase"
 
 export function RecentTransactions() {
-  const { user } = useUser()
+  const { currentOrganization, loading: authLoading } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [addTransactionModalOpen, setAddTransactionModalOpen] = useState(false)
@@ -21,8 +21,13 @@ export function RecentTransactions() {
 
   useEffect(() => {
     const loadTransactions = async () => {
-      if (!user) {
+      if (authLoading) {
+        return // Wait for auth to load
+      }
+      
+      if (!currentOrganization) {
         setIsLoading(false)
+        setDatabaseError('No organization selected. Please create or select an organization.')
         return
       }
       
@@ -37,9 +42,7 @@ export function RecentTransactions() {
           return
         }
         
-        // TODO: Replace with actual organization ID from user context
-        const organizationId = user.publicMetadata?.organizationId as string || 'demo-org'
-        const { data, error } = await db.getRecentTransactions(organizationId, 5)
+        const { data, error } = await db.getRecentTransactions(currentOrganization.id, 5)
         
         if (error) {
           const errorMessage = error.message || 'Unknown error occurred'
@@ -63,7 +66,7 @@ export function RecentTransactions() {
     }
 
     loadTransactions()
-  }, [user])
+  }, [currentOrganization, authLoading])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-PH', {
@@ -103,9 +106,8 @@ export function RecentTransactions() {
     // TODO: Implement actual transaction creation
     toast.success('Transaction added successfully!')
     // Refresh transactions after adding
-    if (user && !databaseError) {
-      const organizationId = user.publicMetadata?.organizationId as string || 'demo-org'
-      db.getRecentTransactions(organizationId, 5).then(({ data }) => {
+    if (currentOrganization && !databaseError) {
+      db.getRecentTransactions(currentOrganization.id, 5).then(({ data }) => {
         if (data) setTransactions(data)
       })
     }

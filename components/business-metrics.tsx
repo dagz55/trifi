@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, DollarSign, Users, Target, BarChart3, ArrowUpRight, ArrowDownRight, AlertCircle, Database } from "lucide-react"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/auth-context"
 import { db } from "@/lib/database"
 import { toast } from "sonner"
 import { isSupabaseConfigured } from "@/lib/supabase"
@@ -20,15 +20,20 @@ interface MetricData {
 }
 
 export function BusinessMetrics() {
-  const { user } = useUser()
+  const { currentOrganization, loading: authLoading } = useAuth()
   const [metrics, setMetrics] = useState<MetricData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadMetrics = async () => {
-      if (!user) {
+      if (authLoading) {
+        return // Wait for auth to load
+      }
+      
+      if (!currentOrganization) {
         setIsLoading(false)
+        setDatabaseError('No organization selected. Please create or select an organization.')
         return
       }
       
@@ -43,14 +48,11 @@ export function BusinessMetrics() {
           return
         }
         
-        // TODO: Replace with actual organization ID from user context
-        const organizationId = user.publicMetadata?.organizationId as string || 'demo-org'
-        
         // Load data from multiple sources
         const [accountsResult, transactionsResult, projectsResult] = await Promise.all([
-          db.getAccounts(organizationId),
-          db.getTransactions(organizationId, 30), // Last 30 transactions
-          db.getProjects(organizationId)
+          db.getAccounts(currentOrganization.id),
+          db.getTransactions(currentOrganization.id, 30), // Last 30 transactions
+          db.getProjects(currentOrganization.id)
         ])
         
         if (accountsResult.error || transactionsResult.error || projectsResult.error) {
@@ -128,7 +130,7 @@ export function BusinessMetrics() {
     }
 
     loadMetrics()
-  }, [user])
+  }, [currentOrganization, authLoading])
 
   // Database not configured state
   if (databaseError === 'database_not_configured' || databaseError === 'Database not configured') {
