@@ -32,7 +32,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(timeout 10 npm run dev)"
+      "Bash(timeout 10 npm run dev)",
+      "Bash(git checkout:*)",
+      "Bash(npx vercel:*)"
     ],
     "deny": []
   }
