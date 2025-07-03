@@ -1,0 +1,24 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "development": true
+    }
+  },
+  "env": {
+    "ENVIRONMENT": "development"
+  },
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "functions": {
+    "app/**/*.tsx": {
+      "maxDuration": 10
+    },
+    "app/api/**/*.ts": {
+      "maxDuration": 10
+    }
+  }
+}
