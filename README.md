@@ -86,6 +86,10 @@ TriFi is a comprehensive financial management and accounting platform designed s
 - **Dark/Light Mode**: Theme switching with system preference detection
 - **Real-time Updates**: Live data synchronization across components
 - **Intuitive Interface**: Clean, modern design with accessibility features
+- **Enhanced Card Design**: Improved card contrast with clear black/white text
+- **Interactive Elements**: Green hover effects for better user feedback
+- **Accessibility Focus**: High contrast ratios and clear visual hierarchy
+- **Consistent Navigation Color**: Dashboard menu text color remains the same in dark and light modes
 ||||||| parent of 9c56260 (Add Clerk auth pages)
 ### 📊 Business Operations
 - **Dashboard**: Real-time business metrics and KPI tracking
@@ -700,32 +704,6 @@ npm run test:coverage # Generate coverage report
 - **TypeScript**: Strict mode enabled
 - **File Naming**: kebab-case for files, PascalCase for components
 =======
-### **Testing Strategy**
-- Unit tests for utility functions
-- Component testing with React Testing Library
-- Integration tests for API endpoints
-- E2E tests for critical user flows
->>>>>>> 9c56260 (Add Clerk auth pages)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-<<<<<<< HEAD
-||||||| parent of 9c56260 (Add Clerk auth pages)
-### Development Guidelines
-
-- Follow TypeScript strict mode
-- Write descriptive commit messages
-- Add JSDoc comments for complex functions
-- Update tests for new features
-- Ensure responsive design compatibility
-
-=======
 ### **Development Guidelines**
 - Follow TypeScript best practices
 - Use conventional commit messages
@@ -790,3 +768,8 @@ For enterprise support and custom development, contact our team.
 
 *Empowering financial management through modern technology*
 >>>>>>> 9c56260 (Add Clerk auth pages)
+
+> **2025-07-06 Update**
+> 
+> • Added a black-and-white favicon (SVG) and linked it in the global metadata to eliminate 404 errors for `/favicon.ico`.
+> • Chat module now renders in strict black & white thanks to a Tailwind `grayscale` filter. No functional changes.

@@ -37,6 +37,15 @@ const nextConfig = {
     
     return config
   },
+  async redirects() {
+    return [
+      {
+        source: '/favicon.ico',
+        destination: '/placeholder-logo.svg',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default nextConfig
