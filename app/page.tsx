@@ -14,7 +14,7 @@ function Dashboard() {
         <h1 className="text-4xl font-bold tracking-tight dashboard-heading">
           Dashboard
         </h1>
-        <p className="text-dashboard-purple text-lg">
+        <p className="text-muted-foreground text-lg">
           Welcome back. Here&apos;s what&apos;s happening with your finances.
         </p>
       </div>

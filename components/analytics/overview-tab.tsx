@@ -39,10 +39,10 @@ export function OverviewTab({ dateRange }: OverviewTabProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <OverviewCards comparisonPeriod={comparisonPeriod} />
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Revenue</CardTitle>
+            <CardTitle style={{ color: '#111827' }}>Revenue</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <RevenueChart comparisonPeriod={comparisonPeriod} />
@@ -50,17 +50,17 @@ export function OverviewTab({ dateRange }: OverviewTabProps) {
         </Card>
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Recent Transactions</CardTitle>
+            <CardTitle style={{ color: '#111827' }}>Recent Transactions</CardTitle>
           </CardHeader>
           <CardContent>
             <RecentTransactions />
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Account Growth</CardTitle>
+            <CardTitle style={{ color: '#111827' }}>Account Growth</CardTitle>
           </CardHeader>
           <CardContent>
             <AccountGrowth comparisonPeriod={comparisonPeriod} />
@@ -68,17 +68,17 @@ export function OverviewTab({ dateRange }: OverviewTabProps) {
         </Card>
         <Card className="col-span-3">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Top Products</CardTitle>
+            <CardTitle style={{ color: '#111827' }}>Top Products</CardTitle>
           </CardHeader>
           <CardContent>
             <TopProducts />
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">User Activity</CardTitle>
+            <CardTitle style={{ color: '#111827' }}>User Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <UserActivity />

@@ -92,9 +92,9 @@ export function AccountsOverview() {
   // Database not configured state
   if (databaseError === 'database_not_configured' || databaseError === 'Database not configured') {
     return (
-      <Card className="glass-card apple-hover border-amber-200">
+      <Card className="bg-white border-amber-200 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Accounts Overview</CardTitle>
+          <CardTitle className="text-sm font-medium text-black">Accounts Overview</CardTitle>
           <AlertCircle className="h-4 w-4 text-amber-500" />
         </CardHeader>
         <CardContent>
@@ -102,12 +102,12 @@ export function AccountsOverview() {
             <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
               <Database className="h-6 w-6 text-amber-600" />
             </div>
-            <p className="text-sm font-medium text-warning-light mb-1">Database Setup Required</p>
-            <p className="text-xs text-readable mb-4">
+            <p className="text-sm font-medium text-amber-700 mb-1">Database Setup Required</p>
+            <p className="text-xs text-gray-600 mb-4">
               Connect to Supabase to start managing your accounts
             </p>
-            <div className="bg-amber-50 rounded-lg p-3 text-left text-xs text-readable">
-              <p className="font-medium mb-1 text-warning-light">To get started:</p>
+            <div className="bg-amber-50 rounded-lg p-3 text-left text-xs text-gray-700">
+              <p className="font-medium mb-1 text-amber-700">To get started:</p>
               <ol className="list-decimal list-inside space-y-1">
                 <li>Create a Supabase project</li>
                 <li>Add your environment variables</li>
@@ -173,22 +173,22 @@ export function AccountsOverview() {
 
   return (
     <>
-      <Card className="glass-card apple-hover">
+      <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Accounts Overview</CardTitle>
+          <CardTitle className="text-sm font-medium text-black">Accounts Overview</CardTitle>
           <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowBalance(!showBalance)}
-              className="h-8 w-8 p-0 hover:bg-muted/50"
+              className="h-8 w-8 p-0 hover:bg-green-50/50"
             >
-              {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              {showBalance ? <Eye className="h-4 w-4 text-gray-600" /> : <EyeOff className="h-4 w-4 text-gray-600" />}
             </Button>
             <Button
               size="sm"
               onClick={() => setAddMoneyModalOpen(true)}
-              className="apple-button gradient-blue text-white border-0"
+              className="bg-green-500 hover:bg-green-600 text-white"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -198,10 +198,10 @@ export function AccountsOverview() {
           <div className="space-y-4">
             {/* Total Balance */}
             <div className="space-y-2">
-              <div className="text-2xl font-bold tracking-tight">
+              <div className="text-2xl font-bold tracking-tight text-black">
                 {showBalance ? formatCurrency(totalBalance) : "••••••"}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-600">
                 Total across {accounts.length} account{accounts.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -212,24 +212,24 @@ export function AccountsOverview() {
                 accounts.map((account) => (
                   <div
                     key={account.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-green-50/50 hover:border-green-200 transition-colors border border-transparent"
                   >
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Wallet className="h-4 w-4 text-primary" />
+                      <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+                        <Wallet className="h-4 w-4 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium">{account.name}</p>
-                        <p className="text-xs text-muted-foreground">{account.bank_name || 'Account'}</p>
+                        <p className="text-sm font-medium text-black">{account.name}</p>
+                        <p className="text-xs text-gray-600">{account.bank_name || 'Account'}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium">
+                      <p className="text-sm font-medium text-black">
                         {showBalance ? formatCurrency(account.balance) : "••••"}
                       </p>
                       <Badge 
                         variant={account.is_active ? 'default' : 'secondary'} 
-                        className="text-xs h-5"
+                        className={`text-xs h-5 ${account.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}
                       >
                         {account.is_active ? 'active' : 'inactive'}
                       </Badge>
@@ -238,17 +238,17 @@ export function AccountsOverview() {
                 ))
               ) : (
                 <div className="text-center py-8 px-4">
-                  <div className="w-12 h-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                    <Wallet className="h-6 w-6 text-muted-foreground" />
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                    <Wallet className="h-6 w-6 text-gray-500" />
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">No accounts yet</p>
-                  <p className="text-xs text-muted-foreground mb-4">
+                  <p className="text-sm font-medium text-black mb-1">No accounts yet</p>
+                  <p className="text-xs text-gray-600 mb-4">
                     Add your first account to start tracking your finances
                   </p>
                   <Button
                     size="sm"
                     onClick={() => setAddMoneyModalOpen(true)}
-                    className="apple-button gradient-blue text-white border-0"
+                    className="bg-green-500 hover:bg-green-600 text-white"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Account

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
 import { useAuth } from "@/contexts/auth-context"
 import { OrganizationEditModal } from "@/components/organization-edit-modal"
@@ -34,6 +33,20 @@ export default function OrganizationPage() {
   const [transactions, setTransactions] = useState<any[]>([])
   const [dataLoading, setDataLoading] = useState(true)
 
+  // Function to load departments from database
+  const loadDepartments = async (organizationId: string) => {
+    try {
+      const { data: departmentsData, error: departmentsError } = await db.getDepartments(organizationId)
+      if (departmentsError) {
+        console.warn('Failed to load departments:', departmentsError)
+      } else {
+        setDepartments(departmentsData || [])
+      }
+    } catch (error) {
+      console.error('Error loading departments:', error)
+    }
+  }
+
   // Load organization data when current organization changes
   useEffect(() => {
     async function loadOrganizationData() {
@@ -60,9 +73,8 @@ export default function OrganizationPage() {
           setTransactions(transactionsData || [])
         }
 
-        // TODO: Load departments when departments API is available
-        // For now, keep empty array
-        setDepartments([])
+        // Load departments
+        await loadDepartments(currentOrganization.id)
 
       } catch (error) {
         console.error('Error loading organization data:', error)
@@ -83,9 +95,11 @@ export default function OrganizationPage() {
     setAddDepartmentModalOpen(true)
   }
 
-  const handleDepartmentAdded = (newDepartment: any) => {
-    setDepartments(prev => [...prev, newDepartment])
-    toast.success(`Department "${newDepartment.name}" added successfully!`)
+  const handleDepartmentAdded = async () => {
+    // Reload departments from database to ensure we have the latest data
+    if (currentOrganization) {
+      await loadDepartments(currentOrganization.id)
+    }
   }
 
   const handleCreateOrganization = async () => {
@@ -273,31 +287,41 @@ export default function OrganizationPage() {
             <div className="grid gap-4 md:grid-cols-2">
               {departments.length > 0 ? (
                 departments.map((dept: any) => (
-                <Card key={dept.name}>
+                <Card key={dept.id}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-semibold">{dept.name}</h4>
-                      <Badge variant="outline">{dept.employees} employees</Badge>
+                      <Badge variant="outline">Active</Badge>
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className="text-xs">
-                            {dept.head.split(' ').map((n: string) => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm text-muted-foreground">{dept.head}</span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Budget: </span>
-                        <span className="font-medium">{dept.budget}</span>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Performance</span>
-                          <span className="font-medium">{dept.performance}%</span>
+                      {dept.user_profiles && (
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-xs">
+                              {dept.user_profiles.full_name ? 
+                                dept.user_profiles.full_name.split(' ').map((n: string) => n[0]).join('') : 
+                                'N/A'
+                              }
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-sm text-muted-foreground">
+                            {dept.user_profiles.full_name || 'No head assigned'}
+                          </span>
                         </div>
-                        <Progress value={dept.performance} className="h-2" />
+                      )}
+                      {dept.budget && (
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Budget: </span>
+                          <span className="font-medium">₱{dept.budget.toLocaleString()}</span>
+                        </div>
+                      )}
+                      {dept.description && (
+                        <div className="text-sm text-muted-foreground">
+                          {dept.description}
+                        </div>
+                      )}
+                      <div className="text-xs text-muted-foreground">
+                        Created: {new Date(dept.created_at).toLocaleDateString()}
                       </div>
                     </div>
                   </CardContent>

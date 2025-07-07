@@ -28,6 +28,7 @@ import {
   EyeOff
 } from "lucide-react"
 import { toast } from "sonner"
+import { useSettings } from "@/contexts/settings-context"
 
 interface AccountSettingsModalProps {
   open: boolean
@@ -35,38 +36,40 @@ interface AccountSettingsModalProps {
 }
 
 export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModalProps) {
+  const { settings, updateSettings, updateNotificationSettings, updatePrivacySettings } = useSettings();
+
+  // Account settings state
   const [accountSettings, setAccountSettings] = useState({
-    accountName: "TriFi Business Account",
-    accountType: "business",
+    accountName: "Main Account",
+    accountType: "personal",
     currency: "PHP",
     timezone: "Asia/Manila",
   })
 
+  // Security settings state
   const [securitySettings, setSecuritySettings] = useState({
-    twoFactorEnabled: true,
+    twoFactorEnabled: false,
     emailNotifications: true,
     smsNotifications: false,
-    loginAlerts: true,
     transactionAlerts: true,
-    weeklyReports: true,
-    monthlyStatements: true,
   })
 
-  const [limits, setLimits] = useState({
-    dailyTransferLimit: "500000",
-    monthlyTransferLimit: "10000000",
-    dailyWithdrawalLimit: "100000",
-    monthlyWithdrawalLimit: "2000000",
-  })
-
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
+  // Password change state
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+  })
+
+  // Password visibility state
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  // Limits state
+  const [limits, setLimits] = useState({
+    dailyTransferLimit: "50000",
+    monthlyTransferLimit: "1000000",
   })
 
   const handleAccountUpdate = () => {
@@ -78,8 +81,14 @@ export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModa
   }
 
   const handleLimitsUpdate = () => {
-    toast.success("Transaction limits updated successfully!")
-  }
+    updatePrivacySettings({ 
+      analyticsSharing: settings.privacy.analyticsSharing, 
+      personalizedAds: settings.privacy.personalizedAds, 
+      visibility: settings.privacy.visibility, 
+      dataRetention: settings.privacy.dataRetention 
+    });
+    toast.success("Transaction limits updated successfully!");
+  };
 
   const handlePasswordChange = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -202,7 +211,7 @@ export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModa
                   </div>
                 </div>
 
-                <Button onClick={handleAccountUpdate}>
+                <Button onClick={handleAccountUpdate} variant="green">
                   Save Account Settings
                 </Button>
               </CardContent>
@@ -333,7 +342,7 @@ export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModa
                       </div>
                     </div>
 
-                    <Button onClick={handlePasswordChange}>
+                    <Button onClick={handlePasswordChange} variant="green">
                       Change Password
                     </Button>
                   </div>
@@ -401,7 +410,7 @@ export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModa
                   </div>
                 </div>
 
-                <Button onClick={handleSecurityUpdate}>
+                <Button onClick={handleSecurityUpdate} variant="green">
                   Save Notification Settings
                 </Button>
               </CardContent>
@@ -451,7 +460,7 @@ export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModa
                   </div>
                 </div>
 
-                <Button onClick={handleLimitsUpdate}>
+                <Button onClick={handleLimitsUpdate} variant="green">
                   Update Transaction Limits
                 </Button>
               </CardContent>
@@ -467,4 +476,4 @@ export function AccountSettingsModal({ open, onOpenChange }: AccountSettingsModa
       </DialogContent>
     </Dialog>
   )
-} 
+}

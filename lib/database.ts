@@ -165,6 +165,152 @@ export interface Meeting {
   updated_at?: string
 }
 
+export interface Department {
+  id: string
+  organization_id: string
+  name: string
+  description?: string
+  head_user_id?: string
+  budget?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface Notification {
+  id: string
+  user_id: string
+  organization_id: string
+  title: string
+  message: string
+  type?: 'info' | 'warning' | 'error' | 'success'
+  category?: string
+  is_read?: boolean
+  action_url?: string
+  metadata?: any
+  created_at?: string
+}
+
+export interface Investment {
+  id: string
+  organization_id: string
+  name: string
+  type: 'stocks' | 'bonds' | 'real_estate' | 'crypto' | 'business'
+  description?: string
+  initial_investment: number
+  current_value?: number
+  expected_return?: number
+  risk_level?: 'low' | 'medium' | 'high'
+  investment_date: string
+  maturity_date?: string
+  status?: 'active' | 'sold' | 'matured'
+  account_id?: string
+  created_by?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface BudgetGoal {
+  id: string
+  organization_id: string
+  name: string
+  description?: string
+  target_amount: number
+  current_amount?: number
+  target_date?: string
+  category_id?: string
+  is_active?: boolean
+  created_by?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface MeetingAttendee {
+  id: string
+  meeting_id: string
+  user_id: string
+  status?: 'invited' | 'accepted' | 'declined' | 'attended'
+  response_date?: string
+}
+
+export interface AuditLog {
+  id: string
+  organization_id: string
+  user_id?: string
+  action: string
+  table_name: string
+  record_id?: string
+  old_values?: any
+  new_values?: any
+  ip_address?: string
+  user_agent?: string
+  created_at?: string
+}
+
+export interface ChatChannel {
+  id: string
+  organization_id: string
+  name: string
+  description?: string
+  type: 'public' | 'private' | 'direct' | 'group'
+  is_archived?: boolean
+  project_id?: string
+  created_by?: string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface ChatMessage {
+  id: string
+  channel_id: string
+  user_id: string
+  content: string
+  message_type?: 'text' | 'image' | 'file' | 'system'
+  reply_to_id?: string
+  metadata?: any
+  is_edited?: boolean
+  is_deleted?: boolean
+  created_at?: string
+  updated_at?: string
+}
+
+export interface ChatChannelMember {
+  id: string
+  channel_id: string
+  user_id: string
+  role?: 'admin' | 'member'
+  joined_at?: string
+  last_read_at?: string
+  is_muted?: boolean
+}
+
+export interface ChatMessageReaction {
+  id: string
+  message_id: string
+  user_id: string
+  reaction: string
+  created_at?: string
+}
+
+export interface ChatAttachment {
+  id: string
+  message_id: string
+  file_name: string
+  file_type?: string
+  file_size?: number
+  file_url: string
+  thumbnail_url?: string
+  created_at?: string
+}
+
+export interface ChatMention {
+  id: string
+  message_id: string
+  user_id: string
+  mention_type?: 'user' | 'channel' | 'everyone'
+  is_read?: boolean
+  created_at?: string
+}
+
 // Database service class
 export class DatabaseService {
   // Lazy initialization of Supabase client
@@ -515,6 +661,444 @@ export class DatabaseService {
     return { data: data || [], error }
   }
 
+  // Department Operations
+  async createDepartment(data: Partial<Department>): Promise<{ data: Department | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('departments')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getDepartments(organizationId: string): Promise<{ data: Department[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('departments')
+      .select(`
+        *,
+        user_profiles(full_name, email)
+      `)
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false })
+
+    return { data: data || [], error }
+  }
+
+  async getDepartment(id: string): Promise<{ data: Department | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('departments')
+      .select(`
+        *,
+        user_profiles(full_name, email)
+      `)
+      .eq('id', id)
+      .single()
+
+    return { data, error }
+  }
+
+  async updateDepartment(id: string, updates: Partial<Department>): Promise<{ data: Department | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('departments')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async deleteDepartment(id: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('departments')
+      .delete()
+      .eq('id', id)
+
+    return { data, error }
+  }
+
+  // Notification Operations
+  async createNotification(data: Partial<Notification>): Promise<{ data: Notification | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('notifications')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getNotifications(userId: string, organizationId: string, limit = 50): Promise<{ data: Notification[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    return { data: data || [], error }
+  }
+
+  async markNotificationAsRead(notificationId: string): Promise<{ data: Notification | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('id', notificationId)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async deleteNotification(notificationId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('notifications')
+      .delete()
+      .eq('id', notificationId)
+
+    return { data, error }
+  }
+
+  async getUnreadNotificationCount(userId: string, organizationId: string): Promise<{ data: number, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: 0, error: { message: 'Database not configured' } }
+    }
+
+    const { count, error } = await this.getClient()
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('organization_id', organizationId)
+      .eq('is_read', false)
+
+    return { data: count || 0, error }
+  }
+
+  // Investment Operations
+  async createInvestment(data: Partial<Investment>): Promise<{ data: Investment | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('investments')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getInvestments(organizationId: string): Promise<{ data: Investment[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('investments')
+      .select(`
+        *,
+        accounts(name, account_number)
+      `)
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: false })
+
+    return { data: data || [], error }
+  }
+
+  async updateInvestment(id: string, updates: Partial<Investment>): Promise<{ data: Investment | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('investments')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async deleteInvestment(id: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('investments')
+      .delete()
+      .eq('id', id)
+
+    return { data, error }
+  }
+
+  async getInvestmentPerformance(organizationId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('investments')
+      .select('initial_investment, current_value, type, status')
+      .eq('organization_id', organizationId)
+
+    if (error) return { data: null, error }
+
+    const totalInvestment = data?.reduce((sum, inv) => sum + (inv.initial_investment || 0), 0) || 0
+    const totalCurrentValue = data?.reduce((sum, inv) => sum + (inv.current_value || inv.initial_investment || 0), 0) || 0
+    const totalReturn = totalCurrentValue - totalInvestment
+    const returnPercentage = totalInvestment > 0 ? (totalReturn / totalInvestment) * 100 : 0
+
+    return {
+      data: {
+        totalInvestment,
+        totalCurrentValue,
+        totalReturn,
+        returnPercentage,
+        investmentCount: data?.length || 0
+      },
+      error: null
+    }
+  }
+
+  // Budget Goal Operations
+  async createBudgetGoal(data: Partial<BudgetGoal>): Promise<{ data: BudgetGoal | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('budget_goals')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getBudgetGoals(organizationId: string): Promise<{ data: BudgetGoal[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('budget_goals')
+      .select(`
+        *,
+        transaction_categories(name, color, icon)
+      `)
+      .eq('organization_id', organizationId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+
+    return { data: data || [], error }
+  }
+
+  async updateBudgetGoal(id: string, updates: Partial<BudgetGoal>): Promise<{ data: BudgetGoal | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('budget_goals')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async deleteBudgetGoal(id: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('budget_goals')
+      .update({ is_active: false })
+      .eq('id', id)
+
+    return { data, error }
+  }
+
+  async getBudgetGoalProgress(goalId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('budget_goals')
+      .select('target_amount, current_amount, target_date, name')
+      .eq('id', goalId)
+      .single()
+
+    if (error) return { data: null, error }
+
+    const progress = data.target_amount > 0 ? (data.current_amount / data.target_amount) * 100 : 0
+    const daysRemaining = data.target_date ? Math.ceil((new Date(data.target_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
+
+    return {
+      data: {
+        ...data,
+        progress,
+        daysRemaining,
+        isCompleted: progress >= 100,
+        isOverdue: daysRemaining !== null && daysRemaining < 0
+      },
+      error: null
+    }
+  }
+
+  // Meeting Attendee Operations
+  async addMeetingAttendee(meetingId: string, userId: string, status = 'invited'): Promise<{ data: MeetingAttendee | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('meeting_attendees')
+      .insert({ meeting_id: meetingId, user_id: userId, status })
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async removeMeetingAttendee(meetingId: string, userId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('meeting_attendees')
+      .delete()
+      .eq('meeting_id', meetingId)
+      .eq('user_id', userId)
+
+    return { data, error }
+  }
+
+  async updateAttendeeStatus(meetingId: string, userId: string, status: string): Promise<{ data: MeetingAttendee | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('meeting_attendees')
+      .update({ status, response_date: new Date().toISOString() })
+      .eq('meeting_id', meetingId)
+      .eq('user_id', userId)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async getMeetingAttendees(meetingId: string): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('meeting_attendees')
+      .select(`
+        *,
+        user_profiles(id, full_name, email, avatar_url)
+      `)
+      .eq('meeting_id', meetingId)
+
+    return { data: data || [], error }
+  }
+
+  // Audit Log Operations
+  async logAuditEvent(data: Partial<AuditLog>): Promise<{ data: AuditLog | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('audit_logs')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getAuditLogs(organizationId: string, filters?: { 
+    userId?: string, 
+    tableName?: string, 
+    action?: string, 
+    startDate?: string, 
+    endDate?: string,
+    limit?: number 
+  }): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    let query = this.getClient()
+      .from('audit_logs')
+      .select(`
+        *,
+        user_profiles(full_name, email)
+      `)
+      .eq('organization_id', organizationId)
+
+    if (filters?.userId) query = query.eq('user_id', filters.userId)
+    if (filters?.tableName) query = query.eq('table_name', filters.tableName)
+    if (filters?.action) query = query.eq('action', filters.action)
+    if (filters?.startDate) query = query.gte('created_at', filters.startDate)
+    if (filters?.endDate) query = query.lte('created_at', filters.endDate)
+
+    const { data, error } = await query
+      .order('created_at', { ascending: false })
+      .limit(filters?.limit || 100)
+
+    return { data: data || [], error }
+  }
+
   // Utility Operations
   async getAccountTypes(): Promise<{ data: any[], error: any }> {
     if (!this.isAvailable()) {
@@ -748,6 +1332,362 @@ export class DatabaseService {
       console.error('Error fetching organization members with roles:', error)
       return { data: null, error }
     }
+  }
+
+  // Chat Channel Operations
+  async createChatChannel(data: Partial<ChatChannel>): Promise<{ data: ChatChannel | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('chat_channels')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getChatChannels(organizationId: string): Promise<{ data: ChatChannel[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channels')
+      .select('*')
+      .eq('organization_id', organizationId)
+      .eq('is_archived', false)
+      .order('created_at', { ascending: true })
+
+    return { data: data || [], error }
+  }
+
+  async getChatChannel(channelId: string): Promise<{ data: ChatChannel | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channels')
+      .select('*')
+      .eq('id', channelId)
+      .single()
+
+    return { data, error }
+  }
+
+  async updateChatChannel(channelId: string, updates: Partial<ChatChannel>): Promise<{ data: ChatChannel | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channels')
+      .update(updates)
+      .eq('id', channelId)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async deleteChatChannel(channelId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channels')
+      .delete()
+      .eq('id', channelId)
+
+    return { data, error }
+  }
+
+  // Chat Channel Member Operations
+  async addChannelMember(channelId: string, userId: string, role: string = 'member'): Promise<{ data: ChatChannelMember | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channel_members')
+      .insert({ channel_id: channelId, user_id: userId, role })
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async removeChannelMember(channelId: string, userId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channel_members')
+      .delete()
+      .eq('channel_id', channelId)
+      .eq('user_id', userId)
+
+    return { data, error }
+  }
+
+  async getChannelMembers(channelId: string): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channel_members')
+      .select(`
+        *,
+        user_profiles(id, full_name, email, avatar_url)
+      `)
+      .eq('channel_id', channelId)
+      .order('joined_at', { ascending: true })
+
+    return { data: data || [], error }
+  }
+
+  async updateLastReadTime(channelId: string, userId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channel_members')
+      .update({ last_read_at: new Date().toISOString() })
+      .eq('channel_id', channelId)
+      .eq('user_id', userId)
+
+    return { data, error }
+  }
+
+  // Chat Message Operations
+  async createChatMessage(data: Partial<ChatMessage>): Promise<{ data: ChatMessage | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('chat_messages')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getChatMessages(channelId: string, limit: number = 50, offset: number = 0): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_messages')
+      .select(`
+        *,
+        user_profiles(id, clerk_user_id, full_name, email, avatar_url),
+        chat_attachments(*),
+        chat_message_reactions(*)
+      `)
+      .eq('channel_id', channelId)
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    return { data: data || [], error }
+  }
+
+  async updateChatMessage(messageId: string, updates: Partial<ChatMessage>): Promise<{ data: ChatMessage | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_messages')
+      .update({ ...updates, is_edited: true })
+      .eq('id', messageId)
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async deleteChatMessage(messageId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_messages')
+      .update({ is_deleted: true, content: 'This message has been deleted' })
+      .eq('id', messageId)
+
+    return { data, error }
+  }
+
+  // Chat Message Reaction Operations
+  async addMessageReaction(messageId: string, userId: string, reaction: string): Promise<{ data: ChatMessageReaction | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_message_reactions')
+      .insert({ message_id: messageId, user_id: userId, reaction })
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async removeMessageReaction(messageId: string, userId: string, reaction: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_message_reactions')
+      .delete()
+      .eq('message_id', messageId)
+      .eq('user_id', userId)
+      .eq('reaction', reaction)
+
+    return { data, error }
+  }
+
+  // Chat Attachment Operations
+  async addMessageAttachment(data: Partial<ChatAttachment>): Promise<{ data: ChatAttachment | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('chat_attachments')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  // Chat Mention Operations
+  async createChatMention(data: Partial<ChatMention>): Promise<{ data: ChatMention | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('chat_mentions')
+      .insert(data)
+      .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async getUnreadMentions(userId: string): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_mentions')
+      .select(`
+        *,
+        chat_messages(
+          id,
+          content,
+          created_at,
+          user_profiles(full_name, avatar_url),
+          chat_channels(name)
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('is_read', false)
+      .order('created_at', { ascending: false })
+
+    return { data: data || [], error }
+  }
+
+  async markMentionAsRead(mentionId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_mentions')
+      .update({ is_read: true })
+      .eq('id', mentionId)
+
+    return { data, error }
+  }
+
+  // Chat Utility Operations
+  async getUserChannels(userId: string): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('chat_channel_members')
+      .select(`
+        *,
+        chat_channels(
+          id,
+          name,
+          description,
+          type,
+          is_archived,
+          created_at,
+          updated_at
+        )
+      `)
+      .eq('user_id', userId)
+      .order('joined_at', { ascending: true })
+
+    return { data: data || [], error }
+  }
+
+  async getUnreadMessageCount(userId: string, channelId: string): Promise<{ data: number, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: 0, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .rpc('get_unread_message_count', { user_uuid: userId, channel_uuid: channelId })
+
+    return { data: data || 0, error }
+  }
+
+  async searchMessages(query: string, channelId?: string, limit: number = 20): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    let queryBuilder = this.getClient()
+      .from('chat_messages')
+      .select(`
+        *,
+        user_profiles(id, clerk_user_id, full_name, email, avatar_url),
+        chat_channels(name)
+      `)
+      .textSearch('content', query, { type: 'websearch' })
+      .eq('is_deleted', false)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (channelId) {
+      queryBuilder = queryBuilder.eq('channel_id', channelId)
+    }
+
+    const { data, error } = await queryBuilder
+
+    return { data: data || [], error }
   }
 }
 

@@ -9,16 +9,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all duration-200",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all duration-200",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all duration-200",
+        ghost: "hover:bg-accent hover:text-accent-foreground transition-all duration-200",
+        link: "text-primary underline-offset-4 hover:underline transition-all duration-200",
         clay: "bg-[#e0e5ec] shadow-[10px_10px_20px_#d1d9e6,_-10px_-10px_20px_#ffffff] hover:shadow-inner text-black font-semibold transition duration-200 rounded-full border border-gray-200",
+        green: "bg-green-500 text-white hover:bg-green-600 transition-all duration-200",
+        "outline-green": "border border-green-500 text-green-600 bg-transparent hover:bg-green-500 hover:text-white transition-all duration-200",
       },
       size: {
         default: "h-10 px-4 py-2",

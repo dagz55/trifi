@@ -21,43 +21,44 @@ module.exports = {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "rgb(var(--border) / <alpha-value>)",
+        input: "rgb(var(--input) / <alpha-value>)",
+        ring: "rgb(var(--ring) / <alpha-value>)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+          foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
+          foreground: "rgb(var(--secondary-foreground) / <alpha-value>)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "rgb(var(--destructive) / <alpha-value>)",
+          foreground: "rgb(var(--destructive-foreground) / <alpha-value>)",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "rgb(var(--popover) / <alpha-value>)",
+          foreground: "rgb(var(--popover-foreground) / <alpha-value>)",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "rgb(var(--card) / <alpha-value>)",
+          foreground: "rgb(var(--card-foreground) / <alpha-value>)",
         },
         // Apple-specific colors
         apple: {
           blue: "rgb(0, 122, 255)",
           green: "rgb(52, 199, 89)",
+          "green-hover": "rgb(48, 179, 80)",
           orange: "rgb(255, 149, 0)",
           red: "rgb(255, 59, 48)",
           purple: "rgb(88, 86, 214)",
@@ -68,6 +69,20 @@ module.exports = {
           gray4: "rgb(209, 209, 214)",
           gray5: "rgb(229, 229, 234)",
           gray6: "rgb(242, 242, 247)",
+        },
+        // Clean black and white theme
+        green: {
+          50: "rgb(240, 253, 244)",
+          100: "rgb(220, 252, 231)",
+          200: "rgb(187, 247, 208)",
+          300: "rgb(134, 239, 172)",
+          400: "rgb(74, 222, 128)",
+          500: "rgb(52, 199, 89)",    // Apple Green
+          600: "rgb(48, 179, 80)",    // Apple Green Hover
+          700: "rgb(21, 128, 61)",
+          800: "rgb(22, 101, 52)",
+          900: "rgb(20, 83, 45)",
+          950: "rgb(5, 46, 22)",
         },
       },
       borderRadius: {
@@ -123,6 +138,7 @@ module.exports = {
         "apple-xl": "0 12px 48px rgba(0, 0, 0, 0.15)",
         "glass": "0 8px 32px rgba(0, 0, 0, 0.1)",
         "inner-light": "inset 0 1px 3px rgba(0, 0, 0, 0.1)",
+        "green-glow": "0 0 20px rgba(52, 199, 89, 0.3)",
       },
       backdropBlur: {
         xs: "2px",

@@ -135,13 +135,13 @@ export function BusinessMetrics() {
   // Database not configured state
   if (databaseError === 'database_not_configured' || databaseError === 'Database not configured') {
     return (
-      <Card className="glass-card apple-hover border-amber-200">
+      <Card className="bg-white border-amber-200 shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold">Business Metrics</CardTitle>
+            <CardTitle className="text-lg font-semibold text-black">Business Metrics</CardTitle>
             <AlertCircle className="h-5 w-5 text-amber-500" />
           </div>
-          <p className="text-sm text-readable">
+          <p className="text-sm text-gray-600">
             Key performance indicators for your business
           </p>
         </CardHeader>
@@ -150,8 +150,8 @@ export function BusinessMetrics() {
             <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
               <Database className="h-6 w-6 text-amber-600" />
             </div>
-            <p className="text-sm font-medium text-warning-light mb-1">Database Setup Required</p>
-            <p className="text-xs text-readable mb-4">
+            <p className="text-sm font-medium text-amber-700 mb-1">Database Setup Required</p>
+            <p className="text-xs text-gray-600 mb-4">
               Connect to Supabase to see your business metrics
             </p>
           </div>
@@ -163,10 +163,10 @@ export function BusinessMetrics() {
   // Database error state
   if (databaseError && databaseError !== 'database_not_configured') {
     return (
-      <Card className="glass-card apple-hover border-red-200">
+      <Card className="bg-white border-red-200 shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold">Business Metrics</CardTitle>
+            <CardTitle className="text-lg font-semibold text-black">Business Metrics</CardTitle>
             <AlertCircle className="h-5 w-5 text-red-500" />
           </div>
         </CardHeader>
@@ -175,8 +175,8 @@ export function BusinessMetrics() {
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
               <AlertCircle className="h-6 w-6 text-red-600" />
             </div>
-            <p className="text-sm font-medium text-error-light mb-1">Connection Error</p>
-            <p className="text-xs text-error-light mb-4">
+            <p className="text-sm font-medium text-red-700 mb-1">Connection Error</p>
+            <p className="text-xs text-red-600 mb-4">
               Unable to load business metrics
             </p>
           </div>
@@ -187,18 +187,18 @@ export function BusinessMetrics() {
 
   if (isLoading) {
     return (
-      <Card className="glass-card apple-hover">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Business Metrics</CardTitle>
+          <CardTitle className="text-lg font-semibold text-black">Business Metrics</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="p-4 rounded-xl bg-muted/30">
+              <div key={i} className="p-4 rounded-xl bg-gray-50">
                 <div className="space-y-2">
-                  <div className="skeleton h-4 w-16" />
-                  <div className="skeleton h-6 w-20" />
-                  <div className="skeleton h-3 w-12" />
+                  <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-6 w-20 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
                 </div>
               </div>
             ))}
@@ -209,15 +209,15 @@ export function BusinessMetrics() {
   }
 
   return (
-    <Card className="glass-card apple-hover">
+    <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold">Business Metrics</CardTitle>
-          <Badge variant="outline" className="text-xs">
+          <CardTitle className="text-lg font-semibold text-black">Business Metrics</CardTitle>
+          <Badge variant="outline" className="text-xs border-green-200 text-green-700">
             Live Data
           </Badge>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-gray-600">
           Key performance indicators for your business
         </p>
       </CardHeader>
@@ -226,16 +226,16 @@ export function BusinessMetrics() {
           {metrics.map((metric, index) => (
             <div
               key={metric.title}
-              className="p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/10 hover:from-muted/40 hover:to-muted/20 transition-all duration-200 apple-hover"
+              className="p-4 rounded-xl bg-white border border-gray-100 hover:border-green-200 hover:bg-green-50/50 transition-all duration-200 hover:shadow-sm"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="flex items-center justify-between mb-3">
-                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center`}>
+                <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center`}>
                   <metric.icon className={`h-4 w-4 ${metric.color}`} />
                 </div>
                 <div className={`flex items-center space-x-1 text-xs ${
                   metric.trend === 'up' ? 'text-green-600' : 
-                  metric.trend === 'down' ? 'text-red-600' : 'text-muted-foreground'
+                  metric.trend === 'down' ? 'text-red-600' : 'text-gray-500'
                 }`}>
                   {metric.trend === 'up' && <ArrowUpRight className="h-3 w-3" />}
                   {metric.trend === 'down' && <ArrowDownRight className="h-3 w-3" />}
@@ -243,8 +243,8 @@ export function BusinessMetrics() {
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-lg font-bold tracking-tight">{metric.value}</p>
-                <p className="text-xs text-muted-foreground">{metric.title}</p>
+                <p className="text-lg font-bold tracking-tight text-black">{metric.value}</p>
+                <p className="text-xs text-gray-600">{metric.title}</p>
               </div>
             </div>
           ))}
@@ -252,10 +252,10 @@ export function BusinessMetrics() {
         
         {metrics.every(m => m.value === "₱0" || m.value === "0") && (
           <div className="mt-6 text-center py-4">
-            <p className="text-sm text-muted-foreground mb-2">
+            <p className="text-sm text-gray-600 mb-2">
               Start adding transactions and projects to see your business metrics
             </p>
-            <Button size="sm" variant="outline" className="apple-button">
+            <Button size="sm" variant="outline" className="border-green-200 text-green-700 hover:bg-green-50">
               Get Started
             </Button>
           </div>

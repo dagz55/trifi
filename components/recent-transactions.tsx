@@ -192,7 +192,7 @@ export function RecentTransactions() {
           <Button
             size="sm"
             onClick={() => setAddTransactionModalOpen(true)}
-            className="apple-button gradient-blue text-white border-0"
+            className="apple-button"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -254,7 +254,7 @@ export function RecentTransactions() {
                 <Button
                   size="sm"
                   onClick={() => setAddTransactionModalOpen(true)}
-                  className="apple-button gradient-blue text-white border-0"
+                  className="apple-button"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Transaction

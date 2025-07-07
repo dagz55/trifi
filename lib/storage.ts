@@ -93,7 +93,24 @@ export async function uploadPhoto(file: File, folder: string = 'avatars'): Promi
     }
 
     const supabase = getSupabaseClient()
-    
+
+    // Ensure photos bucket exists before upload
+    const { data: bucketList, error: listErr } = await supabase.storage.listBuckets()
+    if (listErr) {
+      return { success: false, error: `Storage error: ${listErr.message}` }
+    }
+    const bucketExists = bucketList.some(b => b.name === PHOTO_BUCKET_CONFIG.name)
+    if (!bucketExists) {
+      const { error: createErr } = await supabase.storage.createBucket(PHOTO_BUCKET_CONFIG.name, {
+        public: PHOTO_BUCKET_CONFIG.public,
+        allowedMimeTypes: PHOTO_BUCKET_CONFIG.allowedMimeTypes,
+        fileSizeLimit: PHOTO_BUCKET_CONFIG.fileSizeLimit,
+      })
+      if (createErr) {
+        return { success: false, error: `Failed to create bucket: ${createErr.message}` }
+      }
+    }
+ 
     // Generate unique filename
     const fileExt = file.name.split('.').pop()
     const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`

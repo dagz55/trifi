@@ -23,6 +23,11 @@ export const metadata = {
   title: "TriFi - Advanced Financial Management Platform",
   description: "Professional financial management with Apple-style design and enterprise features",
   generator: 'TriFi Platform',
+  icons: {
+    icon: '/placeholder-logo.svg', // Fallback icon (black & white)
+    shortcut: '/placeholder-logo.svg',
+    apple: '/placeholder-logo.png',
+  },
 }
 
 export default async function RootLayout({
@@ -50,7 +55,7 @@ export default async function RootLayout({
                   
                   {/* Signed In - Dashboard with sidebar and nav */}
                   <SignedIn>
-                    <div className="min-h-screen flex bg-gradient-to-br from-background via-background to-muted/20">
+                    <div className="min-h-screen flex bg-background">
                       <Sidebar />
                       <div className="flex-1 flex flex-col">
                         <TopNav />

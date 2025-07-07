@@ -12,6 +12,7 @@ import {
   Receipt,
   CreditCard,
   Users2,
+  Building,
   Shield,
   MessagesSquare,
   Video,
@@ -36,6 +37,7 @@ const navigation = [
   { name: "Invoices", href: "/invoices", icon: Receipt },
   { name: "Payments", href: "/payments", icon: CreditCard },
   { name: "Members", href: "/members", icon: Users2 },
+  { name: "Departments", href: "/departments", icon: Building },
   { name: "Permissions", href: "/permissions", icon: Shield },
   { name: "Chat", href: "/chat", icon: MessagesSquare },
   { name: "Meetings", href: "/meetings", icon: Video },
@@ -59,8 +61,8 @@ export function Sidebar() {
           className={cn(
             "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
             pathname === item.href
-              ? "bg-secondary text-secondary-foreground"
-              : "text-muted-foreground hover:bg-secondary hover:text-secondary-foreground",
+              ? "bg-muted text-foreground font-semibold"
+              : "text-foreground hover:bg-muted hover:text-foreground",
             isCollapsed && "justify-center px-2",
           )}
         >

@@ -1,16 +1,99 @@
 "use client"
 
-import { useState } from "react"
-import { Bell, X, Info, AlertTriangle, CreditCard, TrendingUp, Gift, Settings } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Bell, X, Info, AlertTriangle, CheckCircle, AlertCircle, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useSettings } from "@/contexts/settings-context"
+import { useUser } from "@clerk/nextjs"
+import { db, Notification } from "@/lib/database"
+import { toast } from "sonner"
 
-// Empty notifications array - clean state for new users
-const notifications: any[] = []
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case 'success': return CheckCircle
+    case 'warning': return AlertTriangle  
+    case 'error': return AlertCircle
+    default: return Info
+  }
+}
+
+const getNotificationColor = (type: string) => {
+  switch (type) {
+    case 'success': return 'text-green-600'
+    case 'warning': return 'text-yellow-600'
+    case 'error': return 'text-red-600'
+    default: return 'text-blue-600'
+  }
+}
 
 export function Notifications() {
   const [isOpen, setIsOpen] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const { organizationData } = useSettings()
+  const { user } = useUser()
+
+  const loadNotifications = async () => {
+    if (!user?.id || !organizationData?.id) return
+
+    setIsLoading(true)
+    try {
+      const { data, error } = await db.getNotifications(user.id, organizationData.id)
+      if (error) {
+        console.error('Error loading notifications:', error)
+      } else {
+        setNotifications(data || [])
+      }
+
+      // Load unread count
+      const { data: count, error: countError } = await db.getUnreadNotificationCount(user.id, organizationData.id)
+      if (!countError) {
+        setUnreadCount(count || 0)
+      }
+    } catch (error) {
+      console.error('Error loading notifications:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const markAsRead = async (notificationId: string) => {
+    try {
+      const { error } = await db.markNotificationAsRead(notificationId)
+      if (error) {
+        toast.error('Failed to mark notification as read')
+      } else {
+        // Update local state
+        setNotifications(prev => 
+          prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+        )
+        setUnreadCount(prev => Math.max(0, prev - 1))
+      }
+    } catch (error) {
+      toast.error('Failed to mark notification as read')
+    }
+  }
+
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const { error } = await db.deleteNotification(notificationId)
+      if (error) {
+        toast.error('Failed to delete notification')
+      } else {
+        setNotifications(prev => prev.filter(n => n.id !== notificationId))
+        toast.success('Notification deleted')
+      }
+    } catch (error) {
+      toast.error('Failed to delete notification')
+    }
+  }
+
+  useEffect(() => {
+    loadNotifications()
+  }, [user?.id, organizationData?.id])
 
   return (
     <div className="relative">
@@ -22,8 +105,10 @@ export function Notifications() {
         aria-label="Notifications"
       >
         <Bell className="h-5 w-5" />
-        {notifications.length > 0 && (
-          <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
         )}
       </Button>
       {isOpen && (
@@ -36,23 +121,63 @@ export function Notifications() {
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[400px] pr-4">
-              {notifications.length > 0 ? (
-                notifications.map((notification) => (
-                  <Card key={notification.id} className="mb-4 last:mb-0 border shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-start space-x-4">
-                        <div className={`${notification.color} p-2 rounded-full bg-opacity-10`}>
-                          <notification.icon className={`h-5 w-5 ${notification.color}`} />
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <p className="text-sm text-muted-foreground">Loading notifications...</p>
+                  </div>
+                </div>
+              ) : notifications.length > 0 ? (
+                notifications.map((notification) => {
+                  const IconComponent = getNotificationIcon(notification.type || 'info')
+                  const iconColor = getNotificationColor(notification.type || 'info')
+                  
+                  return (
+                    <Card 
+                      key={notification.id} 
+                      className={`mb-4 last:mb-0 border shadow-sm cursor-pointer transition-colors ${
+                        !notification.is_read ? 'bg-blue-50 border-blue-200' : ''
+                      }`}
+                      onClick={() => !notification.is_read && markAsRead(notification.id)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start space-x-4">
+                          <div className="p-2 rounded-full bg-opacity-10">
+                            <IconComponent className={`h-5 w-5 ${iconColor}`} />
+                          </div>
+                          <div className="flex-1 space-y-1">
+                            <div className="flex items-start justify-between">
+                              <p className={`text-sm leading-none ${!notification.is_read ? 'font-semibold' : 'font-medium'}`}>
+                                {notification.title}
+                              </p>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  deleteNotification(notification.id)
+                                }}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{notification.message}</p>
+                            <div className="flex items-center justify-between">
+                              <p className="text-xs text-muted-foreground">
+                                {notification.created_at ? new Date(notification.created_at).toLocaleDateString() : 'Just now'}
+                              </p>
+                              {!notification.is_read && (
+                                <span className="h-2 w-2 bg-blue-500 rounded-full"></span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium leading-none">{notification.title}</p>
-                          <p className="text-sm text-muted-foreground">{notification.message}</p>
-                          <p className="text-xs text-muted-foreground">{notification.date}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+                      </CardContent>
+                    </Card>
+                  )
+                })
               ) : (
                 <div className="flex flex-col items-center justify-center h-full py-12 text-center">
                   <div className="p-4 rounded-full bg-muted/50 mb-4">

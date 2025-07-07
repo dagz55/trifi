@@ -7,31 +7,32 @@
 
 @layer base {
   :root {
-    /* TriFi Minimal Light Theme */
+    /* TriFi Apple-like Clean Light Theme */
     --background: 255 255 255;            /* White */
-    --foreground: 0 0 0;                  /* Piano Black */
+    --foreground: 0 0 0;                  /* Black */
     --card: 255 255 255;                  /* White */
-    --card-foreground: 0 0 0;             /* Piano Black */
+    --card-foreground: 0 0 0;             /* Black */
     --popover: 255 255 255;               /* White */
-    --popover-foreground: 0 0 0;          /* Piano Black */
-    --primary: 0 255 102;                 /* Neon Green */
-    --primary-foreground: 0 0 0;          /* Piano Black */
-    --secondary: 0 0 0;                   /* Piano Black */
-    --secondary-foreground: 255 255 255;  /* White */
-    --muted: 255 255 255;                 /* White */
-    --muted-foreground: 0 0 0;            /* Piano Black */
-    --accent: 52 199 89;                  /* Green */
+    --popover-foreground: 0 0 0;          /* Black */
+    --primary: 0 0 0;                     /* Black */
+    --primary-foreground: 255 255 255;    /* White */
+    --secondary: 245 245 247;             /* Light Gray */
+    --secondary-foreground: 0 0 0;        /* Black */
+    --muted: 242 242 247;                 /* Very Light Gray */
+    --muted-foreground: 107 114 128;      /* Darker Gray */
+    --accent: 0 0 0;                      /* Black */
     --accent-foreground: 255 255 255;     /* White */
-    --destructive: 0 0 0;                 /* Piano Black */
+    --destructive: 255 59 48;             /* Apple Red */
     --destructive-foreground: 255 255 255;/* White */
-    --border: 0 0 0;                      /* Piano Black */
+    --border: 229 229 234;                /* Light Gray */
     --input: 255 255 255;                 /* White */
-    --ring: 0 255 102;                    /* Neon Green */
+    --ring: 0 0 0;                        /* Black */
     --radius: 12px;
     
     /* Apple-specific variables */
     --apple-blue: 0 122 255;
     --apple-green: 52 199 89;
+    --apple-green-hover: 48 179 80;       /* Darker green for hover */
     --apple-orange: 255 149 0;
     --apple-red: 255 59 48;
     --apple-purple: 88 86 214;
@@ -43,36 +44,48 @@
     --apple-gray-5: 199 199 204;
     --apple-gray-6: 229 229 234;
     
+    /* Clean card colors - ensuring proper contrast */
+    --card-clean: 255 255 255;            /* Pure white for cards */
+    --card-clean-foreground: 0 0 0;       /* Pure black text */
+    --card-clean-hover: 248 250 252;      /* Light gray hover */
+    --card-clean-green-hover: 240 253 244; /* Light green hover */
+    
     /* Glassmorphism variables */
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.95); /* More opaque for better contrast */
+    --glass-border: rgba(0, 0, 0, 0.1);
     --glass-backdrop: blur(20px);
   }
 
   .dark {
-    /* TriFi Minimal Dark Theme */
-    --background: 0 0 0;                  /* Piano Black */
+    /* TriFi Apple-like Clean Dark Theme */
+    --background: 0 0 0;                  /* Black */
     --foreground: 255 255 255;            /* White */
-    --card: 0 0 0;                        /* Piano Black */
+    --card: 28 28 30;                     /* Dark Gray */
     --card-foreground: 255 255 255;       /* White */
-    --popover: 0 0 0;                     /* Piano Black */
+    --popover: 28 28 30;                  /* Dark Gray */
     --popover-foreground: 255 255 255;    /* White */
-    --primary: 0 255 102;                 /* Neon Green */
-    --primary-foreground: 0 0 0;          /* Piano Black */
-    --secondary: 255 255 255;             /* White */
-    --secondary-foreground: 0 0 0;        /* Piano Black */
-    --muted: 0 0 0;                       /* Piano Black */
-    --muted-foreground: 255 255 255;      /* White */
-    --accent: 52 199 89;                  /* Green */
-    --accent-foreground: 0 0 0;           /* Piano Black */
-    --destructive: 255 255 255;           /* White */
-    --destructive-foreground: 0 0 0;      /* Piano Black */
-    --border: 255 255 255;                /* White */
-    --input: 0 0 0;                       /* Piano Black */
-    --ring: 0 255 102;                    /* Neon Green */
+    --primary: 255 255 255;               /* White */
+    --primary-foreground: 0 0 0;          /* Black */
+    --secondary: 44 44 46;                /* Dark Gray */
+    --secondary-foreground: 255 255 255;  /* White */
+    --muted: 44 44 46;                    /* Dark Gray */
+    --muted-foreground: 156 163 175;      /* Lighter Gray */
+    --accent: 255 255 255;                /* White */
+    --accent-foreground: 0 0 0;           /* Black */
+    --destructive: 255 69 58;             /* Apple Red (Dark) */
+    --destructive-foreground: 255 255 255;/* White */
+    --border: 44 44 46;                   /* Dark Gray */
+    --input: 28 28 30;                    /* Very Dark Gray */
+    --ring: 255 255 255;                  /* White */
+    
+    /* Dark card colors */
+    --card-clean: 28 28 30;               /* Dark gray for cards */
+    --card-clean-foreground: 255 255 255; /* White text */
+    --card-clean-hover: 44 44 46;         /* Darker gray hover */
+    --card-clean-green-hover: 20 83 45;   /* Dark green hover */
     
     /* Dark glassmorphism */
-    --glass-bg: rgba(28, 28, 30, 0.8);
+    --glass-bg: rgba(28, 28, 30, 0.95);  /* More opaque for better contrast */
     --glass-border: rgba(255, 255, 255, 0.1);
   }
 }
@@ -88,6 +101,53 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Force monochrome display across the entire application */
+    filter: grayscale(100%);
+    background-color: #ffffff !important;
+  }
+
+  .dark body {
+    background-color: #000000 !important;
+  }
+
+  html {
+    background-color: #ffffff !important;
+  }
+
+  .dark html {
+    background-color: #000000 !important;
+  }
+  
+  /* Force high contrast for cards */
+  [data-radix-collection-item],
+  .card,
+  .card *,
+  [role="gridcell"],
+  [data-card] {
+    color: #111827 !important;
+  }
+  
+  .dark [data-radix-collection-item],
+  .dark .card,
+  .dark .card *,
+  .dark [role="gridcell"],
+  .dark [data-card] {
+    color: #f9fafb !important;
+  }
+  
+  /* Ensure cards have proper background */
+  .card,
+  [data-card] {
+    background-color: white !important;
+    border: 2px solid #d1d5db !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  .dark .card,
+  .dark [data-card] {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+    color: #f9fafb !important;
   }
   
   /* Apple-style typography hierarchy */
@@ -114,7 +174,7 @@
     font-weight: 500;
     letter-spacing: -0.01em;
   }
-  
+
   /* Apple-style glass components */
   .glass {
     background: var(--glass-bg);
@@ -126,8 +186,40 @@
   .glass-card {
     @apply glass rounded-2xl p-6 shadow-lg;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: rgb(var(--card-clean));
+    color: rgb(var(--card-clean-foreground));
+    transition: all 0.2s ease-out;
   }
   
+  .glass-card:hover {
+    background: rgb(var(--card-clean-hover));
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Clean card styles with proper contrast */
+  .card-clean {
+    background: rgb(var(--card-clean));
+    color: rgb(var(--card-clean-foreground));
+    border: 1px solid rgb(var(--border));
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.2s ease-out;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-clean:hover {
+    background: rgb(var(--card-clean-hover));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-clean-green-hover:hover {
+    background: rgb(var(--card-clean-green-hover));
+    border-color: rgb(var(--apple-green));
+    box-shadow: 0 8px 24px rgba(52, 199, 89, 0.15);
+  }
+
   /* Apple-style hover effects */
   .apple-hover {
     @apply transition-all duration-200 ease-out;
@@ -139,6 +231,19 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
   
+  /* Enhanced green hover effect */
+  .apple-hover-green {
+    @apply transition-all duration-200 ease-out;
+    transform: translateY(0);
+  }
+  
+  .apple-hover-green:hover {
+    transform: translateY(-2px);
+    background: rgb(var(--card-clean-green-hover));
+    border-color: rgb(var(--apple-green));
+    box-shadow: 0 8px 24px rgba(52, 199, 89, 0.15);
+  }
+
   /* Apple-style buttons */
   .apple-button {
     @apply rounded-xl font-medium transition-all duration-200 ease-out;
@@ -155,6 +260,23 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
   
+  /* Green button hover states */
+  .btn-green-hover {
+    @apply bg-green-500 text-white transition-colors duration-200;
+  }
+  
+  .btn-green-hover:hover {
+    @apply bg-green-600;
+  }
+  
+  .btn-outline-green-hover {
+    @apply border border-green-500 text-green-600 bg-transparent transition-colors duration-200;
+  }
+  
+  .btn-outline-green-hover:hover {
+    @apply bg-green-500 text-white;
+  }
+  
   /* Apple-style input fields */
   .apple-input {
     @apply rounded-xl border-0 bg-muted/50 backdrop-blur-sm;
@@ -163,7 +285,7 @@
   
   .apple-input:focus {
     @apply ring-2 ring-primary/20;
-    box-shadow: 0 0 0 4px rgba(0, 255, 102, 0.1);
+    box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.1);
   }
   
   /* Smooth page transitions */
@@ -233,7 +355,7 @@
   /* Apple-style focus states */
   .apple-focus:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 255, 102, 0.25);
+    box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.25);
   }
   
   /* Status colors (limited palette) */
@@ -281,17 +403,11 @@
   
   /* Dashboard heading with green gradient */
   .dashboard-heading {
-    background: linear-gradient(135deg, rgb(0, 255, 102) 0%, rgb(255, 255, 255) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    @apply text-foreground;
   }
   
   .dark .dashboard-heading {
-    background: linear-gradient(135deg, rgb(0, 255, 102) 0%, rgb(255, 255, 255) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    @apply text-foreground;
   }
   
   /* Gradient backgrounds */
@@ -300,7 +416,7 @@
   }
   
   .gradient-green {
-    background: linear-gradient(135deg, rgb(0, 255, 102) 0%, rgb(0, 200, 80) 100%);
+    background: linear-gradient(135deg, rgb(52, 199, 89) 0%, rgb(48, 179, 80) 100%);
   }
   
   .gradient-purple {

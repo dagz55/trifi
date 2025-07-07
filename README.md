@@ -1,87 +1,59 @@
-# TriFi - Complete Financial Management Platform
+# TriFi - Next-Generation Financial Management Platform
 
-<<<<<<< HEAD
-<div align="center">
-  <img src="public/trifi_logo.png" alt="TriFi Logo" width="120" height="120">
-  <h3>Complete Financial Management Solution</h3>
-  <p>Built with Next.js 15, TypeScript, and Tailwind CSS</p>
-</div>
-||||||| parent of 9c56260 (Add Clerk auth pages)
-<div align="center">
-  <img src="public/trifi-logo.svg" alt="TriFi Logo" width="120" height="120">
-  <h3>Complete Financial Management Solution for Philippine Businesses</h3>
-  <p>Built with Next.js, TypeScript, and Tailwind CSS</p>
-</div>
-=======
-TriFi is a modern, comprehensive financial management platform built with Next.js 13+ and React. It provides businesses and individuals with powerful tools to manage finances, track transactions, handle invoices, manage teams, and gain insights through advanced analytics.
->>>>>>> 9c56260 (Add Clerk auth pages)
+🚀 **State-of-the-Art Financial Intelligence Platform** - Built with cutting-edge design and advanced technology stack
 
-<<<<<<< HEAD
-[![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0+-06B6D4)](https://tailwindcss.com/)
-[![Clerk](https://img.shields.io/badge/Auth-Clerk-purple)](https://clerk.com/)
-[![Supabase](https://img.shields.io/badge/Database-Supabase-green)](https://supabase.com/)
-||||||| parent of 9c56260 (Add Clerk auth pages)
-## 🌟 Overview
-=======
-![TriFi Dashboard](https://img.shields.io/badge/Status-Active-brightgreen)
-![Next.js](https://img.shields.io/badge/Next.js-13+-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0+-06B6D4)
->>>>>>> 9c56260 (Add Clerk auth pages)
+TriFi is a revolutionary financial management platform that combines sophisticated design with powerful functionality. Built with Next.js, TypeScript, and modern web technologies, it delivers an unparalleled user experience that stands above traditional financial applications.
 
-<<<<<<< HEAD
-## 🚀 Features
-||||||| parent of 9c56260 (Add Clerk auth pages)
-TriFi is a comprehensive financial management and accounting platform designed specifically for Philippine businesses. It provides a complete suite of tools for managing finances, projects, team members, and business operations with support for Philippine Peso (PHP) currency and local business practices.
-=======
-## 🚀 Features Overview
->>>>>>> 9c56260 (Add Clerk auth pages)
+## ✨ What Makes TriFi Different
 
-<<<<<<< HEAD
-### 💰 **Financial Management**
-- **Multi-Account Tracking**: Real-time balance monitoring across accounts
-- **Transaction Management**: Comprehensive history with advanced filtering
-- **Professional Invoicing**: Itemized billing with tax calculations
-- **Payment Processing**: Multiple payment methods and tracking
-- **Budget & Savings Goals**: Financial planning and monitoring
-||||||| parent of 9c56260 (Add Clerk auth pages)
-## ✨ Features
-=======
-### 💰 **Financial Management**
+### 🎨 **Modern Visual Design**
+- **Particle Animation System**: Interactive canvas-based animations that respond to user movement
+- **Glass Morphism Interface**: Sophisticated backdrop blur effects and transparent overlays
+- **Advanced Gradient System**: Ocean, sunset, forest, aurora, fire, and cosmic color themes
+- **Smooth Micro-Interactions**: Premium animations powered by Framer Motion
+- **Neon Glow Effects**: Professional lighting effects for enhanced visual appeal
+
+### 🚀 **Cutting-Edge Technology**
+- **Interactive Financial Charts**: Real-time animated SVG charts with gradient fills
+- **AI-Powered Analytics**: Machine learning-driven insights and predictive analytics
+- **Real-Time Data Visualization**: Live updating dashboards with smooth transitions
+- **Advanced Animation Framework**: 60fps performance with optimized rendering
+- **Philippine-First Design**: Built specifically for Filipino businesses with peso support
+
+## Latest Design Revolution (January 2025)
+
+### 🎯 **Revolutionary User Experience**
+- **Animated Hero Section**: Particle effects, floating elements, and interactive financial data
+- **Dynamic Feature Showcase**: Interactive component selection with detailed explanations
+- **Premium Pricing Cards**: Motion-enhanced cards with sophisticated animations
+- **Enhanced Theme System**: Improved dark mode with better contrast and visual hierarchy
+- **Modern Gradient Buttons**: Multiple variants with glow effects and smooth transitions
+
+### 🌟 **Professional Aesthetics**
+- **Enterprise-Grade Design**: Suitable for serious financial applications
+- **Brand Differentiation**: Unique visual identity that showcases technology leadership
+- **Glass Morphism Elements**: Modern UI patterns with backdrop blur and transparency
+- **Sophisticated Color Palette**: Extended gradient system with responsive variants
+- **Typography Excellence**: Advanced text effects with gradient and shimmer animations
+
+## Features
+
+### 💰 Financial Management
 - **Accounts Overview**: Multi-account balance tracking with real-time updates
 - **Transaction Management**: Comprehensive transaction tracking with advanced filtering
 - **Invoicing System**: Professional invoice creation, tracking, and management
 - **Payment Processing**: Payment method management and transaction history
 - **Budget Tracking**: Budget creation and expense monitoring
 - **Savings Goals**: Goal setting and progress tracking
->>>>>>> 9c56260 (Add Clerk auth pages)
 
-<<<<<<< HEAD
-### 📊 **Business Operations**
-- **Project Management**: Budget tracking, progress monitoring, team assignments
-- **Team Management**: Role-based access control and member profiles
-- **Analytics Dashboard**: Revenue charts, expense analysis, KPI tracking
-- **Organization Setup**: Company structure and department management
-||||||| parent of 9c56260 (Add Clerk auth pages)
-### 💰 Financial Management
-- **Accounts Overview**: Multi-account balance tracking and management
-- **Transactions**: Comprehensive transaction history with filtering and search
-- **Invoicing**: Professional invoice creation, tracking, and management
-- **Payments**: Multiple payment method support with processing history
-- **Analytics**: Detailed financial reports and business insights
-=======
-### 📊 **Analytics & Reporting**
+### 📊 Analytics & Reporting
 - **Financial Analytics**: Revenue charts, expense analysis, and trend visualization
 - **Account Growth Tracking**: Historical account performance and growth metrics
 - **Custom Reports**: Exportable reports with date range filtering
 - **Business Metrics**: KPI tracking and performance indicators
 - **Real-time Dashboards**: Live data visualization with interactive charts
->>>>>>> 9c56260 (Add Clerk auth pages)
 
-<<<<<<< HEAD
-### 🎨 **User Experience**
+### 🎨 User Experience
 - **Responsive Design**: Works perfectly on desktop and mobile
 - **Dark/Light Mode**: Theme switching with system preference detection
 - **Real-time Updates**: Live data synchronization across components
@@ -90,142 +62,28 @@ TriFi is a comprehensive financial management and accounting platform designed s
 - **Interactive Elements**: Green hover effects for better user feedback
 - **Accessibility Focus**: High contrast ratios and clear visual hierarchy
 - **Consistent Navigation Color**: Dashboard menu text color remains the same in dark and light modes
-||||||| parent of 9c56260 (Add Clerk auth pages)
-### 📊 Business Operations
-- **Dashboard**: Real-time business metrics and KPI tracking
-- **Projects**: Project management with budget tracking and team assignments
-- **Organization**: Company structure, departments, and performance monitoring
-- **Members**: Team management with roles and permissions
-- **Permissions**: Role-based access control with detailed permission matrix
-=======
-### 🏢 **Business Management**
+
+### 🏢 Business Management
 - **Organization Setup**: Company profile and structure management
 - **Department Management**: Team organization and budget allocation
 - **Project Tracking**: Project lifecycle management with progress monitoring
 - **Team Members**: User management with role-based permissions
 - **Meeting Scheduler**: Calendar integration and meeting management
->>>>>>> 9c56260 (Add Clerk auth pages)
 
-<<<<<<< HEAD
-## 🛠️ Tech Stack
-||||||| parent of 9c56260 (Add Clerk auth pages)
-### 🤝 Collaboration
-- **Chat**: Real-time messaging and team communication
-- **Meetings**: Calendar integration and video conferencing support
-- **Help**: Comprehensive support system with FAQ and resources
-=======
-### 💼 **Investment Tools**
+### 💼 Investment Tools
 - **Portfolio Overview**: Investment tracking and performance analysis
 - **Market Analysis**: Real-time market data and trends
 - **Risk Assessment**: Investment risk evaluation tools
 - **Transaction History**: Detailed investment transaction logs
 - **Performance Metrics**: ROI calculation and portfolio analytics
->>>>>>> 9c56260 (Add Clerk auth pages)
 
-<<<<<<< HEAD
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript 5.0+
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **Authentication**: Clerk (optional, with graceful fallbacks)
-- **Database**: Supabase (optional, works without database)
-- **Charts**: Recharts for data visualization
-- **Icons**: Lucide React
-- **State Management**: React Context with localStorage persistence
-||||||| parent of 9c56260 (Add Clerk auth pages)
-### 🌐 Localization
-- **Currency**: Full Philippine Peso (PHP) support with ₱ symbol
-- **Timezone**: Philippine Standard Time (UTC+8)
-- **Contact**: Philippine phone number and address formats
-- **Language**: English interface optimized for Philippine business context
-=======
-### ⚙️ **Advanced Settings**
+### ⚙️ Advanced Settings
 - **User Preferences**: Customizable dashboard and UI settings
 - **Security Settings**: Password rules, 2FA, and security monitoring
 - **Notification Management**: Granular notification preferences
 - **Privacy Controls**: Data sharing and visibility settings
 - **Unsaved Changes Protection**: Automatic change detection with save prompts
->>>>>>> 9c56260 (Add Clerk auth pages)
 
-<<<<<<< HEAD
-## 📦 Quick Start
-||||||| parent of 9c56260 (Add Clerk auth pages)
-## 🛠 Tech Stack
-
-- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/) + Custom Components
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **State Management**: React Context API
-- **Charts**: [Recharts](https://recharts.org/)
-
-## 📦 Installation
-
-### Prerequisites
-- Node.js 18+ 
-- npm, yarn, or pnpm
-
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/trifi.git
-   cd trifi
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
-   ```
-
-3. **Run the development server**
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
-   ```
-
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 🚀 Usage
-
-### Getting Started
-
-1. **Dashboard**: Overview of your business metrics and recent activities
-2. **Setup Organization**: Configure your company information and departments
-3. **Add Team Members**: Invite team members and assign roles
-4. **Create Projects**: Set up projects with budgets and timelines
-5. **Manage Finances**: Track accounts, create invoices, and process payments
-
-### Key Workflows
-
-#### Creating an Invoice
-1. Navigate to **Invoices** → **Create Invoice**
-2. Select client and add line items
-3. Set payment terms and due date
-4. Send invoice to client
-
-#### Managing Projects
-1. Go to **Projects** → **New Project**
-2. Set project details, budget, and timeline
-3. Assign team members and set permissions
-4. Track progress and budget utilization
-
-#### Team Management
-1. Access **Members** → **Invite Member**
-2. Set roles in **Permissions**
-3. Configure access levels for each feature
-4. Monitor team activity and performance
-
-## 📁 Project Structure
-=======
 ## 🛠️ Tech Stack
 
 ### **Frontend**
@@ -253,45 +111,32 @@ TriFi is a comprehensive financial management and accounting platform designed s
 
 ```
 trifi/
-├── app/                          # Next.js 13+ App Router
-│   ├── globals.css              # Global styles
-│   ├── layout.tsx               # Root layout with providers
-│   ├── page.tsx                 # Dashboard homepage
-│   ├── analytics/               # Analytics and reporting
-│   ├── chat/                    # Communication features
-│   ├── help/                    # Help and documentation
-│   ├── invoices/                # Invoice management
-│   ├── investor/                # Investment tools
-│   ├── meetings/                # Meeting scheduler
-│   ├── members/                 # Team management
-│   ├── organization/            # Company settings
-│   ├── payments/                # Payment processing
-│   ├── permissions/             # Access control
-│   ├── projects/                # Project management
-│   ├── settings/                # User preferences
-│   ├── sign-in/                 # Authentication pages
-│   ├── sign-up/                 # User registration
-│   └── transactions/            # Transaction management
-├── components/                   # Reusable UI components
-│   ├── ui/                      # shadcn/ui components
-│   ├── analytics/               # Analytics-specific components
-│   ├── investor/                # Investment components
-│   ├── auth-wrapper.tsx         # Authentication wrapper
-│   ├── sidebar.tsx              # Navigation sidebar
-│   ├── top-nav.tsx              # Top navigation bar
-│   ├── unsaved-changes-bar.tsx  # Unsaved changes notification
-│   └── [feature-components].tsx # Feature-specific components
-├── contexts/                     # React context providers
-│   └── settings-context.tsx    # Global settings management
+├── app/                          # Next.js App Router pages
+│   ├── analytics/               # Analytics dashboard
+│   ├── chat/                    # Team communication
+│   ├── help/                    # Support and documentation
+│   ├── invoices/               # Invoice management
+│   ├── meetings/               # Meeting scheduling
+│   ├── members/                # Team member management
+│   ├── organization/           # Company settings
+│   ├── payments/               # Payment processing
+│   ├── permissions/            # Access control
+│   ├── projects/               # Project management
+│   ├── settings/               # User preferences
+│   ├── transactions/           # Transaction history
+│   ├── layout.tsx              # Root layout
+│   └── page.tsx                # Dashboard page
+├── components/                  # Reusable UI components
+│   ├── ui/                     # Base UI components
+│   ├── analytics/              # Analytics-specific components
+│   ├── investor/               # Investor-related components
+│   └── *.tsx                   # Feature components
+├── contexts/                    # React Context providers
 ├── hooks/                       # Custom React hooks
-│   ├── use-mobile.tsx          # Mobile responsive hook
-│   ├── use-toast.ts            # Toast notification hook
-│   └── use-unsaved-changes.tsx # Unsaved changes detection
 ├── lib/                         # Utility functions
-│   └── utils.ts                # Common utilities
 ├── public/                      # Static assets
-├── styles/                      # Additional stylesheets
-└── middleware.ts               # Clerk authentication middleware
+├── styles/                      # Global styles
+└── types/                       # TypeScript type definitions
 ```
 
 ## 🚀 Getting Started
@@ -391,62 +236,7 @@ The main dashboard provides a comprehensive view of your financial status:
 5. Assess investment risks and returns
 
 ## 🔧 Configuration
->>>>>>> 9c56260 (Add Clerk auth pages)
 
-<<<<<<< HEAD
-### 1. Clone and Install
-```bash
-git clone https://github.com/dagz55/trifi.git
-cd trifi
-npm install
-```
-
-### 2. Environment Setup
-```bash
-cp .env.example .env.local
-# Edit .env.local with your configuration
-```
-
-### 3. Run Development Server
-```bash
-npm run dev
-# Open http://localhost:3000
-```
-
-### 4. Build for Production
-```bash
-npm run build
-npm start
-||||||| parent of 9c56260 (Add Clerk auth pages)
-```
-trifi/
-├── app/                          # Next.js App Router pages
-│   ├── analytics/               # Analytics dashboard
-│   ├── chat/                    # Team communication
-│   ├── help/                    # Support and documentation
-│   ├── invoices/               # Invoice management
-│   ├── meetings/               # Meeting scheduling
-│   ├── members/                # Team member management
-│   ├── organization/           # Company settings
-│   ├── payments/               # Payment processing
-│   ├── permissions/            # Access control
-│   ├── projects/               # Project management
-│   ├── settings/               # User preferences
-│   ├── transactions/           # Transaction history
-│   ├── layout.tsx              # Root layout
-│   └── page.tsx                # Dashboard page
-├── components/                  # Reusable UI components
-│   ├── ui/                     # Base UI components
-│   ├── analytics/              # Analytics-specific components
-│   ├── investor/               # Investor-related components
-│   └── *.tsx                   # Feature components
-├── contexts/                    # React Context providers
-├── hooks/                       # Custom React hooks
-├── lib/                         # Utility functions
-├── public/                      # Static assets
-├── styles/                      # Global styles
-└── types/                       # TypeScript type definitions
-=======
 ### **Theme Configuration**
 The app supports dark/light mode switching:
 ```tsx
@@ -773,3 +563,5 @@ For enterprise support and custom development, contact our team.
 > 
 > • Added a black-and-white favicon (SVG) and linked it in the global metadata to eliminate 404 errors for `/favicon.ico`.
 > • Chat module now renders in strict black & white thanks to a Tailwind `grayscale` filter. No functional changes.
+> • Sidebar navigation now renders plain black text (active item bold with grey highlight).
+> • Pricing cards on landing page now display feature lists and button borders correctly in both themes.

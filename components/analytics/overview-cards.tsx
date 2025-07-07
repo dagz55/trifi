@@ -85,16 +85,16 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
 
   if (!user) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Loading...</CardTitle>
-              <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-semibold">Loading...</CardTitle>
+              <div className="h-5 w-5 bg-gray-300 rounded-full animate-pulse" />
             </CardHeader>
             <CardContent>
-              <div className="h-8 bg-gray-200 rounded animate-pulse mb-2" />
-              <div className="h-4 bg-gray-200 rounded animate-pulse" />
+              <div className="h-8 bg-gray-300 rounded animate-pulse mb-3" />
+              <div className="h-4 bg-gray-300 rounded animate-pulse" />
             </CardContent>
           </Card>
         ))}
@@ -103,7 +103,7 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => {
         const { percentage, isPositive } = calculateChange(card.current, card.previous)
         const Icon = card.icon
@@ -111,20 +111,46 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
         
         return (
           <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle 
+                className="text-sm font-semibold"
+                style={{ color: '#374151' }}
+              >
+                {card.title}
+              </CardTitle>
+              <Icon 
+                className="h-5 w-5" 
+                style={{ color: '#6b7280' }}
+              />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{card.amount}</div>
+              <div 
+                className="text-3xl font-bold mb-3"
+                style={{ 
+                  color: '#111827',
+                  letterSpacing: '-0.025em',
+                  lineHeight: '1.1'
+                }}
+              >
+                {card.amount}
+              </div>
               {percentage > 0 && (
-                <p className={`text-xs ${isPositive ? "text-green-600" : "text-red-600"} flex items-center gap-1`}>
-                  <TrendIcon className="h-3 w-3" />
-                  {percentage.toFixed(1)}% {comparisonLabel}
+                <p 
+                  className={`text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"} flex items-center gap-2`}
+                  style={{ marginTop: '8px' }}
+                >
+                  <TrendIcon className="h-4 w-4" />
+                  <span>{percentage.toFixed(1)}% {comparisonLabel}</span>
                 </p>
               )}
               {percentage === 0 && (
-                <p className="text-xs text-muted-foreground">
+                <p 
+                  className="text-sm font-medium"
+                  style={{ 
+                    color: '#6b7280',
+                    marginTop: '8px'
+                  }}
+                >
                   No data for comparison
                 </p>
               )}
