@@ -464,41 +464,9 @@ export const AnimatedHeroSection: React.FC<{ onWatchDemo: () => void }> = ({ onW
 
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Header */}
-        <motion.header 
-          className="p-6 md:p-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 gradient-blue rounded-2xl flex items-center justify-center shadow-lg">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">TriFi</h1>
-                <p className="text-blue-600 dark:text-blue-400 text-sm">Advanced Financial Platform</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="text-gray-600 dark:text-gray-400 text-sm">
-                {currentTime.toLocaleTimeString()}
-              </div>
-              <SignInButton mode="modal">
-                <Button variant="ghost" className="apple-button hover:bg-gray-100 dark:hover:bg-gray-800">Sign In</Button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <Button className="apple-button gradient-blue text-white border-0 shadow-lg hover:shadow-xl transition-all">Get Started</Button>
-              </SignUpButton>
-              <ModeToggle />
-            </div>
-          </div>
-        </motion.header>
 
-        {/* Hero Content */}
-        <div className="flex-1 flex items-center justify-center px-6 md:px-8">
+        {/* Hero Content - Adjusted spacing for navigation */}
+        <div className="flex-1 flex items-center justify-center px-6 md:px-8 pt-8 lg:pt-12">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             
             {/* Left Column - Text Content */}

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { OverviewTab } from "@/components/analytics/overview-tab"
+import { EnhancedOverviewTab } from "@/components/analytics/enhanced-overview-tab"
 import { AnalyticsTab } from "@/components/analytics/analytics-tab"
 import { ReportsTab } from "@/components/analytics/reports-tab"
 import { NotificationsTab } from "@/components/analytics/notifications-tab"
@@ -15,6 +16,7 @@ import { DateRange } from "react-day-picker"
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
   const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+  const [useEnhancedView, setUseEnhancedView] = useState(true)
 
   // Mock accounts data for export functionality
   const mockAccounts = [
@@ -28,18 +30,31 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
-        <div className="flex items-center space-x-2">
+    <div className="flex-1 space-y-6 p-8 pt-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-financial-heading">Financial Analytics</h2>
+          <p className="text-financial-body">
+            Comprehensive insights powered by AI and machine learning
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            variant={useEnhancedView ? "default" : "outline"}
+            size="sm"
+            onClick={() => setUseEnhancedView(!useEnhancedView)}
+            className="text-xs"
+          >
+            {useEnhancedView ? "Enhanced" : "Standard"} View
+          </Button>
           <DateRangePicker 
             dateRange={dateRange}
             onDateRangeChange={setDateRange}
             className="w-[280px]"
           />
-          <Button onClick={handleExportData} className="flex items-center gap-2">
+          <Button onClick={handleExportData} variant="outline" size="sm" className="flex items-center gap-2">
             <Download className="h-4 w-4" />
-            Export Data
+            Export
           </Button>
         </div>
       </div>
@@ -51,7 +66,11 @@ export default function AnalyticsPage() {
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4">
-          <OverviewTab dateRange={dateRange} />
+          {useEnhancedView ? (
+            <EnhancedOverviewTab dateRange={dateRange} />
+          ) : (
+            <OverviewTab dateRange={dateRange} />
+          )}
         </TabsContent>
         <TabsContent value="analytics" className="space-y-4">
           <AnalyticsTab dateRange={dateRange} />

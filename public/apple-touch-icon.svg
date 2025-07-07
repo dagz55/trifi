@@ -1,0 +1,60 @@
+<svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="apple-gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#EC4899" />
+    </linearGradient>
+    <linearGradient id="apple-gradient2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="50%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="apple-gradient3" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with rounded corners for Apple style -->
+  <rect x="0" y="0" width="180" height="180" rx="40" fill="#FFFFFF"/>
+  
+  <!-- Outer triangle - represents stability and growth -->
+  <path
+    d="M90 30 L140 130 L40 130 Z"
+    fill="url(#apple-gradient1)"
+    opacity="0.9"
+  />
+  
+  <!-- Middle triangle - represents innovation -->
+  <path
+    d="M90 45 L125 115 L55 115 Z"
+    fill="url(#apple-gradient2)"
+    opacity="0.8"
+  />
+  
+  <!-- Inner triangle - represents precision -->
+  <path
+    d="M90 60 L110 105 L70 105 Z"
+    fill="url(#apple-gradient3)"
+    opacity="0.75"
+  />
+  
+  <!-- Center circle - represents focus and clarity -->
+  <circle
+    cx="90"
+    cy="85"
+    r="12"
+    fill="white"
+    opacity="0.95"
+  />
+  
+  <!-- Inner focus point -->
+  <circle
+    cx="90"
+    cy="85"
+    r="5"
+    fill="#3B82F6"
+    opacity="0.9"
+  />
+</svg>

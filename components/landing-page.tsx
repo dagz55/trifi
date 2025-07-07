@@ -28,6 +28,7 @@ import {
 import { SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useState } from "react"
 import FeatureShowcase from "@/components/ui/feature-showcase"
+import { LandingNav } from "@/components/landing-nav"
 
 export function LandingPage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
@@ -187,7 +188,10 @@ export function LandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950" id="top">
+      {/* Modern Top Navigation */}
+      <LandingNav onWatchDemo={handleWatchDemo} />
+      
       {/* Animated Hero Section */}
       <AnimatedHeroSection onWatchDemo={handleWatchDemo} />
 

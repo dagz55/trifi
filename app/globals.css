@@ -7,86 +7,116 @@
 
 @layer base {
   :root {
-    /* TriFi Apple-like Clean Light Theme */
-    --background: 255 255 255;            /* White */
-    --foreground: 0 0 0;                  /* Black */
-    --card: 255 255 255;                  /* White */
-    --card-foreground: 0 0 0;             /* Black */
-    --popover: 255 255 255;               /* White */
-    --popover-foreground: 0 0 0;          /* Black */
-    --primary: 0 0 0;                     /* Black */
+    /* TriFi Modern Financial Platform - Light Theme */
+    --background: 248 250 252;            /* Subtle blue-gray */
+    --foreground: 15 23 42;               /* Deep slate */
+    --card: 255 255 255;                  /* Pure white */
+    --card-foreground: 15 23 42;          /* Deep slate */
+    --popover: 255 255 255;               /* Pure white */
+    --popover-foreground: 15 23 42;       /* Deep slate */
+    --primary: 59 130 246;                /* Modern blue */
     --primary-foreground: 255 255 255;    /* White */
-    --secondary: 245 245 247;             /* Light Gray */
-    --secondary-foreground: 0 0 0;        /* Black */
-    --muted: 242 242 247;                 /* Very Light Gray */
-    --muted-foreground: 107 114 128;      /* Darker Gray */
-    --accent: 0 0 0;                      /* Black */
+    --secondary: 100 116 139;             /* Slate gray */
+    --secondary-foreground: 255 255 255;  /* White */
+    --muted: 241 245 249;                 /* Light blue-gray */
+    --muted-foreground: 100 116 139;      /* Slate gray */
+    --accent: 139 92 246;                 /* Purple accent */
     --accent-foreground: 255 255 255;     /* White */
-    --destructive: 255 59 48;             /* Apple Red */
+    --destructive: 239 68 68;             /* Modern red */
     --destructive-foreground: 255 255 255;/* White */
-    --border: 229 229 234;                /* Light Gray */
+    --border: 226 232 240;                /* Light border */
     --input: 255 255 255;                 /* White */
-    --ring: 0 0 0;                        /* Black */
+    --ring: 59 130 246;                   /* Modern blue */
     --radius: 12px;
     
-    /* Apple-specific variables */
+    /* Financial semantic colors */
+    --success: 34 197 94;                 /* Green */
+    --warning: 245 158 11;                /* Amber */
+    --info: 59 130 246;                   /* Blue */
+    --neutral: 100 116 139;               /* Slate */
+    
+    /* Modern fintech brand colors */
+    --fintech-primary: 59 130 246;        /* Modern blue */
+    --fintech-primary-hover: 37 99 235;   /* Darker blue */
+    --fintech-secondary: 34 197 94;       /* Success green */
+    --fintech-secondary-hover: 22 163 74; /* Darker green */
+    --fintech-accent: 139 92 246;         /* Purple accent */
+    --fintech-accent-hover: 124 58 237;   /* Darker purple */
+    --fintech-warning: 245 158 11;        /* Amber */
+    --fintech-danger: 239 68 68;          /* Red */
+    
+    /* Apple compatibility (kept for existing components) */
     --apple-blue: 0 122 255;
-    --apple-green: 52 199 89;
-    --apple-green-hover: 48 179 80;       /* Darker green for hover */
-    --apple-orange: 255 149 0;
-    --apple-red: 255 59 48;
-    --apple-purple: 88 86 214;
+    --apple-green: 34 197 94;             /* Updated to modern green */
+    --apple-green-hover: 22 163 74;       /* Updated hover */
+    --apple-orange: 245 158 11;           /* Updated to amber */
+    --apple-red: 239 68 68;               /* Updated to modern red */
+    --apple-purple: 139 92 246;           /* Updated to modern purple */
     --apple-pink: 255 45 85;
-    --apple-gray: 72 72 74;
-    --apple-gray-2: 99 99 102;
-    --apple-gray-3: 142 142 147;
-    --apple-gray-4: 174 174 178;
-    --apple-gray-5: 199 199 204;
-    --apple-gray-6: 229 229 234;
+    --apple-gray: 71 85 105;
+    --apple-gray-2: 100 116 139;
+    --apple-gray-3: 148 163 184;
+    --apple-gray-4: 203 213 225;
+    --apple-gray-5: 226 232 240;
+    --apple-gray-6: 241 245 249;
     
-    /* Clean card colors - ensuring proper contrast */
+    /* Enhanced card system */
     --card-clean: 255 255 255;            /* Pure white for cards */
-    --card-clean-foreground: 0 0 0;       /* Pure black text */
-    --card-clean-hover: 248 250 252;      /* Light gray hover */
-    --card-clean-green-hover: 240 253 244; /* Light green hover */
+    --card-clean-foreground: 15 23 42;    /* Deep slate text */
+    --card-clean-hover: 248 250 252;      /* Subtle blue-gray hover */
+    --card-success-hover: 240 253 244;    /* Light green hover */
+    --card-primary-hover: 239 246 255;    /* Light blue hover */
+    --card-accent-hover: 250 245 255;     /* Light purple hover */
     
-    /* Glassmorphism variables */
-    --glass-bg: rgba(255, 255, 255, 0.95); /* More opaque for better contrast */
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --glass-backdrop: blur(20px);
+    /* Modern glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.8); 
+    --glass-bg-strong: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(100, 116, 139, 0.2);
+    --glass-backdrop: blur(24px);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
 
   .dark {
-    /* TriFi Apple-like Clean Dark Theme */
-    --background: 0 0 0;                  /* Black */
-    --foreground: 255 255 255;            /* White */
-    --card: 28 28 30;                     /* Dark Gray */
-    --card-foreground: 255 255 255;       /* White */
-    --popover: 28 28 30;                  /* Dark Gray */
-    --popover-foreground: 255 255 255;    /* White */
-    --primary: 255 255 255;               /* White */
-    --primary-foreground: 0 0 0;          /* Black */
-    --secondary: 44 44 46;                /* Dark Gray */
-    --secondary-foreground: 255 255 255;  /* White */
-    --muted: 44 44 46;                    /* Dark Gray */
-    --muted-foreground: 156 163 175;      /* Lighter Gray */
-    --accent: 255 255 255;                /* White */
-    --accent-foreground: 0 0 0;           /* Black */
-    --destructive: 255 69 58;             /* Apple Red (Dark) */
-    --destructive-foreground: 255 255 255;/* White */
-    --border: 44 44 46;                   /* Dark Gray */
-    --input: 28 28 30;                    /* Very Dark Gray */
-    --ring: 255 255 255;                  /* White */
+    /* TriFi Modern Financial Platform - Dark Theme */
+    --background: 2 6 23;                 /* Deep navy */
+    --foreground: 248 250 252;            /* Light gray */
+    --card: 15 23 42;                     /* Dark slate */
+    --card-foreground: 248 250 252;       /* Light gray */
+    --popover: 15 23 42;                  /* Dark slate */
+    --popover-foreground: 248 250 252;    /* Light gray */
+    --primary: 96 165 250;                /* Lighter blue for dark mode */
+    --primary-foreground: 15 23 42;       /* Dark slate */
+    --secondary: 71 85 105;               /* Dark slate gray */
+    --secondary-foreground: 248 250 252;  /* Light gray */
+    --muted: 30 41 59;                    /* Medium slate */
+    --muted-foreground: 148 163 184;      /* Medium gray */
+    --accent: 167 139 250;                /* Lighter purple for dark mode */
+    --accent-foreground: 15 23 42;        /* Dark slate */
+    --destructive: 248 113 113;           /* Lighter red for dark mode */
+    --destructive-foreground: 15 23 42;   /* Dark slate */
+    --border: 51 65 85;                   /* Dark border */
+    --input: 30 41 59;                    /* Medium slate */
+    --ring: 96 165 250;                   /* Lighter blue */
     
-    /* Dark card colors */
-    --card-clean: 28 28 30;               /* Dark gray for cards */
-    --card-clean-foreground: 255 255 255; /* White text */
-    --card-clean-hover: 44 44 46;         /* Darker gray hover */
-    --card-clean-green-hover: 20 83 45;   /* Dark green hover */
+    /* Dark theme financial colors */
+    --success: 74 222 128;                /* Lighter green */
+    --warning: 251 191 36;                /* Lighter amber */
+    --info: 96 165 250;                   /* Lighter blue */
+    --neutral: 148 163 184;               /* Medium gray */
     
-    /* Dark glassmorphism */
-    --glass-bg: rgba(28, 28, 30, 0.95);  /* More opaque for better contrast */
-    --glass-border: rgba(255, 255, 255, 0.1);
+    /* Enhanced dark card system */
+    --card-clean: 15 23 42;               /* Dark slate for cards */
+    --card-clean-foreground: 248 250 252; /* Light gray text */
+    --card-clean-hover: 30 41 59;         /* Medium slate hover */
+    --card-success-hover: 20 83 45;       /* Dark green hover */
+    --card-primary-hover: 30 58 138;      /* Dark blue hover */
+    --card-accent-hover: 76 29 149;       /* Dark purple hover */
+    
+    /* Enhanced dark glassmorphism */
+    --glass-bg: rgba(15, 23, 42, 0.8);
+    --glass-bg-strong: rgba(15, 23, 42, 0.95);
+    --glass-border: rgba(148, 163, 184, 0.2);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -101,21 +131,21 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Force monochrome display across the entire application */
-    filter: grayscale(100%);
-    background-color: #ffffff !important;
+    /* Modern financial platform styling */
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(59, 130, 246, 0.05) 100%);
+    min-height: 100vh;
   }
 
   .dark body {
-    background-color: #000000 !important;
+    background: linear-gradient(135deg, rgb(var(--background)) 0%, rgba(139, 92, 246, 0.1) 100%);
   }
 
   html {
-    background-color: #ffffff !important;
+    background: rgb(var(--background));
   }
 
   .dark html {
-    background-color: #000000 !important;
+    background: rgb(var(--background));
   }
   
   /* Force high contrast for cards */
@@ -150,32 +180,108 @@
     color: #f9fafb !important;
   }
   
-  /* Apple-style typography hierarchy */
+  /* Modern Fintech Typography Hierarchy */
   h1 {
-    @apply text-4xl font-bold tracking-tight text-foreground;
+    @apply text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-fintech-neutral-900 dark:text-fintech-neutral-100;
     font-weight: 700;
     letter-spacing: -0.025em;
+    line-height: 1.1;
   }
   
   h2 {
-    @apply text-3xl font-semibold tracking-tight text-foreground;
+    @apply text-3xl lg:text-4xl font-semibold tracking-tight text-fintech-neutral-800 dark:text-fintech-neutral-200;
     font-weight: 600;
     letter-spacing: -0.02em;
+    line-height: 1.2;
   }
   
   h3 {
-    @apply text-2xl font-semibold tracking-tight text-foreground;
+    @apply text-2xl lg:text-3xl font-semibold tracking-tight text-fintech-neutral-800 dark:text-fintech-neutral-200;
     font-weight: 600;
     letter-spacing: -0.015em;
+    line-height: 1.25;
   }
   
   h4 {
-    @apply text-xl font-medium tracking-tight text-foreground;
+    @apply text-xl lg:text-2xl font-medium tracking-tight text-fintech-neutral-700 dark:text-fintech-neutral-300;
     font-weight: 500;
     letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  
+  h5 {
+    @apply text-lg lg:text-xl font-medium tracking-tight text-fintech-neutral-700 dark:text-fintech-neutral-300;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.35;
+  }
+  
+  h6 {
+    @apply text-base lg:text-lg font-medium text-fintech-neutral-600 dark:text-fintech-neutral-400;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  
+  /* Financial Typography Variants */
+  .text-financial-heading {
+    @apply text-3xl lg:text-4xl font-bold tracking-tight;
+    background: linear-gradient(135deg, rgb(var(--fintech-primary)) 0%, rgb(var(--fintech-accent)) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-financial-subheading {
+    @apply text-xl lg:text-2xl font-semibold text-fintech-neutral-700 dark:text-fintech-neutral-300;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-financial-body {
+    @apply text-base leading-relaxed text-fintech-neutral-600 dark:text-fintech-neutral-400;
+    line-height: 1.6;
+  }
+  
+  .text-financial-caption {
+    @apply text-sm font-medium text-fintech-neutral-500 dark:text-fintech-neutral-500;
+    letter-spacing: 0.025em;
+  }
+  
+  /* Monetary Value Typography */
+  .text-money {
+    @apply font-mono font-bold tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-money-large {
+    @apply text-3xl lg:text-4xl font-mono font-bold tabular-nums text-fintech-neutral-900 dark:text-fintech-neutral-100;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-money-medium {
+    @apply text-xl lg:text-2xl font-mono font-bold tabular-nums text-fintech-neutral-800 dark:text-fintech-neutral-200;
+    letter-spacing: -0.015em;
+  }
+  
+  .text-money-small {
+    @apply text-lg font-mono font-semibold tabular-nums text-fintech-neutral-700 dark:text-fintech-neutral-300;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Percentage/Change Typography */
+  .text-change-positive {
+    @apply font-semibold text-fintech-secondary;
+  }
+  
+  .text-change-negative {
+    @apply font-semibold text-fintech-danger;
+  }
+  
+  .text-change-neutral {
+    @apply font-semibold text-fintech-neutral-500;
   }
 
-  /* Apple-style glass components */
+  /* Enhanced Glass Morphism Components */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-backdrop);
@@ -183,12 +289,19 @@
     border: 1px solid var(--glass-border);
   }
   
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
   .glass-card {
-    @apply glass rounded-2xl p-6 shadow-lg;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    @apply glass-strong rounded-2xl p-6;
     background: rgb(var(--card-clean));
     color: rgb(var(--card-clean-foreground));
-    transition: all 0.2s ease-out;
+    transition: all 0.3s ease-apple;
   }
   
   .glass-card:hover {
@@ -231,17 +344,33 @@
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   }
   
-  /* Enhanced green hover effect */
-  .apple-hover-green {
-    @apply transition-all duration-200 ease-out;
-    transform: translateY(0);
+  /* Enhanced Financial Hover Effects */
+  .fintech-hover {
+    @apply transition-all duration-300 ease-apple;
+    transform: translateY(0) scale(1);
   }
   
-  .apple-hover-green:hover {
-    transform: translateY(-2px);
-    background: rgb(var(--card-clean-green-hover));
-    border-color: rgb(var(--apple-green));
-    box-shadow: 0 8px 24px rgba(52, 199, 89, 0.15);
+  .fintech-hover:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .fintech-hover-primary:hover {
+    background: rgb(var(--card-primary-hover));
+    border-color: rgb(var(--fintech-primary));
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+  }
+  
+  .fintech-hover-success:hover {
+    background: rgb(var(--card-success-hover));
+    border-color: rgb(var(--fintech-secondary));
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.15);
+  }
+  
+  .fintech-hover-accent:hover {
+    background: rgb(var(--card-accent-hover));
+    border-color: rgb(var(--fintech-accent));
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
   }
 
   /* Apple-style buttons */
@@ -304,9 +433,69 @@
     background: rgba(28, 28, 30, 0.8);
   }
   
-  /* Loading states */
+  /* Enhanced Loading States */
   .skeleton {
-    @apply animate-pulse bg-muted rounded-lg;
+    @apply animate-pulse bg-fintech-neutral-200 dark:bg-fintech-neutral-700 rounded-lg;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .skeleton::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.6),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+  
+  .dark .skeleton::before {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+  }
+  
+  /* Loading Spinner */
+  .loading-spinner {
+    @apply animate-spin w-6 h-6 border-2 border-fintech-primary border-t-transparent rounded-full;
+  }
+  
+  /* Progress Indicators */
+  .progress-bar {
+    @apply bg-fintech-neutral-200 dark:bg-fintech-neutral-700 rounded-full overflow-hidden;
+    position: relative;
+  }
+  
+  .progress-fill {
+    @apply bg-gradient-to-r from-fintech-primary to-fintech-secondary h-full;
+    transition: width 0.5s ease-apple;
+  }
+  
+  /* Micro-interactions */
+  .micro-bounce {
+    transition: transform 0.1s ease-apple;
+  }
+  
+  .micro-bounce:active {
+    transform: scale(0.95);
+  }
+  
+  .micro-glow {
+    transition: box-shadow 0.2s ease-apple;
+  }
+  
+  .micro-glow:hover {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
   }
   
   /* Apple-style scrollbars */
@@ -328,15 +517,30 @@
     background: rgba(142, 142, 147, 0.5);
   }
   
-  /* Refined animations */
+  /* Advanced Financial Platform Animations */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
   
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
   @keyframes slideInFromRight {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes slideInFromLeft {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
   }
   
   @keyframes pulse {
@@ -344,18 +548,165 @@
     50% { opacity: 0.5; }
   }
   
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  @keyframes countUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes moneyFlow {
+    0% { transform: translateX(-10px); opacity: 0.5; }
+    50% { transform: translateX(5px); opacity: 1; }
+    100% { transform: translateX(0); opacity: 0.8; }
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 30px rgba(59, 130, 246, 0.6); }
+  }
+  
+  @keyframes cardHover {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-4px) scale(1.02); }
+  }
+  
+  @keyframes statusPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+  }
+  
+  /* Animation Classes */
   .animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 0.6s ease-apple;
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-apple;
   }
   
   .animate-slide-in {
-    animation: slideInFromRight 0.3s ease-out;
+    animation: slideInFromRight 0.4s ease-apple;
   }
   
-  /* Apple-style focus states */
-  .apple-focus:focus {
+  .animate-slide-in-left {
+    animation: slideInFromLeft 0.4s ease-apple;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-apple;
+  }
+  
+  .animate-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .animate-shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+  
+  .animate-count-up {
+    animation: countUp 0.8s ease-apple;
+  }
+  
+  .animate-money-flow {
+    animation: moneyFlow 2s ease-in-out infinite;
+  }
+  
+  .animate-glow-pulse {
+    animation: glowPulse 2s infinite;
+  }
+  
+  .animate-card-hover {
+    transition: all 0.3s ease-apple;
+  }
+  
+  .animate-card-hover:hover {
+    animation: cardHover 0.3s ease-apple forwards;
+  }
+  
+  .animate-status-pulse {
+    animation: statusPulse 2s infinite;
+  }
+  
+  /* Staggered Animation Delays */
+  .animate-stagger-1 { animation-delay: 0.1s; }
+  .animate-stagger-2 { animation-delay: 0.2s; }
+  .animate-stagger-3 { animation-delay: 0.3s; }
+  .animate-stagger-4 { animation-delay: 0.4s; }
+  .animate-stagger-5 { animation-delay: 0.5s; }
+  
+  /* Interactive States */
+  .interactive-element {
+    transition: all 0.2s ease-apple;
+    cursor: pointer;
+  }
+  
+  .interactive-element:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .interactive-element:active {
+    transform: translateY(0);
+    transition: all 0.1s ease-apple;
+  }
+  
+  /* Financial Data Animations */
+  .financial-metric {
+    transition: all 0.3s ease-apple;
+  }
+  
+  .financial-metric:hover {
+    transform: scale(1.05);
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+  }
+  
+  .financial-positive {
+    animation: countUp 0.6s ease-apple;
+    color: rgb(var(--fintech-secondary));
+  }
+  
+  .financial-negative {
+    animation: countUp 0.6s ease-apple;
+    color: rgb(var(--fintech-danger));
+  }
+  
+  /* Enhanced Focus States */
+  .fintech-focus:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.25);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    border-color: rgb(var(--fintech-primary));
+  }
+  
+  .fintech-focus-success:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+    border-color: rgb(var(--fintech-secondary));
+  }
+  
+  .fintech-focus-warning:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+    border-color: rgb(var(--fintech-warning));
+  }
+  
+  .fintech-focus-danger:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    border-color: rgb(var(--fintech-danger));
   }
   
   /* Status colors (limited palette) */
@@ -432,9 +783,73 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   }
   
-  /* Responsive breakpoints following Apple's guidelines */
+  /* Enhanced Spacing System */
+  .spacing-section {
+    @apply py-12 lg:py-16 xl:py-20;
+  }
+  
+  .spacing-component {
+    @apply py-6 lg:py-8;
+  }
+  
+  .spacing-element {
+    @apply py-3 lg:py-4;
+  }
+  
+  /* Responsive Container System */
   .container {
     @apply mx-auto px-4 sm:px-6 lg:px-8;
     max-width: 1200px;
+  }
+  
+  .container-wide {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1400px;
+  }
+  
+  .container-narrow {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 800px;
+  }
+  
+  /* Financial Grid System */
+  .grid-financial {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+  
+  @media (min-width: 768px) {
+    .grid-financial {
+      gap: 2rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .grid-financial {
+      gap: 2.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    }
+  }
+  
+  /* Financial Dashboard Layout */
+  .dashboard-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: repeat(12, 1fr);
+      gap: 2.5rem;
+    }
   }
 }

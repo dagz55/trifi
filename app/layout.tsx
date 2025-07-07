@@ -21,12 +21,86 @@ import { AuthProvider } from "@/contexts/auth-context"
 
 export const metadata = {
   title: "TriFi - Advanced Financial Management Platform",
-  description: "Professional financial management with Apple-style design and enterprise features",
+  description: "Modern financial management platform with advanced analytics, investment tracking, and comprehensive business management tools. Built with cutting-edge technology for financial institutions.",
   generator: 'TriFi Platform',
+  applicationName: 'TriFi',
+  referrer: 'origin-when-cross-origin',
+  keywords: ['financial management', 'fintech', 'investment tracking', 'business analytics', 'financial platform', 'accounting software'],
+  authors: [{ name: 'TriFi Team' }],
+  creator: 'TriFi',
+  publisher: 'TriFi',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://trifi.com'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://trifi.com',
+    title: 'TriFi - Advanced Financial Management Platform',
+    description: 'Modern financial management platform with advanced analytics, investment tracking, and comprehensive business management tools.',
+    siteName: 'TriFi',
+    images: [
+      {
+        url: '/trifi_logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'TriFi - Advanced Financial Management Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TriFi - Advanced Financial Management Platform',
+    description: 'Modern financial management platform with advanced analytics and investment tracking.',
+    images: ['/trifi_logo.png'],
+    creator: '@trifi',
+  },
   icons: {
-    icon: '/placeholder-logo.svg', // Fallback icon (black & white)
-    shortcut: '/placeholder-logo.svg',
-    apple: '/placeholder-logo.png',
+    icon: [
+      {
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+      },
+      {
+        url: '/placeholder-logo.svg',
+        type: 'image/svg+xml',
+      },
+    ],
+    shortcut: '/favicon.svg',
+    apple: [
+      {
+        url: '/apple-touch-icon.svg',
+        sizes: '180x180',
+        type: 'image/svg+xml',
+      },
+    ],
+  },
+  manifest: '/manifest.json',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#3B82F6' },
+    { media: '(prefers-color-scheme: dark)', color: '#1E293B' },
+  ],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 }
 

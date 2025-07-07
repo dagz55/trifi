@@ -1,0 +1,60 @@
+<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="favicon-gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#EC4899" />
+    </linearGradient>
+    <linearGradient id="favicon-gradient2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="50%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="favicon-gradient3" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle for better visibility -->
+  <circle cx="60" cy="60" r="58" fill="white" stroke="#E5E7EB" stroke-width="2"/>
+  
+  <!-- Outer triangle - represents stability and growth -->
+  <path
+    d="M60 18 L95 85 L25 85 Z"
+    fill="url(#favicon-gradient1)"
+    opacity="0.9"
+  />
+  
+  <!-- Middle triangle - represents innovation -->
+  <path
+    d="M60 28 L85 75 L35 75 Z"
+    fill="url(#favicon-gradient2)"
+    opacity="0.8"
+  />
+  
+  <!-- Inner triangle - represents precision -->
+  <path
+    d="M60 38 L75 68 L45 68 Z"
+    fill="url(#favicon-gradient3)"
+    opacity="0.75"
+  />
+  
+  <!-- Center circle - represents focus and clarity -->
+  <circle
+    cx="60"
+    cy="58"
+    r="8"
+    fill="white"
+    opacity="0.95"
+  />
+  
+  <!-- Inner focus point -->
+  <circle
+    cx="60"
+    cy="58"
+    r="3"
+    fill="#3B82F6"
+    opacity="0.9"
+  />
+</svg>
