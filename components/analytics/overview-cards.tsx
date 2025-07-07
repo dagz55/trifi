@@ -87,7 +87,7 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i}>
+          <Card key={i} className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold">Loading...</CardTitle>
               <div className="h-5 w-5 bg-gray-300 rounded-full animate-pulse" />
@@ -110,7 +110,7 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
         const TrendIcon = isPositive ? TrendingUp : TrendingDown
         
         return (
-          <Card key={card.title}>
+          <Card key={card.title} className="overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle 
                 className="text-sm font-semibold"

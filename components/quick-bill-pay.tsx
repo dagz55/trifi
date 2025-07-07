@@ -176,11 +176,11 @@ export function QuickBillPay() {
                     key={provider.name}
                     variant="outline"
                     size="sm"
-                    className="flex items-center space-x-2 apple-button"
+                    className="flex items-center space-x-2 apple-button overflow-hidden"
                     onClick={() => setSelectedProvider(provider.name)}
                   >
-                    <provider.icon className="h-4 w-4" />
-                    <span className="text-xs">{provider.name}</span>
+                    <provider.icon className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-xs truncate">{provider.name}</span>
                   </Button>
                 ))}
               </div>
