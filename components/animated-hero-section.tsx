@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/mode-toggle";
+import { ClerkWrapper } from "@/components/ui/clerk-wrapper";
 
 interface ParticlesProps {
   className?: string;
@@ -545,16 +546,28 @@ export const AnimatedHeroSection: React.FC<{ onWatchDemo: () => void }> = ({ onW
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.0 }}
               >
-                <SignUpButton mode="modal">
-                  <motion.button
-                    className="gradient-blue text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Zap className="h-5 w-5" />
-                    <span>Start Free Trial</span>
-                  </motion.button>
-                </SignUpButton>
+                <ClerkWrapper
+                  fallback={
+                    <motion.button
+                      className="gradient-blue text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl opacity-75 cursor-not-allowed flex items-center justify-center space-x-2"
+                      disabled
+                    >
+                      <Zap className="h-5 w-5" />
+                      <span>Start Free Trial</span>
+                    </motion.button>
+                  }
+                >
+                  <SignUpButton mode="modal">
+                    <motion.button
+                      className="gradient-blue text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center space-x-2"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Zap className="h-5 w-5" />
+                      <span>Start Free Trial</span>
+                    </motion.button>
+                  </SignUpButton>
+                </ClerkWrapper>
                 
                 <motion.button
                   className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white px-8 py-4 rounded-xl font-semibold text-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/80 transition-all duration-300 flex items-center justify-center space-x-2"

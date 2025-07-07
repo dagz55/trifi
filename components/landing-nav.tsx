@@ -7,6 +7,7 @@ import { SignInButton, SignUpButton } from "@clerk/nextjs"
 import { Menu, X, ChevronDown, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PremiumThemeToggle } from "@/components/ui/premium-theme-toggle"
+import { useTheme } from "next-themes"
 
 interface LandingNavProps {
   onWatchDemo?: () => void
@@ -16,6 +17,8 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const { resolvedTheme } = useTheme()
+  const isDarkTheme = resolvedTheme === "dark"
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,13 +77,27 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
     setActiveDropdown(null)
   }
 
+  // Determine text color based on scroll state and theme
+  const getNavTextColor = () => {
+    if (isScrolled) {
+      return "text-fintech-neutral-700 hover:text-fintech-primary dark:text-fintech-neutral-300 dark:hover:text-fintech-primary"
+    } else {
+      // When not scrolled, use different colors based on theme
+      return isDarkTheme 
+        ? "text-white hover:text-fintech-neutral-200" 
+        : "text-fintech-neutral-800 hover:text-fintech-primary"
+    }
+  }
+
   return (
     <>
       <nav className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-apple",
         isScrolled 
           ? "bg-white/80 dark:bg-fintech-neutral-900/80 backdrop-blur-xl border-b border-fintech-neutral-200/50 dark:border-fintech-neutral-700/50 shadow-fintech-lg" 
-          : "bg-transparent"
+          : isDarkTheme 
+            ? "bg-transparent" 
+            : "bg-white/95 backdrop-blur-sm"
       )}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -109,9 +126,7 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                       <button
                         className={cn(
                           "flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors rounded-lg",
-                          isScrolled 
-                            ? "text-fintech-neutral-700 hover:text-fintech-primary dark:text-fintech-neutral-300 dark:hover:text-fintech-primary" 
-                            : "text-white hover:text-fintech-neutral-200"
+                          getNavTextColor()
                         )}
                         onMouseEnter={() => setActiveDropdown(item.label)}
                         onMouseLeave={() => setActiveDropdown(null)}
@@ -152,9 +167,7 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                       onClick={() => scrollToSection(item.href)}
                       className={cn(
                         "px-3 py-2 text-sm font-medium transition-colors rounded-lg",
-                        isScrolled 
-                          ? "text-fintech-neutral-700 hover:text-fintech-primary dark:text-fintech-neutral-300 dark:hover:text-fintech-primary" 
-                          : "text-white hover:text-fintech-neutral-200"
+                        getNavTextColor()
                       )}
                     >
                       {item.label}
@@ -174,7 +187,9 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                     "font-medium",
                     isScrolled 
                       ? "text-fintech-neutral-700 hover:text-fintech-primary hover:bg-fintech-neutral-100 dark:text-fintech-neutral-300 dark:hover:text-fintech-primary dark:hover:bg-fintech-neutral-800" 
-                      : "text-white hover:text-fintech-neutral-200 hover:bg-white/10"
+                      : isDarkTheme 
+                        ? "text-white hover:text-fintech-neutral-200 hover:bg-white/10"
+                        : "text-fintech-neutral-700 hover:text-fintech-primary hover:bg-fintech-neutral-100"
                   )}
                 >
                   Watch Demo
@@ -186,10 +201,11 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
               
               <SignInButton mode="modal">
                 <Button
-                  variant={isScrolled ? "outline" : "secondary"}
+                  variant={isScrolled ? "outline" : "outline"}
                   className={cn(
                     "font-medium",
-                    !isScrolled && "border-white/20 text-white hover:bg-white/10"
+                    !isScrolled && isDarkTheme && "border-white/20 text-white hover:bg-white/10",
+                    !isScrolled && !isDarkTheme && "border-fintech-neutral-300 text-fintech-neutral-800 hover:bg-fintech-neutral-100"
                   )}
                 >
                   Sign In
@@ -198,10 +214,11 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
               
               <SignUpButton mode="modal">
                 <Button
-                  variant={isScrolled ? "default" : "success"}
+                  variant={isScrolled ? "default" : "default"}
                   className={cn(
                     "font-medium",
-                    !isScrolled && "bg-white text-fintech-primary hover:bg-fintech-neutral-100"
+                    !isScrolled && isDarkTheme && "bg-white text-fintech-primary hover:bg-fintech-neutral-100",
+                    !isScrolled && !isDarkTheme && "bg-fintech-primary text-white hover:bg-fintech-primary/90"
                   )}
                 >
                   <span className="flex items-center gap-2">
@@ -219,9 +236,7 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                 size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className={cn(
-                  isScrolled 
-                    ? "text-fintech-neutral-700 hover:text-fintech-primary dark:text-fintech-neutral-300" 
-                    : "text-white hover:text-fintech-neutral-200"
+                  getNavTextColor()
                 )}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

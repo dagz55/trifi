@@ -29,6 +29,7 @@ import { SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useState } from "react"
 import FeatureShowcase from "@/components/ui/feature-showcase"
 import { LandingNav } from "@/components/landing-nav"
+import { ClerkWrapper } from "@/components/ui/clerk-wrapper"
 
 export function LandingPage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
@@ -301,28 +302,57 @@ export function LandingPage() {
             Join thousands of businesses that trust TriFi to manage their finances efficiently and securely.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <SignUpButton mode="modal">
-              <GradientButton
-                variant="primary"
-                size="lg"
-                className="text-lg px-8 py-4 h-auto"
-                animation="glow"
-              >
-                <span className="flex items-center space-x-2">
-                  <span>Get Started Free</span>
-                  <ArrowRight className="h-5 w-5" />
-                </span>
-              </GradientButton>
-            </SignUpButton>
-            <SignInButton mode="modal">
-              <GradientButton
-                variant="secondary"
-                size="lg"
-                className="text-lg px-8 py-4 h-auto"
-              >
-                Sign In
-              </GradientButton>
-            </SignInButton>
+            <ClerkWrapper
+              fallback={
+                <GradientButton
+                  variant="primary"
+                  size="lg"
+                  className="text-lg px-8 py-4 h-auto opacity-75"
+                  disabled
+                >
+                  <span className="flex items-center space-x-2">
+                    <span>Get Started Free</span>
+                    <ArrowRight className="h-5 w-5" />
+                  </span>
+                </GradientButton>
+              }
+            >
+              <SignUpButton mode="modal">
+                <GradientButton
+                  variant="primary"
+                  size="lg"
+                  className="text-lg px-8 py-4 h-auto"
+                  animation="glow"
+                >
+                  <span className="flex items-center space-x-2">
+                    <span>Get Started Free</span>
+                    <ArrowRight className="h-5 w-5" />
+                  </span>
+                </GradientButton>
+              </SignUpButton>
+            </ClerkWrapper>
+            <ClerkWrapper
+              fallback={
+                <GradientButton
+                  variant="secondary"
+                  size="lg"
+                  className="text-lg px-8 py-4 h-auto opacity-75"
+                  disabled
+                >
+                  Sign In
+                </GradientButton>
+              }
+            >
+              <SignInButton mode="modal">
+                <GradientButton
+                  variant="secondary"
+                  size="lg"
+                  className="text-lg px-8 py-4 h-auto"
+                >
+                  Sign In
+                </GradientButton>
+              </SignInButton>
+            </ClerkWrapper>
           </div>
         </div>
       </section>
