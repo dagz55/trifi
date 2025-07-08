@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useSettings } from "@/contexts/settings-context"
+import { useAuth } from "@/contexts/auth-context"
 import { db, Department } from "@/lib/database"
 import { 
   Building2, 
@@ -39,11 +39,11 @@ function AddDepartmentModal({ onDepartmentAdded }: { onDepartmentAdded: () => vo
     description: "",
     budget: 0
   })
-  const { organizationData } = useSettings()
+  const { currentOrganization } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!organizationData?.id) {
+    if (!currentOrganization?.id) {
       toast.error("No organization selected")
       return
     }
@@ -51,7 +51,7 @@ function AddDepartmentModal({ onDepartmentAdded }: { onDepartmentAdded: () => vo
     setIsLoading(true)
     try {
       const { data, error } = await db.createDepartment({
-        organization_id: organizationData.id,
+        organization_id: currentOrganization.id,
         name: formData.name,
         description: formData.description,
         budget: formData.budget
@@ -143,14 +143,14 @@ export default function DepartmentsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [departments, setDepartments] = useState<Department[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { organizationData } = useSettings()
+  const { currentOrganization, loading: authLoading, createOrganization } = useAuth()
 
   const loadDepartments = async () => {
-    if (!organizationData?.id) return
+    if (!currentOrganization?.id) return
 
     setIsLoading(true)
     try {
-      const { data, error } = await db.getDepartments(organizationData.id)
+      const { data, error } = await db.getDepartments(currentOrganization.id)
       if (error) {
         toast.error("Failed to load departments")
         console.error("Error loading departments:", error)
@@ -167,7 +167,7 @@ export default function DepartmentsPage() {
 
   useEffect(() => {
     loadDepartments()
-  }, [organizationData?.id])
+  }, [currentOrganization?.id])
 
   const filteredDepartments = departments.filter(department =>
     department.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -225,6 +225,53 @@ export default function DepartmentsPage() {
       toast.error("Failed to delete department")
       console.error("Error deleting department:", error)
     }
+  }
+
+  // Handle case where user needs to create an organization first
+  const handleCreateFirstOrganization = async () => {
+    const newOrg = await createOrganization({
+      name: "My Organization",
+      type: "Business",
+      phone: "",
+      email: "",
+      website: "",
+      location: ""
+    })
+    
+    if (newOrg) {
+      toast.success("Organization created! You can now add departments.")
+    }
+  }
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <div className="text-center">
+          <Building2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
+          <p className="text-xl font-medium">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!currentOrganization) {
+    return (
+      <div className="flex-1 space-y-4 p-4 pt-6">
+        <div className="flex items-center justify-center h-[400px]">
+          <div className="text-center">
+            <Building2 className="h-16 w-16 mx-auto mb-4 opacity-50" />
+            <h2 className="text-xl font-medium mb-2">No Organization Found</h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              You need to create an organization first before you can add departments.
+            </p>
+            <Button onClick={handleCreateFirstOrganization}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Organization
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

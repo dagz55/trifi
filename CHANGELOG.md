@@ -71,6 +71,17 @@ All notable changes to the TriFi project will be documented in this file.
 - Enhanced pricing section with animated cards and improved visual hierarchy
 
 ### Fixed
+- **Hydration Mismatch Errors** - Fixed SSR hydration issues with Clerk authentication components
+  - Created hydration-safe wrapper component (`ClerkWrapper`) for Clerk authentication buttons
+  - Prevents server/client rendering mismatches when wrapping custom components
+  - Added proper fallback states during initial hydration
+  - Applied to SignUpButton and SignInButton components in landing page and hero section
+- **Navigation Button Readability** - Enhanced navigation button visibility in light mode
+  - Added theme detection using next-themes hook
+  - Dynamic text colors based on scroll state and current theme
+  - Improved background transparency and contrast for light mode
+  - Added proper hover states for all theme/scroll combinations
+  - Ensures buttons are always readable against any background
 - Fixed missing theme toggle functionality on landing page
 - Improved accessibility with better color contrast in dark mode
 - Fixed modal styling for consistent dark mode appearance

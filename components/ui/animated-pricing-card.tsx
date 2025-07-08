@@ -67,7 +67,7 @@ export const AnimatedPricingCard: React.FC<PricingCardProps> = ({
       transition={{ duration: 0.5, ease: "easeOut" }}
       whileHover={{ y: -5 }}
     >
-      {/* Popular Badge */}
+      {/* Popular Badge - Always takes priority and center position */}
       {isPopular && (
         <motion.div
           className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20"
@@ -82,16 +82,31 @@ export const AnimatedPricingCard: React.FC<PricingCardProps> = ({
         </motion.div>
       )}
 
-      {/* Recommended Badge */}
-      {isRecommended && (
+      {/* Recommended Badge - Only shows if not popular, or positioned differently if both are needed */}
+      {isRecommended && !isPopular && (
         <motion.div
-          className="absolute -top-4 right-4 z-20"
+          className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20"
           initial={{ scale: 0, rotate: 10 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
         >
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center space-x-1">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg flex items-center space-x-1">
             <Zap className="h-3 w-3" />
+            <span>Recommended</span>
+          </div>
+        </motion.div>
+      )}
+      
+      {/* Secondary badge for when both popular and recommended */}
+      {isRecommended && isPopular && (
+        <motion.div
+          className="absolute -top-1 right-4 z-10"
+          initial={{ scale: 0, rotate: 10 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+        >
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-medium shadow-md flex items-center space-x-1">
+            <Zap className="h-2.5 w-2.5" />
             <span>Recommended</span>
           </div>
         </motion.div>

@@ -17,8 +17,14 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
   const { resolvedTheme } = useTheme()
-  const isDarkTheme = resolvedTheme === "dark"
+  const isDarkTheme = mounted && resolvedTheme === "dark"
+
+  // Prevent hydration mismatch by only using theme after mounting
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,7 +88,11 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
     if (isScrolled) {
       return "text-fintech-neutral-700 hover:text-fintech-primary dark:text-fintech-neutral-300 dark:hover:text-fintech-primary"
     } else {
-      // When not scrolled, use different colors based on theme
+      // When not scrolled, use different colors based on theme (only after mounting)
+      if (!mounted) {
+        // Default to light theme styles during SSR
+        return "text-fintech-neutral-800 hover:text-fintech-primary"
+      }
       return isDarkTheme 
         ? "text-white hover:text-fintech-neutral-200" 
         : "text-fintech-neutral-800 hover:text-fintech-primary"
@@ -95,9 +105,11 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-apple",
         isScrolled 
           ? "bg-white/80 dark:bg-fintech-neutral-900/80 backdrop-blur-xl border-b border-fintech-neutral-200/50 dark:border-fintech-neutral-700/50 shadow-fintech-lg" 
-          : isDarkTheme 
-            ? "bg-transparent" 
-            : "bg-white/95 backdrop-blur-sm"
+          : !mounted
+            ? "bg-white/95 backdrop-blur-sm" // Default during SSR
+            : isDarkTheme 
+              ? "bg-transparent" 
+              : "bg-white/95 backdrop-blur-sm"
       )}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -187,9 +199,11 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                     "font-medium",
                     isScrolled 
                       ? "text-fintech-neutral-700 hover:text-fintech-primary hover:bg-fintech-neutral-100 dark:text-fintech-neutral-300 dark:hover:text-fintech-primary dark:hover:bg-fintech-neutral-800" 
-                      : isDarkTheme 
-                        ? "text-white hover:text-fintech-neutral-200 hover:bg-white/10"
-                        : "text-fintech-neutral-700 hover:text-fintech-primary hover:bg-fintech-neutral-100"
+                      : !mounted
+                        ? "text-fintech-neutral-700 hover:text-fintech-primary hover:bg-fintech-neutral-100" // Default during SSR
+                        : isDarkTheme 
+                          ? "text-white hover:text-fintech-neutral-200 hover:bg-white/10"
+                          : "text-fintech-neutral-700 hover:text-fintech-primary hover:bg-fintech-neutral-100"
                   )}
                 >
                   Watch Demo
@@ -204,8 +218,9 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                   variant={isScrolled ? "outline" : "outline"}
                   className={cn(
                     "font-medium",
-                    !isScrolled && isDarkTheme && "border-white/20 text-white hover:bg-white/10",
-                    !isScrolled && !isDarkTheme && "border-fintech-neutral-300 text-fintech-neutral-800 hover:bg-fintech-neutral-100"
+                    !isScrolled && !mounted && "border-fintech-neutral-300 text-fintech-neutral-800 hover:bg-fintech-neutral-100", // Default during SSR
+                    !isScrolled && mounted && isDarkTheme && "border-white/20 text-white hover:bg-white/10",
+                    !isScrolled && mounted && !isDarkTheme && "border-fintech-neutral-300 text-fintech-neutral-800 hover:bg-fintech-neutral-100"
                   )}
                 >
                   Sign In
@@ -217,8 +232,9 @@ export function LandingNav({ onWatchDemo }: LandingNavProps) {
                   variant={isScrolled ? "default" : "default"}
                   className={cn(
                     "font-medium",
-                    !isScrolled && isDarkTheme && "bg-white text-fintech-primary hover:bg-fintech-neutral-100",
-                    !isScrolled && !isDarkTheme && "bg-fintech-primary text-white hover:bg-fintech-primary/90"
+                    !isScrolled && !mounted && "bg-fintech-primary text-white hover:bg-fintech-primary/90", // Default during SSR
+                    !isScrolled && mounted && isDarkTheme && "bg-white text-fintech-primary hover:bg-fintech-neutral-100",
+                    !isScrolled && mounted && !isDarkTheme && "bg-fintech-primary text-white hover:bg-fintech-primary/90"
                   )}
                 >
                   <span className="flex items-center gap-2">

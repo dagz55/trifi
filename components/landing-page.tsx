@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AnimatedHeroSection } from "@/components/animated-hero-section"
+import FinancialHeroSection from "@/components/ui/financial-hero-section"
 import AnimatedPricingCard from "@/components/ui/animated-pricing-card"
 import GradientButton from "@/components/ui/gradient-button"
 import { 
@@ -129,7 +129,7 @@ export function LandingPage() {
         "Export to Excel/PDF"
       ],
       isPopular: true,
-      isRecommended: true,
+      isRecommended: false,
       buttonText: "Start Premium Trial",
       variant: 'premium' as const,
       onButtonClick: () => {}
@@ -193,8 +193,8 @@ export function LandingPage() {
       {/* Modern Top Navigation */}
       <LandingNav onWatchDemo={handleWatchDemo} />
       
-      {/* Animated Hero Section */}
-      <AnimatedHeroSection onWatchDemo={handleWatchDemo} />
+      {/* Financial Hero Section */}
+      <FinancialHeroSection onWatchDemo={handleWatchDemo} />
 
       {/* Features Section */}
       <FeatureShowcase />

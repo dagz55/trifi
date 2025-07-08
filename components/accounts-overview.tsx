@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Plus, Wallet, Eye, EyeOff, AlertCircle, Database } from "lucide-react"
-import { AddMoneyModal } from "@/components/add-money-modal"
+import { AddAccountModal } from "@/components/add-account-modal"
 import { useAuth } from "@/contexts/auth-context"
 import { db, Account } from "@/lib/database"
 import { toast } from "sonner"
@@ -16,7 +16,7 @@ export function AccountsOverview() {
   const [accounts, setAccounts] = useState<Account[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showBalance, setShowBalance] = useState(true)
-  const [addMoneyModalOpen, setAddMoneyModalOpen] = useState(false)
+  const [addAccountModalOpen, setAddAccountModalOpen] = useState(false)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -78,14 +78,15 @@ export function AccountsOverview() {
     }).format(amount)
   }
 
-  const handleAddMoney = (amount: number) => {
-    // TODO: Implement actual add money functionality
-    toast.success(`₱${amount} added successfully`)
-    // Refresh accounts after adding money
+  const handleAccountAdded = async () => {
+    // Refresh accounts after adding a new account
     if (currentOrganization && !databaseError) {
-      db.getAccounts(currentOrganization.id).then(({ data }) => {
+      try {
+        const { data } = await db.getAccounts(currentOrganization.id)
         if (data) setAccounts(data)
-      })
+      } catch (error) {
+        console.error('Error refreshing accounts:', error)
+      }
     }
   }
 
@@ -187,7 +188,7 @@ export function AccountsOverview() {
             </Button>
             <Button
               size="sm"
-              onClick={() => setAddMoneyModalOpen(true)}
+              onClick={() => setAddAccountModalOpen(true)}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
               <Plus className="h-4 w-4" />
@@ -247,7 +248,7 @@ export function AccountsOverview() {
                   </p>
                   <Button
                     size="sm"
-                    onClick={() => setAddMoneyModalOpen(true)}
+                    onClick={() => setAddAccountModalOpen(true)}
                     className="bg-green-500 hover:bg-green-600 text-white"
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -260,10 +261,10 @@ export function AccountsOverview() {
         </CardContent>
       </Card>
 
-      <AddMoneyModal
-        isOpen={addMoneyModalOpen}
-        onClose={() => setAddMoneyModalOpen(false)}
-        onAddMoney={handleAddMoney}
+      <AddAccountModal
+        isOpen={addAccountModalOpen}
+        onClose={() => setAddAccountModalOpen(false)}
+        onAccountAdded={handleAccountAdded}
       />
     </>
   )

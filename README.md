@@ -17,6 +17,8 @@ TriFi is a revolutionary financial management platform that combines sophisticat
 - **Interactive Financial Charts**: Real-time animated SVG charts with gradient fills
 - **AI-Powered Analytics**: Machine learning-driven insights and predictive analytics
 - **Real-Time Data Visualization**: Live updating dashboards with smooth transitions
+- **Hydration-Safe Components**: Client-side wrappers preventing SSR mismatches
+- **Dynamic Theme Adaptation**: Navigation components that adapt to theme and scroll state
 - **Advanced Animation Framework**: 60fps performance with optimized rendering
 - **Philippine-First Design**: Built specifically for Filipino businesses with peso support
 
