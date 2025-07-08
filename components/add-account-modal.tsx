@@ -111,15 +111,10 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
   }
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    console.log(`Input change: ${field} = ${value}`)
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        [field]: value
-      }
-      console.log('New form data:', newData)
-      return newData
-    })
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
   }
 
   const validateForm = () => {
