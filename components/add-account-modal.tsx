@@ -42,16 +42,15 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingTypes, setIsLoadingTypes] = useState(true)
   
-  const [formData, setFormData] = useState({
-    name: "",
-    account_type_id: "",
-    account_number: "",
-    bank_name: "",
-    balance: "",
-    currency: "PHP",
-    is_active: true,
-    description: ""
-  })
+  // Individual state for each form field
+  const [name, setName] = useState("")
+  const [accountTypeId, setAccountTypeId] = useState("")
+  const [accountNumber, setAccountNumber] = useState("")
+  const [bankName, setBankName] = useState("")
+  const [balance, setBalance] = useState("")
+  const [currency, setCurrency] = useState("PHP")
+  const [isActive, setIsActive] = useState(true)
+  const [description, setDescription] = useState("")
 
   // Load account types when modal opens
   useEffect(() => {
@@ -62,16 +61,14 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
 
   // Reset form when modal closes
   const handleClose = () => {
-    setFormData({
-      name: "",
-      account_type_id: "",
-      account_number: "",
-      bank_name: "",
-      balance: "",
-      currency: "PHP",
-      is_active: true,
-      description: ""
-    })
+    setName("")
+    setAccountTypeId("")
+    setAccountNumber("")
+    setBankName("")
+    setBalance("")
+    setCurrency("PHP")
+    setIsActive(true)
+    setDescription("")
     onClose()
   }
 
@@ -94,20 +91,13 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
     }
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
-  }
-
   const validateForm = () => {
-    if (!formData.name.trim()) {
+    if (!name.trim()) {
       toast.error('Account name is required')
       return false
     }
     
-    if (!formData.account_type_id) {
+    if (!accountTypeId) {
       toast.error('Account type is required')
       return false
     }
@@ -128,14 +118,14 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
       
       const accountData = {
         organization_id: currentOrganization!.id,
-        account_type_id: formData.account_type_id,
-        name: formData.name.trim(),
-        account_number: formData.account_number.trim() || undefined,
-        bank_name: formData.bank_name.trim() || undefined,
-        balance: formData.balance ? parseFloat(formData.balance) : 0,
-        currency: formData.currency,
-        is_active: formData.is_active,
-        description: formData.description.trim() || undefined,
+        account_type_id: accountTypeId,
+        name: name.trim(),
+        account_number: accountNumber.trim() || undefined,
+        bank_name: bankName.trim() || undefined,
+        balance: balance ? parseFloat(balance) : 0,
+        currency: currency,
+        is_active: isActive,
+        description: description.trim() || undefined,
         created_by: userProfile?.id
       }
       
@@ -165,7 +155,7 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
     return iconMap[iconName] || CreditCard
   }
 
-  const selectedAccountType = accountTypes.find(type => type.id === formData.account_type_id)
+  const selectedAccountType = accountTypes.find(type => type.id === accountTypeId)
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -191,8 +181,8 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
             <Input
               id="name"
               placeholder="e.g., My Checking Account"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
@@ -205,8 +195,8 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
               </div>
             ) : (
               <Select
-                value={formData.account_type_id}
-                onValueChange={(value) => handleInputChange('account_type_id', value)}
+                value={accountTypeId}
+                onValueChange={setAccountTypeId}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select account type" />
@@ -235,8 +225,8 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
             <Input
               id="bank_name"
               placeholder="e.g., BPI, BDO, Metrobank"
-              value={formData.bank_name}
-              onChange={(e) => handleInputChange('bank_name', e.target.value)}
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
             />
           </div>
 
@@ -246,8 +236,8 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
             <Input
               id="account_number"
               placeholder="e.g., 1234567890"
-              value={formData.account_number}
-              onChange={(e) => handleInputChange('account_number', e.target.value)}
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
             />
           </div>
 
@@ -260,15 +250,15 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                value={formData.balance}
-                onChange={(e) => handleInputChange('balance', e.target.value)}
+                value={balance}
+                onChange={(e) => setBalance(e.target.value)}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="currency">Currency</Label>
               <Select
-                value={formData.currency}
-                onValueChange={(value) => handleInputChange('currency', value)}
+                value={currency}
+                onValueChange={setCurrency}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -289,8 +279,8 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
             <Textarea
               id="description"
               placeholder="Additional notes about this account..."
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               rows={3}
             />
           </div>
@@ -305,8 +295,8 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
             </div>
             <Switch
               id="is_active"
-              checked={formData.is_active}
-              onCheckedChange={(checked) => handleInputChange('is_active', checked)}
+              checked={isActive}
+              onCheckedChange={setIsActive}
             />
           </div>
         </div>
