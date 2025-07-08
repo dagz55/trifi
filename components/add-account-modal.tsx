@@ -53,26 +53,10 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
     description: ""
   })
 
-  // Debug form data changes
-  useEffect(() => {
-    console.log('Form data updated:', formData)
-  }, [formData])
-
-  // Load account types and ensure form is properly initialized when modal opens
+  // Load account types when modal opens
   useEffect(() => {
     if (isOpen) {
       loadAccountTypes()
-      // Ensure form is properly initialized (sometimes React needs this)
-      setFormData(prev => ({
-        name: prev.name || "",
-        account_type_id: prev.account_type_id || "",
-        account_number: prev.account_number || "",
-        bank_name: prev.bank_name || "",
-        balance: prev.balance || "",
-        currency: prev.currency || "PHP",
-        is_active: prev.is_active !== undefined ? prev.is_active : true,
-        description: prev.description || ""
-      }))
     }
   }, [isOpen])
 
