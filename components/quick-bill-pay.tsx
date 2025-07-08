@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Zap, CreditCard, Wifi, Car, Plus, Clock } from "lucide-react"
 import { PaymentModal } from "@/components/payment-modal"
 import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 interface QuickBill {
   id: string
@@ -30,10 +31,10 @@ export function QuickBillPay() {
   const [selectedProvider, setSelectedProvider] = useState("")
 
   const commonProviders = [
-    { name: "Meralco", icon: Zap, category: "Electric" },
-    { name: "Smart/Globe", icon: Wifi, category: "Internet" },
-    { name: "Credit Card", icon: CreditCard, category: "Finance" },
-    { name: "Gas Station", icon: Car, category: "Fuel" },
+    { name: "Meralco", icon: Zap, category: "Electric", color: "text-yellow-500" },
+    { name: "Smart/Globe", icon: Wifi, category: "Internet", color: "text-blue-500" },
+    { name: "Credit Card", icon: CreditCard, category: "Finance", color: "text-red-500" },
+    { name: "Gas Station", icon: Car, category: "Fuel", color: "text-green-500" },
   ]
 
   const handleQuickPay = (provider: string, amount: string) => {
@@ -137,7 +138,7 @@ export function QuickBillPay() {
                     {commonProviders.map((provider) => (
                       <SelectItem key={provider.name} value={provider.name}>
                         <div className="flex items-center space-x-2">
-                          <provider.icon className="h-4 w-4" />
+                          <provider.icon className={cn("h-4 w-4", provider.color)} />
                           <span>{provider.name}</span>
                           <Badge variant="outline" className="ml-auto text-xs">
                             {provider.category}
@@ -176,10 +177,10 @@ export function QuickBillPay() {
                     key={provider.name}
                     variant="outline"
                     size="sm"
-                    className="flex items-center space-x-2 apple-button overflow-hidden"
+                    className="flex items-center justify-center space-x-2 apple-button overflow-hidden"
                     onClick={() => setSelectedProvider(provider.name)}
                   >
-                    <provider.icon className="h-4 w-4 flex-shrink-0" />
+                    <provider.icon className={cn("h-4 w-4 flex-shrink-0", provider.color)} />
                     <span className="text-xs truncate">{provider.name}</span>
                   </Button>
                 ))}

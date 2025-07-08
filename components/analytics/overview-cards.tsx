@@ -103,7 +103,7 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => {
         const { percentage, isPositive } = calculateChange(card.current, card.previous)
         const Icon = card.icon
@@ -111,49 +111,28 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
         
         return (
           <Card key={card.title} className="overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle 
-                className="text-sm font-semibold"
-                style={{ color: '#374151' }}
-              >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
                 {card.title}
               </CardTitle>
-              <Icon 
-                className="h-5 w-5" 
-                style={{ color: '#6b7280' }}
-              />
+              <Icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div 
-                className="text-3xl font-bold mb-3"
-                style={{ 
-                  color: '#111827',
-                  letterSpacing: '-0.025em',
-                  lineHeight: '1.1'
-                }}
-              >
+            <CardContent className="p-4 pt-0">
+              <div className="text-2xl font-bold tracking-tight text-foreground mb-1">
                 {card.amount}
               </div>
-              {percentage > 0 && (
-                <p 
-                  className={`text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"} flex items-center gap-2`}
-                  style={{ marginTop: '8px' }}
-                >
-                  <TrendIcon className="h-4 w-4" />
-                  <span>{percentage.toFixed(1)}% {comparisonLabel}</span>
-                </p>
-              )}
-              {percentage === 0 && (
-                <p 
-                  className="text-sm font-medium"
-                  style={{ 
-                    color: '#6b7280',
-                    marginTop: '8px'
-                  }}
-                >
-                  No data for comparison
-                </p>
-              )}
+              <div className="min-h-[24px]">
+                {percentage > 0 ? (
+                  <p className={`text-xs font-medium flex items-center gap-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
+                    <TrendIcon className="h-3 w-3" />
+                    <span className="truncate">{percentage.toFixed(1)}% {comparisonLabel}</span>
+                  </p>
+                ) : (
+                  <p className="text-xs font-medium text-muted-foreground">
+                    No data for comparison
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
         )
