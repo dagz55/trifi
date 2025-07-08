@@ -10,6 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import { SettingsProvider } from "@/contexts/settings-context"
 import { AuthProvider } from "@/contexts/auth-context"
+import { Viewport } from 'next'
 
 // Temporarily use system fonts
 // const inter = Inter({ 
@@ -18,6 +19,18 @@ import { AuthProvider } from "@/contexts/auth-context"
 //   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
 //   preload: false
 // })
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+  initialScale: 1,
+  width: 'device-width',
+  userScalable: true,
+  minimumScale: 1,
+  maximumScale: 5,
+}
 
 export const metadata = {
   title: "TriFi - Advanced Financial Management Platform",

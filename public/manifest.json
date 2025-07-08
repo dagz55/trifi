@@ -1,55 +1,20 @@
 {
-  "name": "TriFi - Advanced Financial Management Platform",
+  "name": "TriFi",
   "short_name": "TriFi",
-  "description": "Modern financial management platform with advanced analytics, investment tracking, and business management tools.",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#F8FAFC",
-  "theme_color": "#3B82F6",
-  "orientation": "portrait-primary",
-  "scope": "/",
-  "lang": "en-US",
-  "categories": ["finance", "business", "productivity"],
+  "description": "Advanced Financial Management Platform",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/apple-touch-icon.svg",
-      "sizes": "180x180",
-      "type": "image/svg+xml",
-      "purpose": "apple touch icon"
-    },
-    {
-      "src": "/placeholder-logo.png",
-      "sizes": "192x192",
+      "src": "/icon-192.png",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "192x192"
     },
     {
-      "src": "/placeholder-logo.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "src": "/placeholder-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/trifi_logo.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "label": "TriFi Dashboard"
-    }
-  ],
-  "features": [
-    "Financial management",
-    "Investment tracking",
-    "Business analytics",
-    "Invoice management",
-    "Team collaboration",
-    "Dark mode support"
-  ]
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait"
 }
