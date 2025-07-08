@@ -53,23 +53,43 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
     description: ""
   })
 
-  // Load account types on mount
+  // Debug form data changes
+  useEffect(() => {
+    console.log('Form data updated:', formData)
+  }, [formData])
+
+  // Load account types and ensure form is properly initialized when modal opens
   useEffect(() => {
     if (isOpen) {
       loadAccountTypes()
-      // Reset form when modal opens
-      setFormData({
-        name: "",
-        account_type_id: "",
-        account_number: "",
-        bank_name: "",
-        balance: "",
-        currency: "PHP",
-        is_active: true,
-        description: ""
-      })
+      // Ensure form is properly initialized (sometimes React needs this)
+      setFormData(prev => ({
+        name: prev.name || "",
+        account_type_id: prev.account_type_id || "",
+        account_number: prev.account_number || "",
+        bank_name: prev.bank_name || "",
+        balance: prev.balance || "",
+        currency: prev.currency || "PHP",
+        is_active: prev.is_active !== undefined ? prev.is_active : true,
+        description: prev.description || ""
+      }))
     }
   }, [isOpen])
+
+  // Reset form when modal closes
+  const handleClose = () => {
+    setFormData({
+      name: "",
+      account_type_id: "",
+      account_number: "",
+      bank_name: "",
+      balance: "",
+      currency: "PHP",
+      is_active: true,
+      description: ""
+    })
+    onClose()
+  }
 
   const loadAccountTypes = async () => {
     try {
@@ -91,10 +111,15 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
   }
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    console.log(`Input change: ${field} = ${value}`)
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      }
+      console.log('New form data:', newData)
+      return newData
+    })
   }
 
   const validateForm = () => {
@@ -147,7 +172,7 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
       
       toast.success('Account created successfully')
       onAccountAdded()
-      onClose()
+      handleClose()
     } catch (error) {
       console.error('Unexpected error creating account:', error)
       toast.error('Failed to create account')
@@ -164,7 +189,7 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
   const selectedAccountType = accountTypes.find(type => type.id === formData.account_type_id)
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -308,7 +333,7 @@ export function AddAccountModal({ isOpen, onClose, onAccountAdded }: AddAccountM
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+          <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
