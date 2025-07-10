@@ -1,4 +1,4 @@
-import { useUser } from '@clerk/nextjs'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from './database'
 import { UserProfile, Organization } from './database'
 
@@ -28,8 +28,8 @@ export class AuthService {
     // Create new user profile if it doesn't exist
     const profileData = {
       clerk_user_id: clerkUser.id,
-      full_name: clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim(),
-      email: clerkUser.emailAddresses?.[0]?.emailAddress,
+      full_name: clerkUser.fullName || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || clerkUser.emailAddresses?.[0]?.emailAddress?.split('@')[0] || '',
+      email: clerkUser.emailAddresses?.[0]?.emailAddress || '',
       avatar_url: clerkUser.imageUrl,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       language: 'en',
@@ -141,18 +141,6 @@ export class AuthService {
   }
 }
 
-// Hook to use authentication with database integration
-export function useAuthWithProfile() {
-  const { user, isLoaded, isSignedIn } = useUser()
-  
-  return {
-    user,
-    isLoaded,
-    isSignedIn,
-    authService: new AuthService()
-  }
-}
-
 // Export a lazy singleton to avoid initialization issues
 let _authService: AuthService | null = null
 export function getAuthService(): AuthService {
@@ -169,4 +157,40 @@ export const authService = new Proxy({} as AuthService, {
     const value = (instance as any)[prop]
     return typeof value === 'function' ? value.bind(instance) : value
   }
-}) 
+})
+
+// Helper functions for server-side auth
+export async function getCurrentUser() {
+  try {
+    const user = await currentUser()
+    return user
+  } catch (error) {
+    console.error('Error getting current user:', error)
+    return null
+  }
+}
+
+export async function getAuthState() {
+  try {
+    const authResult = await auth()
+    return authResult
+  } catch (error) {
+    console.error('Error getting auth state:', error)
+    return null
+  }
+}
+
+export async function getCurrentUserProfile(): Promise<{ data: UserProfile | null, error: any }> {
+  try {
+    const user = await getCurrentUser()
+    if (!user) {
+      return { data: null, error: { message: 'No authenticated user' } }
+    }
+
+    const authSvc = getAuthService()
+    return await authSvc.ensureUserProfile(user)
+  } catch (error) {
+    console.error('Error getting current user profile:', error)
+    return { data: null, error }
+  }
+} 

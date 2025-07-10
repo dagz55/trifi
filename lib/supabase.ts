@@ -29,8 +29,24 @@ export function getSupabaseClient() {
   return createClient(supabaseUrl!, supabaseAnonKey!)
 }
 
+// Client component client
+export function createSupabaseClient() {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Supabase is not configured. Please check your environment variables.')
+  }
+  return createClient(supabaseUrl!, supabaseAnonKey!)
+}
+
+// Server component client
+export function createSupabaseServerClient() {
+  if (!isSupabaseConfigured()) {
+    throw new Error('Supabase is not configured. Please check your environment variables.')
+  }
+  return createClient(supabaseUrl!, supabaseAnonKey!)
+}
+
 // Legacy export for backwards compatibility - create lazily to avoid build errors
-let _supabase: ReturnType<typeof createClient> | null = null
+let _supabase: any = null
 export function getSupabase() {
   if (_supabase === null && isSupabaseConfigured()) {
     try {
@@ -44,6 +60,39 @@ export function getSupabase() {
 
 // For backwards compatibility
 export const supabase = null // Will be created lazily by getSupabase()
+
+// Auth utilities
+export const authHelpers = {
+  async signInWithEmail(email: string, password: string) {
+    const supabase = getSupabaseClient()
+    return await supabase.auth.signInWithPassword({ email, password })
+  },
+
+  async signUpWithEmail(email: string, password: string) {
+    const supabase = getSupabaseClient()
+    return await supabase.auth.signUp({ email, password })
+  },
+
+  async signOut() {
+    const supabase = getSupabaseClient()
+    return await supabase.auth.signOut()
+  },
+
+  async getSession() {
+    const supabase = getSupabaseClient()
+    return await supabase.auth.getSession()
+  },
+
+  async getUser() {
+    const supabase = getSupabaseClient()
+    return await supabase.auth.getUser()
+  },
+
+  async resetPassword(email: string) {
+    const supabase = getSupabaseClient()
+    return await supabase.auth.resetPasswordForEmail(email)
+  }
+}
 
 // IMPROVED test connection: try the lightweight `ping` RPC first (if present) then fallback to auth check
 export async function testSupabaseConnection() {

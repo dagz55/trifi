@@ -1,15 +1,11 @@
 import "./globals.css"
 // Temporarily comment out Google Font import to avoid network issues
 // import { Inter } from "next/font/google"
-import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
 import type React from "react"
+import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider"
-import { Sidebar } from "@/components/sidebar"
-import { TopNav } from "@/components/top-nav"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster } from "@/components/ui/sonner"
 import { SettingsProvider } from "@/contexts/settings-context"
-import { AuthProvider } from "@/contexts/auth-context"
+import { LayoutContent } from "@/components/layout-content"
 import { Viewport } from 'next'
 
 // Temporarily use system fonts
@@ -108,6 +104,7 @@ export const metadata = {
   },
 }
 
+
 export default async function RootLayout({
   children,
 }: {
@@ -124,44 +121,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <SettingsProvider>
-              <AuthProvider>
-                <TooltipProvider delayDuration={0}>
-                  {/* Signed Out - Full screen landing page */}
-                  <SignedOut>
-                    <main className="w-full animate-fade-in">{children}</main>
-                  </SignedOut>
-                  
-                  {/* Signed In - Dashboard with sidebar and nav */}
-                  <SignedIn>
-                    <div className="min-h-screen flex bg-background">
-                      <Sidebar />
-                      <div className="flex-1 flex flex-col">
-                        <TopNav />
-                        <div className="flex-1 page-transition">
-                          <div className="container mx-auto p-6 max-w-7xl">
-                            <main className="w-full animate-fade-in">{children}</main>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </SignedIn>
-                  
-                  <Toaster 
-                    position="top-right"
-                    richColors
-                    expand={false}
-                    closeButton
-                    toastOptions={{
-                      style: {
-                        background: 'var(--glass-bg)',
-                        backdropFilter: 'var(--glass-backdrop)',
-                        border: '1px solid var(--glass-border)',
-                        borderRadius: '12px',
-                      },
-                    }}
-                  />
-                </TooltipProvider>
-              </AuthProvider>
+              <LayoutContent>{children}</LayoutContent>
             </SettingsProvider>
           </ThemeProvider>
         </body>

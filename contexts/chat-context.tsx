@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/contexts/auth-context'
 import { db } from '@/lib/database'
 import { ChatChannel, ChatMessage, ChatChannelMember } from '@/lib/database'
 import { getSupabaseClient } from '@/lib/supabase'
@@ -69,7 +69,7 @@ interface ChatProviderProps {
 }
 
 export function ChatProvider({ children }: ChatProviderProps) {
-  const { user } = useUser()
+  const { user } = useAuth()
   const { organizationData } = useSettings()
   
   const [state, setState] = useState<ChatState>({

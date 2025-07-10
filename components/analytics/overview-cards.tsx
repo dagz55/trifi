@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DollarSign, TrendingUp, TrendingDown } from "lucide-react"
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/contexts/auth-context'
 
 interface OverviewCardsProps {
   comparisonPeriod: string
@@ -26,7 +26,7 @@ const getComparisonLabel = (period: string) => {
 }
 
 export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
-  const { user } = useUser()
+  const { user } = useAuth()
 
   // TODO: Replace with actual data from your database/API
   // For now, showing placeholder data - connect to your Supabase database

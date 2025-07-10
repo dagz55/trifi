@@ -19,7 +19,7 @@ import {
   Wallet
 } from "lucide-react"
 import { toast } from "sonner"
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/contexts/auth-context'
 import { AddTransactionModal } from "@/components/add-transaction-modal"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { AdvancedFiltersModal } from "@/components/advanced-filters-modal"
@@ -74,7 +74,7 @@ const formatAmount = (amount: number, type: string) => {
 }
 
 export default function TransactionsPage() {
-  const { user } = useUser()
+  const { user } = useAuth()
   
   // TODO: Replace with actual data from your database/API
   const [transactions, setTransactions] = useState<Transaction[]>([])

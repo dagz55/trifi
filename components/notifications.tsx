@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useSettings } from "@/contexts/settings-context"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/contexts/auth-context"
 import { db, Notification } from "@/lib/database"
 import { toast } from "sonner"
 
@@ -34,7 +34,7 @@ export function Notifications() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const { organizationData } = useSettings()
-  const { user } = useUser()
+  const { user } = useAuth()
 
   const loadNotifications = async () => {
     if (!user?.id || !organizationData?.id) return

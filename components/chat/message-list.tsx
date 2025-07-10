@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useChatContext } from '@/contexts/chat-context'
 import { ChatMessage } from '@/lib/database'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/contexts/auth-context'
 import { cn } from '@/lib/utils'
 
 interface MessageListProps {
@@ -25,7 +25,7 @@ interface MessageListProps {
 
 export function MessageList({ className }: MessageListProps) {
   const { state, loadMoreMessages, editMessage, deleteMessage, addReaction } = useChatContext()
-  const { user } = useUser()
+  const { user } = useAuth()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState(true)

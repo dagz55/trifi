@@ -9,7 +9,7 @@ export async function GET() {
     const tests = []
     
     // Test chat_channels table
-    const { data: channels, error: channelsError } = await supabase
+    const { error: channelsError } = await supabase
       .from('chat_channels')
       .select('count(*)')
       .limit(1)
@@ -21,7 +21,7 @@ export async function GET() {
     })
     
     // Test chat_messages table
-    const { data: messages, error: messagesError } = await supabase
+    const { error: messagesError } = await supabase
       .from('chat_messages')
       .select('count(*)')
       .limit(1)
@@ -33,7 +33,7 @@ export async function GET() {
     })
     
     // Test user_profiles table
-    const { data: profiles, error: profilesError } = await supabase
+    const { error: profilesError } = await supabase
       .from('user_profiles')
       .select('count(*)')
       .limit(1)
@@ -45,7 +45,7 @@ export async function GET() {
     })
     
     // Test organizations table
-    const { data: orgs, error: orgsError } = await supabase
+    const { error: orgsError } = await supabase
       .from('organizations')
       .select('count(*)')
       .limit(1)
@@ -60,11 +60,11 @@ export async function GET() {
       success: true,
       tests
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json({
       success: false,
-      error: error.message,
-      stack: error.stack
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
     })
   }
 }

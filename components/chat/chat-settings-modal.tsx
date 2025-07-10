@@ -44,7 +44,7 @@ import {
 import { useChatContext } from '@/contexts/chat-context'
 import { useSettings } from '@/contexts/settings-context'
 import { db, ChatChannel } from '@/lib/database'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/contexts/auth-context'
 import { toast } from 'sonner'
 
 interface ChatSettingsModalProps {
@@ -60,7 +60,7 @@ interface ChannelEditData {
 
 export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps) {
   const { state, loadChannels, setCurrentChannel } = useChatContext()
-  const { user } = useUser()
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('channels')
   const [editingChannel, setEditingChannel] = useState<ChatChannel | null>(null)
   const [channelMembers, setChannelMembers] = useState<Array<{ 
