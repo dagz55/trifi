@@ -120,33 +120,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const createOrganization = async (organizationData: Partial<Organization>): Promise<Organization | null> => {
+    console.log('🏗️ AuthContext.createOrganization called with:', organizationData)
+    
     if (!userProfile) {
+      console.error('❌ User profile not available')
       setError('User profile not available')
       return null
     }
 
+    console.log('👤 User profile available:', userProfile.id)
+
     try {
       setError(null)
       
+      console.log('📡 Calling db.createOrganizationWithOwner...')
       // Use the new database service method
       const { data: newOrg, error } = await db.createOrganizationWithOwner(organizationData, userProfile.id)
 
+      console.log('📊 Database response:', { newOrg, error })
+
       if (error) {
-        setError(`Failed to create organization: ${error.message}`)
-        return null
+        console.error('❌ Database error:', error)
+        
+        // Propagate specific error codes
+        if (error.code === 'SUPABASE_NOT_CONFIGURED') {
+          setError(`Database not configured: ${error.message}`)
+          throw new Error(error.message)
+        } else if (error.code === 'FUNCTION_NOT_FOUND') {
+          setError(`Database setup incomplete: ${error.message}`)
+          throw new Error(error.message)
+        } else {
+          setError(`Failed to create organization: ${error.message}`)
+          throw new Error(error.message)
+        }
       }
 
       if (newOrg) {
+        console.log('✅ Organization created successfully:', newOrg)
         // Refresh organizations to get the updated list
+        console.log('🔄 Refreshing organizations...')
         await refreshOrganizations()
         
         // Set the new organization as current
+        console.log('🎯 Setting new organization as current')
         setCurrentOrganization(newOrg)
         
         return newOrg
       }
+      
+      console.warn('⚠️ Organization creation returned null result')
       return null
     } catch (err) {
+      console.error('💥 Exception in createOrganization:', err)
       setError(`Error creating organization: ${err instanceof Error ? err.message : 'Unknown error'}`)
       return null
     }

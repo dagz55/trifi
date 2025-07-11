@@ -52,7 +52,11 @@ export function TopNav({ className }: TopNavProps) {
           <Avatar className="h-8 w-8">
             <AvatarImage 
               src={user?.imageUrl} 
-              alt={user?.fullName || user?.emailAddresses?.[0]?.emailAddress || 'User'} 
+              alt={user?.fullName || user?.emailAddresses?.[0]?.emailAddress || 'User'}
+              onError={(e) => {
+                console.log('Avatar image failed to load:', user?.imageUrl)
+                e.currentTarget.style.display = 'none'
+              }}
             />
             <AvatarFallback>
               {(user?.fullName || user?.firstName || user?.emailAddresses?.[0]?.emailAddress || 'U')

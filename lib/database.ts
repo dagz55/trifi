@@ -402,28 +402,68 @@ export class DatabaseService {
   }
 
   async createOrganizationWithOwner(organizationData: Partial<Organization>, creatorUserId: string): Promise<{ data: Organization | null, error: any }> {
+    console.log('🔗 Database.createOrganizationWithOwner called:', { organizationData, creatorUserId })
+    
     if (!this.isAvailable()) {
-      return { data: null, error: { message: 'Database not configured' } }
+      console.warn('⚠️ Database not available - Supabase not configured')
+      return { 
+        data: null, 
+        error: { 
+          message: 'Database not configured. Please set up your Supabase environment variables to create organizations.',
+          code: 'SUPABASE_NOT_CONFIGURED'
+        } 
+      }
     }
 
-    const { data: result, error } = await this.getClient()
-      .rpc('create_organization_and_add_owner', {
-        org_name: organizationData.name,
-        creator_user_id: creatorUserId,
-        org_description: organizationData.description,
-        org_industry: organizationData.industry,
-        org_logo_url: organizationData.logo_url,
-        org_website: organizationData.website,
-        org_phone: organizationData.phone,
-        org_email: organizationData.email,
-        org_address: organizationData.address,
-        org_tax_id: organizationData.tax_id,
-        org_currency: organizationData.currency || 'PHP',
-        org_timezone: organizationData.timezone || 'UTC+8'
-      })
-      .single()
+    try {
+      console.log('📡 Calling Supabase RPC: create_organization_and_add_owner')
+      
+      const { data: result, error } = await this.getClient()
+        .rpc('create_organization_and_add_owner', {
+          org_name: organizationData.name,
+          creator_user_id: creatorUserId,
+          org_description: organizationData.description,
+          org_industry: organizationData.industry,
+          org_logo_url: organizationData.logo_url,
+          org_website: organizationData.website,
+          org_phone: organizationData.phone,
+          org_email: organizationData.email,
+          org_address: organizationData.address,
+          org_tax_id: organizationData.tax_id,
+          org_currency: organizationData.currency || 'PHP',
+          org_timezone: organizationData.timezone || 'UTC+8'
+        })
+        .single() as { data: Organization | null, error: any }
 
-    return { data: result, error }
+      console.log('📊 Supabase RPC result:', { result, error })
+
+      if (error) {
+        console.error('❌ Supabase RPC error:', error)
+        // Check for common RPC errors
+        if (error.code === '42883' || error.message.includes('function public.create_organization_and_add_owner')) {
+          return { 
+            data: null, 
+            error: { 
+              message: 'Database function not found. Please run the database migrations to set up the create_organization_and_add_owner function.',
+              code: 'FUNCTION_NOT_FOUND',
+              originalError: error
+            } 
+          }
+        }
+      }
+
+      return { data: result, error }
+    } catch (err) {
+      console.error('💥 Exception in createOrganizationWithOwner:', err)
+      return { 
+        data: null, 
+        error: { 
+          message: `Unexpected error: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          code: 'UNEXPECTED_ERROR',
+          originalError: err
+        } 
+      }
+    }
   }
 
   async getOrganizations(): Promise<{ data: Organization[], error: any }> {

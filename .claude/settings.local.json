@@ -34,7 +34,10 @@
       "Bash(git push:*)",
       "Bash(timeout 10 npm run dev)",
       "Bash(timeout 5 npm run dev)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npx supabase:*)",
+      "Bash(npx dotenv-cli:*)",
+      "mcp__supabase__execute_sql"
     ],
     "deny": []
   }

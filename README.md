@@ -69,9 +69,18 @@ yarn install
 Create a `.env.local` file in the root directory:
 
 ```env
-# Supabase Configuration
+# Clerk Authentication (Required for full functionality)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+# Supabase Configuration (Required for organization creation)
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Optional: For development
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -223,6 +232,81 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: Check the `docs/` directory
 - **Issues**: Report bugs or request features via GitHub Issues
 - **Discussions**: Join community discussions in GitHub Discussions
+
+## 🔧 Troubleshooting
+
+### Common Issues and Solutions
+
+#### 1. Database Connection Issues
+**Error:** "Database connection failed" or "Failed to connect to Supabase"
+
+**Solutions:**
+- Verify your Supabase environment variables in `.env.local`
+- Check if your Supabase project is active and not paused
+- Ensure the database URL doesn't have trailing slashes
+- Try resetting your database password in the Supabase dashboard
+
+#### 2. Storage/Photo Upload Issues
+**Error:** "Failed to create bucket: RLS policies need to be set up"
+
+**Solutions:**
+- The storage migration has been applied automatically
+- Try uploading a photo again - the bucket should be created successfully
+- If issues persist, check your Supabase Storage settings in the dashboard
+- Verify that your environment variables are correctly configured
+
+#### 3. Authentication Issues
+**Error:** "Authentication failed" or Clerk-related errors
+
+**Solutions:**
+- Verify your Clerk environment variables
+- Check if your Clerk application is properly configured
+- Ensure redirect URLs are set correctly in Clerk dashboard
+- Clear browser cache and cookies
+
+#### 4. Migration Issues
+**Error:** "Migration failed" or "Table already exists"
+
+**Solutions:**
+- This is normal if you're updating an existing database
+- The migrations are designed to handle existing tables
+- Check the migration logs for specific errors
+- Contact support if critical functions are missing
+
+#### 5. Environment Variables
+**Error:** Various configuration errors
+
+**Solutions:**
+- Copy `.env.example` to `.env.local` if it doesn't exist
+- Ensure all required environment variables are set
+- Restart your development server after changing environment variables
+- Check for typos in variable names
+
+#### 6. Development Server Issues
+**Error:** Port conflicts or build errors
+
+**Solutions:**
+- Try different ports: `npm run dev -- --port 3001`
+- Clear Next.js cache: `rm -rf .next`
+- Reinstall dependencies: `rm -rf node_modules && npm install`
+- Check for TypeScript errors: `npm run type-check`
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. **Check the Console:** Browser developer tools often show detailed error messages
+2. **Review Logs:** Check your terminal for server-side errors
+3. **Verify Configuration:** Double-check all environment variables and settings
+4. **Database Status:** Ensure your Supabase project is active and accessible
+5. **Contact Support:** If issues persist, provide error messages and configuration details
+
+### Performance Tips
+
+- **Database Queries:** Use proper indexes and limit result sets
+- **Image Optimization:** Compress images before uploading
+- **Caching:** Enable browser caching for static assets
+- **Bundle Size:** Monitor and optimize your JavaScript bundle size
 
 ## 🎯 Roadmap
 

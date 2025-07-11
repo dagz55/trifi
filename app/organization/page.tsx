@@ -26,7 +26,7 @@ import {
 } from "lucide-react"
 
 export default function OrganizationPage() {
-  const { currentOrganization, loading: authLoading } = useAuth()
+  const { currentOrganization, loading: authLoading, error: authError } = useAuth()
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [addDepartmentModalOpen, setAddDepartmentModalOpen] = useState(false)
   const [createOrganizationModalOpen, setCreateOrganizationModalOpen] = useState(false)
@@ -34,6 +34,16 @@ export default function OrganizationPage() {
   const [accounts, setAccounts] = useState<any[]>([])
   const [transactions, setTransactions] = useState<any[]>([])
   const [dataLoading, setDataLoading] = useState(true)
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🏢 Organization Page State:', {
+      currentOrganization,
+      authLoading,
+      authError,
+      createOrganizationModalOpen
+    })
+  }, [currentOrganization, authLoading, authError, createOrganizationModalOpen])
 
   // Function to load departments from database
   const loadDepartments = async (organizationId: string) => {
@@ -175,6 +185,29 @@ export default function OrganizationPage() {
               <p className="text-muted-foreground mb-4">
                 You need to create an organization to get started
               </p>
+              {authError && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                  <div className="text-sm text-amber-800">
+                    <p className="font-medium">Database Configuration Notice:</p>
+                    <p className="mt-1">
+                      To create and store organizations, you need to configure your Supabase environment variables.
+                      Until then, you can explore the app in demo mode.
+                    </p>
+                    <details className="mt-2">
+                      <summary className="cursor-pointer font-medium">Setup Instructions</summary>
+                      <div className="mt-2 text-xs space-y-1">
+                        <p>1. Create a <code className="bg-amber-100 px-1 rounded">.env.local</code> file in your project root</p>
+                        <p>2. Add your Supabase credentials:</p>
+                        <pre className="bg-amber-100 p-2 rounded text-xs mt-1">
+{`NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}
+                        </pre>
+                        <p>3. Restart your development server</p>
+                      </div>
+                    </details>
+                  </div>
+                </div>
+              )}
               <Button onClick={() => setCreateOrganizationModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Organization

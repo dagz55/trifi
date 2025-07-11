@@ -15,6 +15,7 @@ function sanitizeSupabaseUrl(url?: string) {
 const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseUrl = sanitizeSupabaseUrl(rawSupabaseUrl)
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 // Helper function to check if Supabase is configured
 export function isSupabaseConfigured(): boolean {
@@ -43,6 +44,14 @@ export function createSupabaseServerClient() {
     throw new Error('Supabase is not configured. Please check your environment variables.')
   }
   return createClient(supabaseUrl!, supabaseAnonKey!)
+}
+
+// Admin client with service role key (for server-side operations)
+export function createSupabaseAdminClient() {
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    throw new Error('Supabase admin client is not configured. Please check SUPABASE_SERVICE_ROLE_KEY environment variable.')
+  }
+  return createClient(supabaseUrl, supabaseServiceRoleKey)
 }
 
 // Legacy export for backwards compatibility - create lazily to avoid build errors
@@ -108,11 +117,19 @@ export async function testSupabaseConnection() {
 
     // Attempt to call a lightweight ping RPC if it exists
     const { data: pingData, error: pingError } = await client.rpc('ping')
-    if (pingError && pingError.code !== '42883') { // 42883 = undefined_function, ignore if ping not created
-      // If we got an error that is NOT function does not exist, treat as failure
-      return { success: false, message: `Supabase connection error: ${pingError.message}` }
-    }
-    if (pingData === 'pong') {
+    if (pingError) {
+      // Check if the error indicates the function doesn't exist
+      const functionNotFoundCodes = ['42883', 'PGRST202']
+      const isUndefinedFunction = functionNotFoundCodes.includes(pingError.code) || 
+                                 pingError.message.includes('function public.ping') ||
+                                 pingError.message.includes('schema cache')
+      
+      if (!isUndefinedFunction) {
+        // If we got an error that is NOT function does not exist, treat as failure
+        return { success: false, message: `Supabase connection error: ${pingError.message}` }
+      }
+      // Function doesn't exist, continue to fallback
+    } else if (pingData === 'pong') {
       return { success: true, message: 'Supabase connected successfully (ping)' }
     }
 

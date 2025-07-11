@@ -114,6 +114,7 @@ export function CreateOrganizationModal({ open, onOpenChange }: CreateOrganizati
   }, [])
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log('🏗️ Create Organization - Starting submission:', values)
     setLoading(true)
     try {
       const organizationData = {
@@ -127,17 +128,38 @@ export function CreateOrganizationModal({ open, onOpenChange }: CreateOrganizati
         timezone: values.timezone,
       }
       
+      console.log('📊 Organization data prepared:', organizationData)
+      console.log('🔧 Calling createOrganization function...')
+      
       const newOrg = await createOrganization(organizationData)
+      
+      console.log('✅ Create organization result:', newOrg)
+      
       if (newOrg) {
         toast.success("Organization created successfully!")
+        console.log('🎉 Organization created successfully, closing modal')
         onOpenChange(false)
         form.reset()
+        
+        // Add small delay to ensure UI updates properly
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000)
       } else {
-        toast.error("Failed to create organization.")
+        console.error('❌ Create organization returned null/undefined')
+        toast.error("Failed to create organization. Please try again.")
       }
-    } catch (error) {
-      console.error('Create organization error:', error)
-      toast.error("An unexpected error occurred.")
+    } catch (error: any) {
+      console.error('💥 Create organization error:', error)
+      
+      // Handle specific error types
+      if (error?.code === 'SUPABASE_NOT_CONFIGURED') {
+        toast.error("Database not configured. Please set up your Supabase environment variables to create organizations.")
+      } else if (error?.code === 'FUNCTION_NOT_FOUND') {
+        toast.error("Database setup incomplete. Please run database migrations.")
+      } else {
+        toast.error(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      }
     } finally {
       setLoading(false)
     }

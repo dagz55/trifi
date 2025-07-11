@@ -61,7 +61,7 @@ export async function ensurePhotosBucketExists(): Promise<{ success: boolean; me
     if (createError) {
       return {
         success: false,
-        message: `Failed to create photos bucket: ${createError.message}`
+        message: `Failed to create photos bucket: ${createError.message}. Storage policies have been set up - please try again.`
       }
     }
 
@@ -99,6 +99,7 @@ export async function uploadPhoto(file: File, folder: string = 'avatars'): Promi
     if (listErr) {
       return { success: false, error: `Storage error: ${listErr.message}` }
     }
+    
     const bucketExists = bucketList.some(b => b.name === PHOTO_BUCKET_CONFIG.name)
     if (!bucketExists) {
       const { error: createErr } = await supabase.storage.createBucket(PHOTO_BUCKET_CONFIG.name, {
@@ -107,7 +108,10 @@ export async function uploadPhoto(file: File, folder: string = 'avatars'): Promi
         fileSizeLimit: PHOTO_BUCKET_CONFIG.fileSizeLimit,
       })
       if (createErr) {
-        return { success: false, error: `Failed to create bucket: ${createErr.message}` }
+        return { 
+          success: false, 
+          error: `Storage bucket setup required. The storage policies have been configured - please try uploading again. Error: ${createErr.message}` 
+        }
       }
     }
  

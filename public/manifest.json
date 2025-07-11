@@ -9,13 +9,19 @@
       "sizes": "192x192"
     },
     {
-      "src": "/placeholder-logo.svg",
+      "src": "/favicon.svg",
       "type": "image/svg+xml",
-      "sizes": "512x512"
+      "sizes": "any"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "180x180"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#000000"
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
 }
