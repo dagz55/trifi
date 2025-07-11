@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### 🎨 Improved
+- **Dashboard Overview Cards**: Fixed text truncation and sizing issues
+  - Removed redundant grid layout causing card constraints
+  - Enhanced card spacing and padding for better content display
+  - Improved text handling with proper wrapping and truncation
+  - Added responsive layout optimizations
+  - Enhanced visual balance and readability
+
+### 🔧 Fixed
+- **UI Layout**: Resolved double grid structure causing improper card sizing
+- **Text Display**: Fixed text overflow and truncation in dashboard cards
+- **Responsive Design**: Improved card layout across different screen sizes
+
+---
+
 ## [2.0.0] - 2025-01-09
 
 ### 🚨 BREAKING CHANGES

@@ -26,7 +26,7 @@ const getComparisonLabel = (period: string) => {
 }
 
 export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
-  const { user } = useAuth()
+  const { isSignedIn } = useAuth()
 
   // TODO: Replace with actual data from your database/API
   // For now, showing placeholder data - connect to your Supabase database
@@ -83,18 +83,18 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
     return { percentage: Math.abs(change), isPositive: change >= 0 }
   }
 
-  if (!user) {
+  if (!isSignedIn) {
     return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-semibold">Loading...</CardTitle>
-              <div className="h-5 w-5 bg-gray-300 rounded-full animate-pulse" />
+          <Card key={i}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 px-6 pt-6">
+              <div className="h-4 bg-muted rounded-md w-2/3 animate-pulse" />
+              <div className="h-4 w-4 bg-muted rounded-full animate-pulse" />
             </CardHeader>
-            <CardContent>
-              <div className="h-8 bg-gray-300 rounded animate-pulse mb-3" />
-              <div className="h-4 bg-gray-300 rounded animate-pulse" />
+            <CardContent className="px-6 pb-6">
+              <div className="h-7 bg-muted rounded-md w-1/2 animate-pulse mb-2" />
+              <div className="h-3 bg-muted rounded-md w-full animate-pulse" />
             </CardContent>
           </Card>
         ))}
@@ -103,7 +103,7 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
       {cards.map((card) => {
         const { percentage, isPositive } = calculateChange(card.current, card.previous)
         const Icon = card.icon
@@ -111,28 +111,28 @@ export function OverviewCards({ comparisonPeriod }: OverviewCardsProps) {
         
         return (
           <Card key={card.title} className="overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 px-6 pt-6">
+              <CardTitle className="text-sm font-medium text-muted-foreground truncate">
                 {card.title}
               </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
+              <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <div className="text-2xl font-bold tracking-tight text-foreground mb-1">
+            <CardContent className="px-6 pb-6">
+              <div className="text-2xl font-bold mb-2 break-words">
                 {card.amount}
               </div>
-              <div className="min-h-[24px]">
+              <p className="text-xs text-muted-foreground">
                 {percentage > 0 ? (
-                  <p className={`text-xs font-medium flex items-center gap-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
-                    <TrendIcon className="h-3 w-3" />
-                    <span className="truncate">{percentage.toFixed(1)}% {comparisonLabel}</span>
-                  </p>
+                  <span className={`flex items-center gap-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
+                    <TrendIcon className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">
+                      {percentage.toFixed(1)}% {comparisonLabel}
+                    </span>
+                  </span>
                 ) : (
-                  <p className="text-xs font-medium text-muted-foreground">
-                    No data for comparison
-                  </p>
+                  "No comparison data"
                 )}
-              </div>
+              </p>
             </CardContent>
           </Card>
         )

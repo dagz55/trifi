@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { useAuth } from "@/contexts/auth-context"
 import { OrganizationEditModal } from "@/components/organization-edit-modal"
 import { AddDepartmentModal } from "@/components/add-department-modal"
+import { CreateOrganizationModal } from "@/components/create-organization-modal"
 import { db } from "@/lib/database"
 import { 
   Building2, 
@@ -25,9 +26,10 @@ import {
 } from "lucide-react"
 
 export default function OrganizationPage() {
-  const { currentOrganization, loading: authLoading, createOrganization } = useAuth()
+  const { currentOrganization, loading: authLoading } = useAuth()
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [addDepartmentModalOpen, setAddDepartmentModalOpen] = useState(false)
+  const [createOrganizationModalOpen, setCreateOrganizationModalOpen] = useState(false)
   const [departments, setDepartments] = useState<any[]>([])
   const [accounts, setAccounts] = useState<any[]>([])
   const [transactions, setTransactions] = useState<any[]>([])
@@ -102,19 +104,6 @@ export default function OrganizationPage() {
     }
   }
 
-  const handleCreateOrganization = async () => {
-    const newOrg = await createOrganization({
-      name: "My Organization",
-      description: "A new organization",
-      industry: "Technology",
-      currency: "PHP",
-      timezone: "UTC+8"
-    })
-    
-    if (newOrg) {
-      toast.success("Organization created successfully!")
-    }
-  }
 
   // Calculate metrics based on actual data
   const totalBalance = accounts.reduce((sum, account) => sum + (account.balance || 0), 0)
@@ -186,7 +175,7 @@ export default function OrganizationPage() {
               <p className="text-muted-foreground mb-4">
                 You need to create an organization to get started
               </p>
-              <Button onClick={handleCreateOrganization}>
+              <Button onClick={() => setCreateOrganizationModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" />
                 Create Organization
               </Button>
@@ -354,6 +343,11 @@ export default function OrganizationPage() {
         open={addDepartmentModalOpen} 
         onOpenChange={setAddDepartmentModalOpen} 
         onDepartmentAdded={handleDepartmentAdded}
+      />
+      
+      <CreateOrganizationModal
+        open={createOrganizationModalOpen}
+        onOpenChange={setCreateOrganizationModalOpen}
       />
     </>
   )

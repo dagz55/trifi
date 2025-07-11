@@ -5,6 +5,7 @@ import type React from "react"
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/theme-provider"
 import { SettingsProvider } from "@/contexts/settings-context"
+import { AuthProvider } from "@/contexts/auth-context"
 import { LayoutContent } from "@/components/layout-content"
 import { Viewport } from 'next'
 
@@ -121,7 +122,9 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <SettingsProvider>
-              <LayoutContent>{children}</LayoutContent>
+              <AuthProvider>
+                <LayoutContent>{children}</LayoutContent>
+              </AuthProvider>
             </SettingsProvider>
           </ThemeProvider>
         </body>

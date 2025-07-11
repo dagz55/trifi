@@ -1,7 +1,7 @@
 "use client"
 
 import { LandingPage } from "@/components/landing-page"
-import { AnalyticsTab } from "@/components/analytics/analytics-tab"
+import { OverviewTab } from "@/components/analytics/overview-tab"
 import { useAuth } from "@/contexts/auth-context"
 
 export default function HomePage() {
@@ -19,5 +19,5 @@ export default function HomePage() {
     return <LandingPage />
   }
 
-  return <AnalyticsTab comparisonPeriod="last_month" />
+  return <OverviewTab />
 }

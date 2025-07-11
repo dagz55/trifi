@@ -19,6 +19,7 @@ A modern, feature-rich financial management platform built with Next.js, TypeScr
 
 ### User Experience
 - **Modern UI/UX** - Clean, intuitive interface built with Tailwind CSS and shadcn/ui
+- **Enhanced Dashboard** - Optimized overview cards with proper text display and responsive sizing
 - **Dark/Light Mode** - Seamless theme switching with system preference detection
 - **Mobile Responsive** - Optimized for all devices with offline capabilities
 - **Real-time Updates** - Live data synchronization across all connected devices

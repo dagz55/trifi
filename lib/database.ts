@@ -357,6 +357,20 @@ export class DatabaseService {
     return { data, error }
   }
 
+  async getUserProfileByClerkId(clerkId: string): Promise<{ data: UserProfile | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .from('user_profiles')
+      .select()
+      .eq('clerk_user_id', clerkId)
+      .single()
+
+    return { data: result, error }
+  }
+
   async updateUserProfile(id: string, updates: Partial<UserProfile>): Promise<{ data: UserProfile | null, error: any }> {
     if (!this.isAvailable()) {
       return { data: null, error: { message: 'Database not configured' } }
@@ -382,6 +396,31 @@ export class DatabaseService {
       .from('organizations')
       .insert(data)
       .select()
+      .single()
+
+    return { data: result, error }
+  }
+
+  async createOrganizationWithOwner(organizationData: Partial<Organization>, creatorUserId: string): Promise<{ data: Organization | null, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data: result, error } = await this.getClient()
+      .rpc('create_organization_and_add_owner', {
+        org_name: organizationData.name,
+        creator_user_id: creatorUserId,
+        org_description: organizationData.description,
+        org_industry: organizationData.industry,
+        org_logo_url: organizationData.logo_url,
+        org_website: organizationData.website,
+        org_phone: organizationData.phone,
+        org_email: organizationData.email,
+        org_address: organizationData.address,
+        org_tax_id: organizationData.tax_id,
+        org_currency: organizationData.currency || 'PHP',
+        org_timezone: organizationData.timezone || 'UTC+8'
+      })
       .single()
 
     return { data: result, error }
@@ -413,6 +452,89 @@ export class DatabaseService {
       .single()
 
     return { data, error }
+  }
+
+  // Organization Membership Operations
+  async getUserOrganizations(userProfileId: string): Promise<{ data: Organization[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('organization_members')
+      .select('organization_id, role, organizations (*)')
+      .eq('user_id', userProfileId)
+
+    if (error) {
+      return { data: [], error }
+    }
+
+    const organizations = data?.map((membership: any) => membership.organizations).filter(Boolean) || []
+    return { data: organizations, error: null }
+  }
+
+  async addOrganizationMember(organizationId: string, userId: string, role: string = 'member'): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('organization_members')
+      .insert({
+        organization_id: organizationId,
+        user_id: userId,
+        role: role
+      })
+      .select()
+      .single()
+
+    return { data, error }
+  }
+
+  async removeOrganizationMember(organizationId: string, userId: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('organization_members')
+      .delete()
+      .eq('organization_id', organizationId)
+      .eq('user_id', userId)
+
+    return { data, error }
+  }
+
+  async updateOrganizationMemberRole(organizationId: string, userId: string, newRole: string): Promise<{ data: any, error: any }> {
+    if (!this.isAvailable()) {
+      return { data: null, error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('organization_members')
+      .update({ role: newRole })
+      .eq('organization_id', organizationId)
+      .eq('user_id', userId)
+      .select()
+
+    return { data, error }
+  }
+
+  async getOrganizationMembers(organizationId: string): Promise<{ data: any[], error: any }> {
+    if (!this.isAvailable()) {
+      return { data: [], error: { message: 'Database not configured' } }
+    }
+
+    const { data, error } = await this.getClient()
+      .from('organization_members')
+      .select(`
+        *,
+        user_profiles(id, full_name, email, avatar_url, created_at)
+      `)
+      .eq('organization_id', organizationId)
+      .order('created_at', { ascending: true })
+
+    return { data: data || [], error }
   }
 
   // Account Operations

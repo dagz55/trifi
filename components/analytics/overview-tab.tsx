@@ -36,9 +36,7 @@ export function OverviewTab({ dateRange }: OverviewTabProps) {
           </Select>
         </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <OverviewCards comparisonPeriod={comparisonPeriod} />
-      </div>
+      <OverviewCards comparisonPeriod={comparisonPeriod} />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 mt-6">
         <Card className="col-span-4">
           <CardHeader>
