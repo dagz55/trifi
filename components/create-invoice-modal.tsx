@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
 import { format, addDays } from "date-fns"
 import { cn } from "@/lib/utils"
-import { useSettings } from "@/contexts/settings-context"
+import { useAuth } from "@/contexts/auth-context"
 
 interface InvoiceItem {
   id: number
@@ -25,12 +25,13 @@ interface InvoiceItem {
 
 interface CreateInvoiceModalProps {
   trigger?: React.ReactNode
+  onInvoiceCreated?: (invoice: any) => void
 }
 
-export function CreateInvoiceModal({ trigger }: CreateInvoiceModalProps) {
+export function CreateInvoiceModal({ trigger, onInvoiceCreated }: CreateInvoiceModalProps) {
+  const { currentOrganization, userProfile } = useAuth()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { payments, setPayments } = useSettings()
   
   const [formData, setFormData] = useState({
     clientName: "",
@@ -78,49 +79,73 @@ export function CreateInvoiceModal({ trigger }: CreateInvoiceModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!currentOrganization) {
+      toast.error("Please select an organization first")
+      return
+    }
+
+    if (!userProfile) {
+      toast.error("User profile not available")
+      return
+    }
+
+    if (!formData.clientName.trim()) {
+      toast.error("Client name is required")
+      return
+    }
+
+    if (items.some(item => !item.description.trim())) {
+      toast.error("All items must have a description")
+      return
+    }
+
     setLoading(true)
 
     try {
-      if (!formData.clientName.trim()) {
-        toast.error("Client name is required")
-        return
-      }
-
-      if (items.some(item => !item.description.trim())) {
-        toast.error("All items must have a description")
-        return
-      }
-
-      const newInvoice = {
-        id: formData.invoiceNumber,
-        client: formData.clientName,
-        clientEmail: formData.clientEmail,
-        clientAddress: formData.clientAddress,
-        issueDate: format(formData.issueDate, "MMM dd, yyyy"),
-        dueDate: format(formData.dueDate, "MMM dd, yyyy"),
-        amount: total,
+      const invoiceData = {
+        invoice_number: formData.invoiceNumber,
+        client_name: formData.clientName,
+        client_email: formData.clientEmail,
+        client_address: formData.clientAddress ? { address: formData.clientAddress } : undefined,
         subtotal: subtotal,
-        taxRate: formData.taxRate,
-        taxAmount: taxAmount,
-        status: "draft",
-        items: items.filter(item => item.description.trim()),
+        tax_rate: formData.taxRate,
+        tax_amount: taxAmount,
+        total_amount: total,
+        issue_date: format(formData.issueDate, "yyyy-MM-dd"),
+        due_date: format(formData.dueDate, "yyyy-MM-dd"),
         notes: formData.notes,
         terms: formData.terms,
-        createdAt: new Date().toISOString(),
+        status: "draft",
+        organizationId: currentOrganization.id,
+        userId: userProfile.clerk_user_id,
+        items: items.filter(item => item.description.trim()).map((item, index) => ({
+          description: item.description,
+          quantity: item.quantity,
+          unit_price: item.rate,
+          total: item.amount,
+          order_index: index
+        }))
       }
 
-      // Add to payments list for demo purposes
-      const updatedPayments = [...payments, {
-        id: Date.now(),
-        type: "invoice",
-        description: `Invoice ${formData.invoiceNumber} for ${formData.clientName}`,
-        amount: `₱${total.toLocaleString()}`,
-        date: format(formData.issueDate, "MMM dd, yyyy"),
-        status: "pending",
-        category: "Income",
-        invoice: newInvoice,
-      }]
-      setPayments(updatedPayments)
+      const response = await fetch('/api/invoices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(invoiceData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create invoice')
+      }
+
+      const { data } = await response.json()
+      
+      if (onInvoiceCreated) {
+        onInvoiceCreated(data)
+      }
       
       // Reset form
       setFormData({
@@ -139,8 +164,8 @@ export function CreateInvoiceModal({ trigger }: CreateInvoiceModalProps) {
       setOpen(false)
       toast.success("Invoice created successfully!")
     } catch (error) {
-      toast.error("Failed to create invoice")
       console.error("Error creating invoice:", error)
+      toast.error(error instanceof Error ? error.message : 'Failed to create invoice')
     } finally {
       setLoading(false)
     }

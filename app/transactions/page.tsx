@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,20 +24,7 @@ import { AddTransactionModal } from "@/components/add-transaction-modal"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { AdvancedFiltersModal } from "@/components/advanced-filters-modal"
 import { DateRange } from "react-day-picker"
-
-// Transaction interface
-interface Transaction {
-  id: string
-  type: "income" | "expense" | "transfer"
-  description: string
-  amount: number
-  date: string
-  time: string
-  status: "completed" | "pending" | "failed"
-  category: string
-  account: string
-  reference: string
-}
+import { Transaction } from "@/lib/database"
 
 const getTransactionIcon = (type: string) => {
   switch (type) {
@@ -74,10 +61,10 @@ const formatAmount = (amount: number, type: string) => {
 }
 
 export default function TransactionsPage() {
-  const { user } = useAuth()
+  const { currentOrganization, userProfile } = useAuth()
   
-  // TODO: Replace with actual data from your database/API
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [typeFilter, setTypeFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
@@ -95,25 +82,66 @@ export default function TransactionsPage() {
   const [addTransactionModalOpen, setAddTransactionModalOpen] = useState(false)
   const [advancedFiltersModalOpen, setAdvancedFiltersModalOpen] = useState(false)
 
-  // Placeholder metrics - TODO: Calculate from actual transaction data
+  // Load transactions
+  const loadTransactions = async () => {
+    if (!currentOrganization) return
+
+    try {
+      setIsLoading(true)
+      const params = new URLSearchParams({
+        organizationId: currentOrganization.id,
+        limit: '50'
+      })
+
+      if (typeFilter !== 'all') params.append('type', typeFilter)
+      if (statusFilter !== 'all') params.append('status', statusFilter)
+      if (dateRange?.from) params.append('startDate', dateRange.from.toISOString().split('T')[0])
+      if (dateRange?.to) params.append('endDate', dateRange.to.toISOString().split('T')[0])
+
+      const response = await fetch(`/api/transactions?${params}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to load transactions')
+      }
+
+      const { data } = await response.json()
+      setTransactions(data || [])
+    } catch (error) {
+      console.error('Error loading transactions:', error)
+      toast.error('Failed to load transactions')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadTransactions()
+  }, [currentOrganization, typeFilter, statusFilter, dateRange])
+
+  // Calculate metrics from actual data
   const transactionMetrics = [
     {
       title: "Total Income",
-      value: "₱0",
+      value: `₱${transactions.filter((t: Transaction) => t.type === 'income').reduce((sum: number, t: Transaction) => sum + t.amount, 0).toLocaleString()}`,
       change: "0%",
       icon: TrendingUp,
       color: "text-green-600",
     },
     {
       title: "Total Expenses",
-      value: "₱0",
+      value: `₱${transactions.filter((t: Transaction) => t.type === 'expense').reduce((sum: number, t: Transaction) => sum + t.amount, 0).toLocaleString()}`,
       change: "0%",
       icon: TrendingDown,
       color: "text-red-600",
     },
     {
       title: "Net Income",
-      value: "₱0",
+      value: `₱${transactions.reduce((sum: number, t: Transaction) => {
+        if (t.type === 'income') return sum + t.amount
+        if (t.type === 'expense') return sum - t.amount
+        return sum
+      }, 0).toLocaleString()}`,
       change: "0%",
       icon: Wallet,
       color: "text-blue-600",
@@ -133,10 +161,9 @@ export default function TransactionsPage() {
       return
     }
     
-    toast.success("Exporting transactions as CSV...")
     const csvContent = "data:text/csv;charset=utf-8," + 
       "ID,Type,Description,Amount,Date,Status,Category\n" +
-      filteredTransactions.map(t => `${t.id},${t.type},${t.description},${t.amount},${t.date},${t.status},${t.category}`).join("\n")
+      filteredTransactions.map(t => `${t.id},${t.type},${t.description},${t.amount},${t.transaction_date},${t.status},${t.category_id}`).join("\n")
     
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement("a")
@@ -145,13 +172,15 @@ export default function TransactionsPage() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    
+    toast.success("Transactions exported successfully!")
   }
 
   const handleAddTransaction = () => {
     setAddTransactionModalOpen(true)
   }
 
-  const handleTransactionAdded = (newTransaction: any) => {
+  const handleTransactionAdded = (newTransaction: Transaction) => {
     setTransactions([newTransaction, ...transactions])
     toast.success("Transaction added successfully!")
   }
@@ -163,15 +192,15 @@ export default function TransactionsPage() {
 
   const filteredTransactions = transactions.filter(transaction => {
     // Basic filters
-    const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          transaction.category.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = transaction.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          transaction.reference_number?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = typeFilter === "all" || transaction.type === typeFilter
     const matchesStatus = statusFilter === "all" || transaction.status === statusFilter
 
     // Date range filter
     let matchesDateRange = true
     if (dateRange?.from) {
-      const transactionDate = new Date(transaction.date)
+      const transactionDate = new Date(transaction.transaction_date)
       matchesDateRange = transactionDate >= dateRange.from
       if (dateRange.to) {
         matchesDateRange = matchesDateRange && transactionDate <= dateRange.to
@@ -191,24 +220,9 @@ export default function TransactionsPage() {
       matchesAdvanced = matchesAdvanced && transaction.amount <= maxAmount
     }
 
-    // Accounts filter
-    if (advancedFilters.accounts.length > 0) {
-      matchesAdvanced = matchesAdvanced && advancedFilters.accounts.includes(transaction.account)
-    }
-
-    // Categories filter
-    if (advancedFilters.categories.length > 0) {
-      matchesAdvanced = matchesAdvanced && advancedFilters.categories.includes(transaction.category)
-    }
-
-    // Statuses filter
-    if (advancedFilters.statuses.length > 0) {
-      matchesAdvanced = matchesAdvanced && advancedFilters.statuses.includes(transaction.status)
-    }
-
     // Reference filter
     if (advancedFilters.reference) {
-      matchesAdvanced = matchesAdvanced && transaction.reference.toLowerCase().includes(advancedFilters.reference.toLowerCase())
+      matchesAdvanced = matchesAdvanced && transaction.reference_number?.toLowerCase().includes(advancedFilters.reference.toLowerCase())
     }
 
     return matchesSearch && matchesType && matchesStatus && matchesDateRange && matchesAdvanced
@@ -228,7 +242,7 @@ export default function TransactionsPage() {
     return count
   }
 
-  if (!user) {
+  if (!currentOrganization) {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
@@ -356,7 +370,25 @@ export default function TransactionsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {filteredTransactions.length > 0 ? (
+                {isLoading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div key={i} className="flex items-center justify-between p-4 border rounded-lg animate-pulse">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                          <div className="space-y-2">
+                            <div className="h-4 bg-gray-200 rounded w-32"></div>
+                            <div className="h-3 bg-gray-200 rounded w-24"></div>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-20"></div>
+                          <div className="h-3 bg-gray-200 rounded w-16"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : filteredTransactions.length > 0 ? (
                   filteredTransactions.map((transaction) => (
                     <div key={transaction.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                       <div className="flex items-center gap-4">
@@ -364,13 +396,11 @@ export default function TransactionsPage() {
                           {getTransactionIcon(transaction.type)}
                         </div>
                         <div>
-                          <p className="font-medium">{transaction.description}</p>
+                          <p className="font-medium">{transaction.description || 'Transaction'}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{transaction.date}</span>
+                            <span>{new Date(transaction.transaction_date).toLocaleDateString()}</span>
                             <span>•</span>
-                            <span>{transaction.time}</span>
-                            <span>•</span>
-                            <span>{transaction.account}</span>
+                            <span>{transaction.reference_number}</span>
                           </div>
                         </div>
                       </div>
@@ -381,10 +411,10 @@ export default function TransactionsPage() {
                           }`}>
                             {formatAmount(transaction.amount, transaction.type)}
                           </p>
-                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.category_id}</p>
                         </div>
-                        <Badge className={getStatusColor(transaction.status)}>
-                          {transaction.status}
+                        <Badge className={getStatusColor(transaction.status || 'completed')}>
+                          {transaction.status || 'completed'}
                         </Badge>
                       </div>
                     </div>
@@ -421,11 +451,11 @@ export default function TransactionsPage() {
                           {getTransactionIcon(transaction.type)}
                         </div>
                         <div>
-                          <p className="font-medium">{transaction.description}</p>
+                          <p className="font-medium">{transaction.description || 'Transaction'}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{transaction.date}</span>
+                            <span>{new Date(transaction.transaction_date).toLocaleDateString()}</span>
                             <span>•</span>
-                            <span>{transaction.account}</span>
+                            <span>{transaction.reference_number}</span>
                           </div>
                         </div>
                       </div>
@@ -434,10 +464,10 @@ export default function TransactionsPage() {
                           <p className="font-medium text-green-600">
                             {formatAmount(transaction.amount, transaction.type)}
                           </p>
-                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.category_id}</p>
                         </div>
-                        <Badge className={getStatusColor(transaction.status)}>
-                          {transaction.status}
+                        <Badge className={getStatusColor(transaction.status || 'completed')}>
+                          {transaction.status || 'completed'}
                         </Badge>
                       </div>
                     </div>
@@ -464,11 +494,11 @@ export default function TransactionsPage() {
                           {getTransactionIcon(transaction.type)}
                         </div>
                         <div>
-                          <p className="font-medium">{transaction.description}</p>
+                          <p className="font-medium">{transaction.description || 'Transaction'}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{transaction.date}</span>
+                            <span>{new Date(transaction.transaction_date).toLocaleDateString()}</span>
                             <span>•</span>
-                            <span>{transaction.account}</span>
+                            <span>{transaction.reference_number}</span>
                           </div>
                         </div>
                       </div>
@@ -477,10 +507,10 @@ export default function TransactionsPage() {
                           <p className="font-medium text-red-600">
                             {formatAmount(transaction.amount, transaction.type)}
                           </p>
-                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.category_id}</p>
                         </div>
-                        <Badge className={getStatusColor(transaction.status)}>
-                          {transaction.status}
+                        <Badge className={getStatusColor(transaction.status || 'completed')}>
+                          {transaction.status || 'completed'}
                         </Badge>
                       </div>
                     </div>
@@ -507,11 +537,11 @@ export default function TransactionsPage() {
                           {getTransactionIcon(transaction.type)}
                         </div>
                         <div>
-                          <p className="font-medium">{transaction.description}</p>
+                          <p className="font-medium">{transaction.description || 'Transaction'}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{transaction.date}</span>
+                            <span>{new Date(transaction.transaction_date).toLocaleDateString()}</span>
                             <span>•</span>
-                            <span>{transaction.account}</span>
+                            <span>{transaction.reference_number}</span>
                           </div>
                         </div>
                       </div>
@@ -520,10 +550,10 @@ export default function TransactionsPage() {
                           <p className="font-medium text-blue-600">
                             {formatAmount(transaction.amount, transaction.type)}
                           </p>
-                          <p className="text-sm text-muted-foreground">{transaction.category}</p>
+                          <p className="text-sm text-muted-foreground">{transaction.category_id}</p>
                         </div>
-                        <Badge className={getStatusColor(transaction.status)}>
-                          {transaction.status}
+                        <Badge className={getStatusColor(transaction.status || 'completed')}>
+                          {transaction.status || 'completed'}
                         </Badge>
                       </div>
                     </div>

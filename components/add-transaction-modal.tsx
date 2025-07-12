@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,6 +20,7 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/auth-context"
 
 interface AddTransactionModalProps {
   open: boolean
@@ -28,6 +29,8 @@ interface AddTransactionModalProps {
 }
 
 export function AddTransactionModal({ open, onOpenChange, onTransactionAdded }: AddTransactionModalProps) {
+  const { currentOrganization, userProfile } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     type: "",
     description: "",
@@ -37,42 +40,77 @@ export function AddTransactionModal({ open, onOpenChange, onTransactionAdded }: 
     reference: "",
   })
   const [date, setDate] = useState<Date>(new Date())
+  const [accounts, setAccounts] = useState<any[]>([])
+  const [loadingAccounts, setLoadingAccounts] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!currentOrganization) {
+      toast.error("Please select an organization first")
+      return
+    }
+
+    if (!userProfile) {
+      toast.error("User profile not available")
+      return
+    }
     
     if (!formData.type || !formData.description || !formData.amount || !date) {
       toast.error("Please fill in all required fields")
       return
     }
 
-    const newTransaction = {
-      id: `TXN${Date.now()}`,
-      type: formData.type,
-      description: formData.description,
-      amount: parseFloat(formData.amount.replace(/,/g, "")),
-      date: format(date, "yyyy-MM-dd"),
-      time: format(new Date(), "HH:mm"),
-      status: "completed",
-      category: formData.category || "General",
-      account: formData.account || "Business Checking",
-      reference: formData.reference || `REF-${Date.now()}`,
-    }
+    setIsLoading(true)
 
-    onTransactionAdded(newTransaction)
-    toast.success("Transaction added successfully!")
-    
-    // Reset form
-    setFormData({
-      type: "",
-      description: "",
-      amount: "",
-      category: "",
-      account: "",
-      reference: "",
-    })
-    setDate(new Date())
-    onOpenChange(false)
+    try {
+      const transactionData = {
+        type: formData.type,
+        description: formData.description,
+        amount: parseFloat(formData.amount.replace(/,/g, "")),
+        transaction_date: format(date, "yyyy-MM-dd"),
+        category: formData.category || "General",
+        account_id: formData.account,
+        reference_number: formData.reference || `REF-${Date.now()}`,
+        organizationId: currentOrganization.id,
+        userId: userProfile.clerk_user_id
+      }
+
+      const response = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(transactionData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create transaction')
+      }
+
+      const { data } = await response.json()
+      
+      onTransactionAdded(data)
+      toast.success("Transaction added successfully!")
+      
+      // Reset form
+      setFormData({
+        type: "",
+        description: "",
+        amount: "",
+        category: "",
+        account: "",
+        reference: "",
+      })
+      setDate(new Date())
+      onOpenChange(false)
+    } catch (error) {
+      console.error('Error creating transaction:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to create transaction')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleAmountChange = (value: string) => {
@@ -82,6 +120,28 @@ export function AddTransactionModal({ open, onOpenChange, onTransactionAdded }: 
     const formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     setFormData({ ...formData, amount: formatted })
   }
+
+  // Load accounts when component mounts or organization changes
+  useEffect(() => {
+    const loadAccounts = async () => {
+      if (!currentOrganization) return
+      
+      setLoadingAccounts(true)
+      try {
+        const response = await fetch(`/api/accounts?organizationId=${currentOrganization.id}`)
+        if (response.ok) {
+          const { data } = await response.json()
+          setAccounts(data || [])
+        }
+      } catch (error) {
+        console.error('Error loading accounts:', error)
+      } finally {
+        setLoadingAccounts(false)
+      }
+    }
+
+    loadAccounts()
+  }, [currentOrganization])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -184,13 +244,20 @@ export function AddTransactionModal({ open, onOpenChange, onTransactionAdded }: 
               <Label htmlFor="account">Account</Label>
               <Select value={formData.account} onValueChange={(value) => setFormData({ ...formData, account: value })}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select account" />
+                  <SelectValue placeholder={loadingAccounts ? "Loading..." : "Select account"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Business Checking">Business Checking</SelectItem>
-                  <SelectItem value="Savings">Savings</SelectItem>
-                  <SelectItem value="Investment">Investment</SelectItem>
-                  <SelectItem value="Credit Card">Credit Card</SelectItem>
+                  {accounts.length > 0 ? (
+                    accounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name} - ₱{account.balance?.toLocaleString()}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>
+                      No accounts available
+                    </SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -206,10 +273,12 @@ export function AddTransactionModal({ open, onOpenChange, onTransactionAdded }: 
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit">Add Transaction</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Adding..." : "Add Transaction"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

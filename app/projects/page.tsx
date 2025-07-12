@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,7 +9,8 @@ import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddProjectModal } from "@/components/add-project-modal"
-import { useSettings } from "@/contexts/settings-context"
+import { useAuth } from "@/contexts/auth-context"
+import { Project } from "@/lib/database"
 import { 
   Folder, 
   Calendar, 
@@ -26,12 +27,14 @@ import {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "Completed":
+    case "completed":
       return "bg-green-100 text-green-800"
-    case "In Progress":
+    case "active":
       return "bg-blue-100 text-blue-800"
-    case "Planning":
+    case "on_hold":
       return "bg-yellow-100 text-yellow-800"
+    case "cancelled":
+      return "bg-red-100 text-red-800"
     default:
       return "bg-gray-100 text-gray-800"
   }
@@ -39,21 +42,51 @@ const getStatusColor = (status: string) => {
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case "High":
+    case "high":
       return "bg-red-100 text-red-800"
-    case "Medium":
+    case "medium":
       return "bg-orange-100 text-orange-800"
-    case "Low":
+    case "low":
       return "bg-green-100 text-green-800"
+    case "urgent":
+      return "bg-purple-100 text-purple-800"
     default:
       return "bg-gray-100 text-gray-800"
   }
 }
 
 export default function ProjectsPage() {
+  const { currentOrganization } = useAuth()
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { projects } = useSettings();
+  const [projects, setProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const loadProjects = async () => {
+    if (!currentOrganization) return
+
+    try {
+      setIsLoading(true)
+      const response = await fetch(`/api/projects?organizationId=${currentOrganization.id}`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to load projects')
+      }
+
+      const { data } = await response.json()
+      setProjects(data || [])
+    } catch (error) {
+      console.error('Error loading projects:', error)
+      toast.error('Failed to load projects')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadProjects()
+  }, [currentOrganization])
 
   const filteredProjects = projects.filter((project) =>
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -63,32 +96,52 @@ export default function ProjectsPage() {
   const updatedProjectMetrics = [
     {
       title: "Active Projects",
-      value: projects.filter(p => p.status === "In Progress").length.toString(),
+      value: projects.filter((p: Project) => p.status === "active").length.toString(),
       change: projects.length.toString(),
       icon: Folder,
     },
     {
       title: "Total Budget",
-      value: "₱" + projects.reduce((sum, p) => {
-        const budget = p.budget?.replace(/[₱,]/g, '') || '0';
-        return sum + (parseFloat(budget) || 0);
+      value: "₱" + projects.reduce((sum: number, p: Project) => {
+        return sum + (p.budget || 0);
       }, 0).toLocaleString(),
       change: `₱${projects.length * 50000}`,
       icon: DollarSign,
     },
     {
       title: "Team Members",
-      value: projects.reduce((sum, p) => sum + (p.team?.length || 0), 0).toString(),
+      value: projects.length.toString(), // TODO: Get actual team member count
       change: projects.length.toString(),
       icon: Users,
     },
     {
       title: "Completion Rate",
-      value: projects.length > 0 ? `${Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)}%` : "0%",
-      change: `${projects.filter(p => p.status === "Completed").length}`,
+      value: projects.length > 0 ? `${Math.round((projects.filter((p: Project) => p.status === "completed").length / projects.length) * 100)}%` : "0%",
+      change: `${projects.filter((p: Project) => p.status === "completed").length}`,
       icon: TrendingUp,
     },
   ];
+
+  const handleProjectAdded = (newProject: Project) => {
+    setProjects([newProject, ...projects])
+    toast.success("Project added successfully!")
+  }
+
+  if (!currentOrganization) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-24 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -110,7 +163,7 @@ export default function ProjectsPage() {
             <Search className="mr-2 h-4 w-4" />
             Search
           </Button>
-          <AddProjectModal />
+          <AddProjectModal onProjectAdded={handleProjectAdded} />
         </div>
       </div>
 
@@ -152,30 +205,35 @@ export default function ProjectsPage() {
 
         <TabsContent value="all" className="space-y-4">
           <div className="grid gap-4">
-            {projects.length > 0 ? (
-              projects.map((project: {
-                id: number;
-                name: string;
-                status: string;
-                priority: string;
-                progress: number;
-                budget: string;
-                spent: string;
-                startDate: string;
-                endDate: string;
-                team: { name: string; role: string }[];
-              }) => (
+            {isLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-6">
+                      <div className="animate-pulse">
+                        <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+                        <div className="space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : projects.length > 0 ? (
+              projects.map((project) => (
               <Card key={project.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-semibold text-lg">{project.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge className={getStatusColor(project.status)}>
-                          {project.status}
+                        <Badge className={getStatusColor(project.status || 'active')}>
+                          {project.status || 'active'}
                         </Badge>
-                        <Badge className={getPriorityColor(project.priority)}>
-                          {project.priority}
+                        <Badge className={getPriorityColor(project.priority || 'medium')}>
+                          {project.priority || 'medium'}
                         </Badge>
                       </div>
                     </div>
@@ -189,12 +247,12 @@ export default function ProjectsPage() {
                       <h4 className="font-medium mb-2">Progress</h4>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
-                          <span>{project.progress}% Complete</span>
+                          <span>0% Complete</span>
                           <span className="text-muted-foreground">
-                            {project.progress === 100 ? "Done" : "In Progress"}
+                            In Progress
                           </span>
                         </div>
-                        <Progress value={project.progress} className="h-2" />
+                        <Progress value={0} className="h-2" />
                       </div>
                     </div>
 
@@ -203,11 +261,11 @@ export default function ProjectsPage() {
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
                           <span>Total:</span>
-                          <span className="font-medium">{project.budget}</span>
+                          <span className="font-medium">₱{(project.budget || 0).toLocaleString()}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <span>Spent:</span>
-                          <span className="text-muted-foreground">{project.spent}</span>
+                          <span className="text-muted-foreground">₱{(project.spent || 0).toLocaleString()}</span>
                         </div>
                       </div>
                     </div>
@@ -217,34 +275,22 @@ export default function ProjectsPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-sm">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span>{project.startDate}</span>
+                          <span>{project.start_date ? new Date(project.start_date).toLocaleDateString() : 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span>{project.endDate}</span>
+                          <span>{project.end_date ? new Date(project.end_date).toLocaleDateString() : 'Not set'}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4">
-                    <h4 className="font-medium mb-2">Team</h4>
-                    <div className="flex items-center gap-2">
-                      {project.team.map((member: { name: string; role: string }, index: number) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className="text-xs">
-                              {member.name.split(' ').map((n: string) => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="text-sm">
-                            <p className="font-medium">{member.name}</p>
-                            <p className="text-muted-foreground">{member.role}</p>
-                          </div>
-                        </div>
-                      ))}
+                  {project.description && (
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Description</h4>
+                      <p className="text-sm text-muted-foreground">{project.description}</p>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             ))
@@ -260,7 +306,7 @@ export default function ProjectsPage() {
                     <Plus className="mr-2 h-4 w-4" />
                     Create Project
                   </Button>
-                } />
+                } onProjectAdded={handleProjectAdded} />
               </div>
             )}
           </div>
@@ -268,18 +314,18 @@ export default function ProjectsPage() {
 
         <TabsContent value="active" className="space-y-4">
           <div className="grid gap-4">
-            {filteredProjects.filter(p => p.status === "In Progress").map((project) => (
+            {filteredProjects.filter(p => p.status === "active").map((project) => (
               <Card key={project.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-semibold text-lg">{project.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge className={getStatusColor(project.status)}>
-                          {project.status}
+                        <Badge className={getStatusColor(project.status || 'active')}>
+                          {project.status || 'active'}
                         </Badge>
-                        <Badge className={getPriorityColor(project.priority)}>
-                          {project.priority}
+                        <Badge className={getPriorityColor(project.priority || 'medium')}>
+                          {project.priority || 'medium'}
                         </Badge>
                       </div>
                     </div>
@@ -289,15 +335,15 @@ export default function ProjectsPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span>{project.progress}% Complete</span>
-                      <span className="text-muted-foreground">Budget: {project.budget}</span>
+                      <span>0% Complete</span>
+                      <span className="text-muted-foreground">Budget: ₱{(project.budget || 0).toLocaleString()}</span>
                     </div>
-                    <Progress value={project.progress} className="h-2" />
+                    <Progress value={0} className="h-2" />
                   </div>
                 </CardContent>
               </Card>
             ))}
-            {filteredProjects.filter(p => p.status === "In Progress").length === 0 && (
+            {filteredProjects.filter(p => p.status === "active").length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No active projects found</p>
               </div>
@@ -307,18 +353,18 @@ export default function ProjectsPage() {
 
         <TabsContent value="completed" className="space-y-4">
           <div className="grid gap-4">
-            {filteredProjects.filter(p => p.status === "Completed").map((project) => (
+            {filteredProjects.filter(p => p.status === "completed").map((project) => (
               <Card key={project.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-semibold text-lg">{project.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge className={getStatusColor(project.status)}>
-                          {project.status}
+                        <Badge className={getStatusColor(project.status || 'completed')}>
+                          {project.status || 'completed'}
                         </Badge>
-                        <Badge className={getPriorityColor(project.priority)}>
-                          {project.priority}
+                        <Badge className={getPriorityColor(project.priority || 'medium')}>
+                          {project.priority || 'medium'}
                         </Badge>
                       </div>
                     </div>
@@ -328,15 +374,15 @@ export default function ProjectsPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span>{project.progress}% Complete</span>
-                      <span className="text-muted-foreground">Budget: {project.budget}</span>
+                      <span>100% Complete</span>
+                      <span className="text-muted-foreground">Budget: ₱{(project.budget || 0).toLocaleString()}</span>
                     </div>
-                    <Progress value={project.progress} className="h-2" />
+                    <Progress value={100} className="h-2" />
                   </div>
                 </CardContent>
               </Card>
             ))}
-            {filteredProjects.filter(p => p.status === "Completed").length === 0 && (
+            {filteredProjects.filter(p => p.status === "completed").length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No completed projects found</p>
               </div>
@@ -346,18 +392,18 @@ export default function ProjectsPage() {
 
         <TabsContent value="planning" className="space-y-4">
           <div className="grid gap-4">
-            {filteredProjects.filter(p => p.status === "Planning").map((project) => (
+            {filteredProjects.filter(p => p.status === "on_hold").map((project) => (
               <Card key={project.id}>
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="font-semibold text-lg">{project.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge className={getStatusColor(project.status)}>
-                          {project.status}
+                        <Badge className={getStatusColor(project.status || 'on_hold')}>
+                          {project.status || 'on_hold'}
                         </Badge>
-                        <Badge className={getPriorityColor(project.priority)}>
-                          {project.priority}
+                        <Badge className={getPriorityColor(project.priority || 'medium')}>
+                          {project.priority || 'medium'}
                         </Badge>
                       </div>
                     </div>
@@ -367,15 +413,15 @@ export default function ProjectsPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span>{project.progress}% Complete</span>
-                      <span className="text-muted-foreground">Budget: {project.budget}</span>
+                      <span>0% Complete</span>
+                      <span className="text-muted-foreground">Budget: ₱{(project.budget || 0).toLocaleString()}</span>
                     </div>
-                    <Progress value={project.progress} className="h-2" />
+                    <Progress value={0} className="h-2" />
                   </div>
                 </CardContent>
               </Card>
             ))}
-            {filteredProjects.filter(p => p.status === "Planning").length === 0 && (
+            {filteredProjects.filter(p => p.status === "on_hold").length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No projects in planning phase found</p>
               </div>

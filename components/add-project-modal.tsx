@@ -10,24 +10,25 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
 import { format } from "date-fns"
-import { useSettings } from "@/contexts/settings-context"
+import { useAuth } from "@/contexts/auth-context"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { DateRange } from "react-day-picker"
 
 interface AddProjectModalProps {
   trigger?: React.ReactNode
+  onProjectAdded?: (project: any) => void
 }
 
-export function AddProjectModal({ trigger }: AddProjectModalProps) {
+export function AddProjectModal({ trigger, onProjectAdded }: AddProjectModalProps) {
+  const { currentOrganization, userProfile } = useAuth()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { projects, setProjects } = useSettings()
   
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    status: "Planning",
-    priority: "Medium",
+    status: "active",
+    priority: "medium",
     budget: "",
     dateRange: undefined as DateRange | undefined,
     projectManager: "",
@@ -36,39 +37,63 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!currentOrganization) {
+      toast.error("Please select an organization first")
+      return
+    }
+
+    if (!userProfile) {
+      toast.error("User profile not available")
+      return
+    }
+
+    if (!formData.name.trim()) {
+      toast.error("Project name is required")
+      return
+    }
+
     setLoading(true)
 
     try {
-      if (!formData.name.trim()) {
-        toast.error("Project name is required")
-        return
-      }
-
-      const newProject = {
-        id: Date.now(),
+      const projectData = {
         name: formData.name,
         description: formData.description,
         status: formData.status,
         priority: formData.priority,
-        progress: 0,
-        budget: formData.budget || "₱0",
-        spent: "₱0",
-        startDate: formData.dateRange?.from ? format(formData.dateRange.from, "MMM dd, yyyy") : "Not set",
-        endDate: formData.dateRange?.to ? format(formData.dateRange.to, "MMM dd, yyyy") : "Not set",
-        projectManager: formData.projectManager || "Unassigned",
-        department: formData.department || "General",
-        team: [],
-        createdAt: new Date().toISOString(),
+        budget: formData.budget ? parseFloat(formData.budget.replace(/[₱,]/g, "")) : 0,
+        start_date: formData.dateRange?.from ? format(formData.dateRange.from, "yyyy-MM-dd") : undefined,
+        end_date: formData.dateRange?.to ? format(formData.dateRange.to, "yyyy-MM-dd") : undefined,
+        project_manager_id: formData.projectManager || undefined,
+        department_id: formData.department || undefined,
+        organizationId: currentOrganization.id,
+        userId: userProfile.clerk_user_id
       }
 
-      const updatedProjects = [...projects, newProject]
-      setProjects(updatedProjects)
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create project')
+      }
+
+      const { data } = await response.json()
+      
+      if (onProjectAdded) {
+        onProjectAdded(data)
+      }
       
       setFormData({
         name: "",
         description: "",
-        status: "Planning",
-        priority: "Medium",
+        status: "active",
+        priority: "medium",
         budget: "",
         dateRange: undefined,
         projectManager: "",
@@ -78,8 +103,8 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
       setOpen(false)
       toast.success("Project created successfully!")
     } catch (error) {
-      toast.error("Failed to create project")
       console.error("Error creating project:", error)
+      toast.error(error instanceof Error ? error.message : 'Failed to create project')
     } finally {
       setLoading(false)
     }
@@ -156,10 +181,10 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Planning">Planning</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="On Hold">On Hold</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="on_hold">On Hold</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -171,10 +196,10 @@ export function AddProjectModal({ trigger }: AddProjectModalProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Low">Low</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                  <SelectItem value="Urgent">Urgent</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="urgent">Urgent</SelectItem>
                 </SelectContent>
               </Select>
             </div>

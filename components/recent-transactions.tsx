@@ -8,63 +8,62 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowUpRight, ArrowDownRight, MoreHorizontal, Plus, Receipt, AlertCircle, Database } from "lucide-react"
 import { AddTransactionModal } from "@/components/add-transaction-modal"
 import { useAuth } from "@/contexts/auth-context"
-import { db, Transaction } from "@/lib/database"
+import { Transaction } from "@/lib/database"
 import { toast } from "sonner"
 import { isSupabaseConfigured } from "@/lib/supabase"
 
 export function RecentTransactions() {
-  const { currentOrganization, loading: authLoading } = useAuth()
+  const { currentOrganization, loading: authLoading, userProfile } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [addTransactionModalOpen, setAddTransactionModalOpen] = useState(false)
   const [databaseError, setDatabaseError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const loadTransactions = async () => {
-      if (authLoading) {
-        return // Wait for auth to load
-      }
-      
-      if (!currentOrganization) {
+  const loadTransactions = async () => {
+    if (authLoading) {
+      return // Wait for auth to load
+    }
+    
+    if (!currentOrganization) {
+      setIsLoading(false)
+      setDatabaseError('No organization selected. Please create or select an organization.')
+      return
+    }
+    
+    try {
+      setIsLoading(true)
+      setDatabaseError(null)
+
+      // Check if Supabase is configured
+      if (!isSupabaseConfigured()) {
+        setDatabaseError('database_not_configured')
         setIsLoading(false)
-        setDatabaseError('No organization selected. Please create or select an organization.')
         return
       }
       
-      try {
-        setIsLoading(true)
-        setDatabaseError(null)
-
-        // Check if Supabase is configured
-        if (!isSupabaseConfigured()) {
-          setDatabaseError('database_not_configured')
-          setIsLoading(false)
-          return
-        }
-        
-        const { data, error } = await db.getRecentTransactions(currentOrganization.id, 5)
-        
-        if (error) {
-          const errorMessage = error.message || 'Unknown error occurred'
-          setDatabaseError(errorMessage)
-          
-          // Don't show toast for database not configured error
-          if (errorMessage !== 'Database not configured') {
-            toast.error('Failed to load transactions: ' + errorMessage)
-          }
-          return
-        }
-        
-        setTransactions(data || [])
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-        setDatabaseError(errorMessage)
-        toast.error('Failed to load transactions')
-      } finally {
-        setIsLoading(false)
+      const response = await fetch(`/api/transactions?organizationId=${currentOrganization.id}&limit=5`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to load transactions')
       }
+      
+      const { data } = await response.json()
+      setTransactions(data || [])
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      setDatabaseError(errorMessage)
+      
+      // Don't show toast for database not configured error
+      if (errorMessage !== 'Database not configured') {
+        toast.error('Failed to load transactions: ' + errorMessage)
+      }
+    } finally {
+      setIsLoading(false)
     }
+  }
 
+  useEffect(() => {
     loadTransactions()
   }, [currentOrganization, authLoading])
 
@@ -102,15 +101,14 @@ export function RecentTransactions() {
     return iconMap[categoryName?.toLowerCase() || 'other'] || '📋'
   }
 
-  const handleTransactionAdded = (transaction: any) => {
-    // TODO: Implement actual transaction creation
+  const handleTransactionAdded = (transaction: Transaction) => {
+    // Add the new transaction to the beginning of the list
+    setTransactions((prev: Transaction[]) => [transaction, ...prev.slice(0, 4)]) // Keep only 5 transactions
     toast.success('Transaction added successfully!')
-    // Refresh transactions after adding
-    if (currentOrganization && !databaseError) {
-      db.getRecentTransactions(currentOrganization.id, 5).then(({ data }) => {
-        if (data) setTransactions(data)
-      })
-    }
+  }
+
+  const refreshTransactions = () => {
+    loadTransactions()
   }
 
   // Database not configured state
