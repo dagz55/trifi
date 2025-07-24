@@ -231,11 +231,10 @@ export default function DepartmentsPage() {
   const handleCreateFirstOrganization = async () => {
     const newOrg = await createOrganization({
       name: "My Organization",
-      type: "Business",
+      industry: "Business",
       phone: "",
       email: "",
-      website: "",
-      location: ""
+      website: ""
     })
     
     if (newOrg) {

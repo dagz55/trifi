@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useAuth } from '@/contexts/auth-context'
+import { useUser } from '@clerk/nextjs'
 import { db } from '@/lib/database'
 import { ChatChannel, ChatMessage, ChatChannelMember } from '@/lib/database'
 import { getSupabaseClient } from '@/lib/supabase'
-import { useSettings } from './settings-context'
 import { toast } from 'sonner'
 
 interface ChatState {
@@ -69,8 +69,8 @@ interface ChatProviderProps {
 }
 
 export function ChatProvider({ children }: ChatProviderProps) {
-  const { user } = useAuth()
-  const { organizationData } = useSettings()
+  const { userProfile: authUserProfile, currentOrganization } = useAuth()
+  const { user } = useUser()
   
   const [state, setState] = useState<ChatState>({
     channels: [],
@@ -90,14 +90,14 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   // Initialize user profile and channels
   useEffect(() => {
-    if (user && organizationData?.id) {
+    if (user && currentOrganization?.id) {
       initializeChat()
     }
-  }, [user, organizationData])
+  }, [user, currentOrganization])
 
   // Set up real-time subscriptions
   useEffect(() => {
-    if (!user || !organizationData?.id) return
+    if (!user || !currentOrganization?.id) return
 
     const supabase = getSupabaseClient()
     const subscriptions: any[] = []
@@ -109,7 +109,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
         event: '*',
         schema: 'public',
         table: 'chat_channels',
-        filter: `organization_id=eq.${organizationData.id}`
+        filter: `organization_id=eq.${currentOrganization.id}`
       }, handleChannelChange)
       .subscribe()
 
@@ -138,7 +138,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
     return () => {
       subscriptions.forEach(sub => sub.unsubscribe())
     }
-  }, [user, organizationData])
+  }, [user, currentOrganization])
 
   // Subscribe to current channel messages
   useEffect(() => {
@@ -165,14 +165,17 @@ export function ChatProvider({ children }: ChatProviderProps) {
     console.log('🔄 Chat initialization starting...', {
       hasUser: !!user,
       userId: user?.id,
-      hasOrgData: !!organizationData?.id,
-      orgId: organizationData?.id
+      hasOrgData: !!currentOrganization?.id,
+      orgId: currentOrganization?.id,
+      currentOrganization: currentOrganization
     })
 
-    if (!user || !organizationData?.id) {
+    if (!user || !currentOrganization?.id) {
       console.log('❌ Chat initialization skipped - missing user or organization data:', { 
         hasUser: !!user, 
-        hasOrgData: !!organizationData?.id 
+        hasOrgData: !!currentOrganization?.id,
+        user: user ? { id: user.id, firstName: user.firstName } : null,
+        currentOrganization: currentOrganization
       })
       return
     }
@@ -265,7 +268,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
   }
 
   const loadChannels = async () => {
-    if (!user || !organizationData?.id || !userProfile) return
+    if (!user || !currentOrganization?.id || !userProfile) return
 
     try {
       // Load user channels
@@ -287,28 +290,57 @@ export function ChatProvider({ children }: ChatProviderProps) {
   }
 
   const createChannel = async (data: Partial<ChatChannel>) => {
-    console.log('🏗️ Creating channel:', { data, organizationData: organizationData?.id, userProfile: userProfile?.id })
+    console.log('🏗️ Creating channel:', { 
+      data, 
+      organizationId: currentOrganization?.id, 
+      userProfileId: userProfile?.id,
+      hasCurrentOrg: !!currentOrganization,
+      hasUserProfile: !!userProfile,
+      userClerkId: user?.id
+    })
     
-    if (!organizationData?.id || !userProfile) {
+    if (!currentOrganization?.id || !userProfile) {
       console.log('❌ Cannot create channel - missing data:', {
-        hasOrgData: !!organizationData?.id,
-        hasUserProfile: !!userProfile
+        hasOrgData: !!currentOrganization?.id,
+        hasUserProfile: !!userProfile,
+        currentOrganization,
+        userProfile
       })
-      toast.error('Unable to create channel: missing organization or user data')
-      return
+      // Try to initialize chat first if user profile is missing
+      if (user && currentOrganization?.id && !userProfile) {
+        console.log('🔄 Attempting to initialize chat...')
+        await initializeChat()
+        // After initialization, check again
+        if (!userProfile) {
+          toast.error('Unable to create channel: user profile not initialized')
+          return
+        }
+      } else {
+        toast.error('Unable to create channel: missing organization or user data')
+        return
+      }
     }
 
     try {
       const channelData = {
         ...data,
-        organization_id: organizationData.id,
+        organization_id: currentOrganization.id,
         created_by: userProfile.id
       }
+
+      console.log('📝 Attempting to create channel with data:', channelData)
+
+      // First, let's verify organization membership
+      const { data: membership, error: membershipError } = await db.getOrganizationMember(currentOrganization.id, userProfile.id)
+      console.log('👥 Organization membership check:', { membership, membershipError })
 
       const { data: newChannel, error: createError } = await db.createChatChannel(channelData)
       
       if (createError) {
-        throw new Error(`Failed to create channel: ${createError}`)
+        console.error('Channel creation error:', createError)
+        console.error('Full error object:', JSON.stringify(createError, null, 2))
+        const errorMessage = createError?.message || createError?.details || JSON.stringify(createError) || 'Unknown error'
+        throw new Error(`Failed to create channel: ${errorMessage}`)
       }
       
       if (newChannel) {

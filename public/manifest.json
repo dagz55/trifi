@@ -4,19 +4,9 @@
   "description": "Advanced Financial Management Platform",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/TriFi-logo.png",
       "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
-    },
-    {
-      "src": "/apple-touch-icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "180x180"
+      "sizes": "192x192 512x512 180x180 any"
     }
   ],
   "start_url": "/",

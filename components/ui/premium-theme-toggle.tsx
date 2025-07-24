@@ -1,21 +1,34 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun, Monitor, Palette } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
 
 interface PremiumThemeToggleProps {
   className?: string
-  variant?: "nav" | "standalone"
+  variant?: "nav" | "standalone" | "dropdown" | "compact" | "animated"
+  showLabel?: boolean
 }
 
 export function PremiumThemeToggle({ 
   className,
-  variant = "standalone"
+  variant = "standalone",
+  showLabel = true
 }: PremiumThemeToggleProps) {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
   const [isDark, setIsDark] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -52,6 +65,198 @@ export function PremiumThemeToggle({
 
   if (!mounted) {
     return null
+  }
+
+  // Dropdown variant - with system theme option
+  if (variant === "dropdown") {
+    const themeOptions = [
+      { value: "light", label: "Light", icon: Sun },
+      { value: "dark", label: "Dark", icon: Moon },
+      { value: "system", label: "System", icon: Monitor },
+    ]
+
+    const currentTheme = themeOptions.find(option => option.value === theme)
+    const CurrentIcon = currentTheme?.icon || Sun
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={cn("gap-2", className)}
+          >
+            <motion.div
+              key={theme}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <CurrentIcon className="h-4 w-4" />
+            </motion.div>
+            {showLabel && <span className="hidden sm:inline">{currentTheme?.label}</span>}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel className="flex items-center gap-2">
+            <Palette className="h-4 w-4" />
+            Theme
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup value={theme} onValueChange={(value) => setTheme(value)}>
+            {themeOptions.map((option) => (
+              <DropdownMenuRadioItem 
+                key={option.value} 
+                value={option.value}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <option.icon className="h-4 w-4" />
+                <span>{option.label}</span>
+                {option.value === "system" && resolvedTheme && (
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    ({resolvedTheme})
+                  </span>
+                )}
+              </DropdownMenuRadioItem>
+            ))}
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  // Compact variant - toggle switch style
+  if (variant === "compact") {
+    const toggleTheme = () => {
+      if (theme === "light") setTheme("dark")
+      else if (theme === "dark") setTheme("system")
+      else setTheme("light")
+    }
+
+    return (
+      <motion.button
+        onClick={toggleTheme}
+        className={cn(
+          "relative flex h-10 w-20 cursor-pointer items-center rounded-full p-1 transition-all duration-300 border shadow-sm",
+          resolvedTheme === "dark" 
+            ? "bg-background border-border" 
+            : "bg-muted border-border",
+          className
+        )}
+        whileTap={{ scale: 0.95 }}
+        aria-label="Toggle theme"
+      >
+        <motion.div
+          className="absolute z-20 flex h-8 w-8 items-center justify-center rounded-full bg-primary shadow-md"
+          initial={false}
+          animate={{
+            x: theme === "light" ? 2 : theme === "dark" ? 44 : 23,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+          }}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={theme}
+              initial={{ opacity: 0, rotate: -180 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 180 }}
+              transition={{ duration: 0.2 }}
+            >
+              {theme === "light" && <Sun className="h-4 w-4 text-primary-foreground" />}
+              {theme === "dark" && <Moon className="h-4 w-4 text-primary-foreground" />}
+              {theme === "system" && <Monitor className="h-4 w-4 text-primary-foreground" />}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
+        
+        <div className="absolute inset-0 flex items-center justify-between px-2 text-xs font-medium text-muted-foreground">
+          <Sun className="h-3 w-3 opacity-50" />
+          <Monitor className="h-3 w-3 opacity-50" />
+          <Moon className="h-3 w-3 opacity-50" />
+        </div>
+      </motion.button>
+    )
+  }
+
+  // Animated variant - floating button with effects
+  if (variant === "animated") {
+    const cycleTheme = () => {
+      if (theme === "light") setTheme("dark")
+      else if (theme === "dark") setTheme("system") 
+      else setTheme("light")
+    }
+
+    return (
+      <motion.button
+        onClick={cycleTheme}
+        className={cn(
+          "relative flex h-12 w-12 items-center justify-center rounded-xl border bg-background shadow-lg transition-all duration-300 hover:shadow-xl",
+          className
+        )}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        aria-label="Toggle theme"
+      >
+        <motion.div
+          className="absolute inset-0 rounded-xl bg-gradient-to-br opacity-20"
+          style={{
+            background: resolvedTheme === "dark" 
+              ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+              : "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+          }}
+          animate={{
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={theme}
+            initial={{ y: -20, opacity: 0, rotate: -90 }}
+            animate={{ y: 0, opacity: 1, rotate: 0 }}
+            exit={{ y: 20, opacity: 0, rotate: 90 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 300,
+              damping: 20
+            }}
+            className="relative z-10"
+          >
+            {theme === "light" && (
+              <Sun className="h-5 w-5 text-foreground" />
+            )}
+            {theme === "dark" && (
+              <Moon className="h-5 w-5 text-foreground" />
+            )}
+            {theme === "system" && (
+              <Monitor className="h-5 w-5 text-foreground" />
+            )}
+          </motion.div>
+        </AnimatePresence>
+        
+        <motion.div
+          className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-primary"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.7, 1, 0.7],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.button>
+    )
   }
 
   // Navigation variant - more compact

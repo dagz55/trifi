@@ -104,6 +104,10 @@ export default function OrganizationPage() {
   }
 
   const handleAddDepartment = () => {
+    if (!currentOrganization) {
+      toast.error("Please create an organization first before adding departments")
+      return
+    }
     setAddDepartmentModalOpen(true)
   }
 
@@ -208,10 +212,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key`}
                   </div>
                 </div>
               )}
-              <Button onClick={() => setCreateOrganizationModalOpen(true)}>
+              <Button 
+                onClick={() => setCreateOrganizationModalOpen(true)}
+                disabled={!!authError && authError.includes('Database not configured')}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Create Organization
               </Button>
+              {authError && authError.includes('Database not configured') && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Please configure your database to create organizations
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -207,7 +207,7 @@ export default function MembersPage() {
                         <Avatar>
                           <AvatarImage src={member.avatar} />
                           <AvatarFallback>
-                            {member.name.split(" ").map(n => n[0]).join("")}
+                            {member.name.split(" ").map((n: string) => n[0]).join("")}
                           </AvatarFallback>
                         </Avatar>
                         <div>

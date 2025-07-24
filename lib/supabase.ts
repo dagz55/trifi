@@ -22,49 +22,54 @@ export function isSupabaseConfigured(): boolean {
   return !!(supabaseUrl && supabaseAnonKey)
 }
 
+// Singleton instance for the client
+let _clientInstance: any = null
+
 // Safe Supabase client getter - create client lazily to avoid build-time errors
 export function getSupabaseClient() {
   if (!isSupabaseConfigured()) {
     throw new Error('Supabase is not configured. Please check your environment variables.')
   }
-  return createClient(supabaseUrl!, supabaseAnonKey!)
+  if (!_clientInstance) {
+    _clientInstance = createClient(supabaseUrl!, supabaseAnonKey!)
+  }
+  return _clientInstance
 }
 
-// Client component client
+// Client component client - returns singleton
 export function createSupabaseClient() {
-  if (!isSupabaseConfigured()) {
-    throw new Error('Supabase is not configured. Please check your environment variables.')
-  }
-  return createClient(supabaseUrl!, supabaseAnonKey!)
+  return getSupabaseClient()
 }
 
-// Server component client
+// Server component client - returns singleton
 export function createSupabaseServerClient() {
-  if (!isSupabaseConfigured()) {
-    throw new Error('Supabase is not configured. Please check your environment variables.')
-  }
-  return createClient(supabaseUrl!, supabaseAnonKey!)
+  return getSupabaseClient()
 }
+
+// Singleton instance for admin client
+let _adminInstance: any = null
 
 // Admin client with service role key (for server-side operations)
 export function createSupabaseAdminClient() {
   if (!supabaseUrl || !supabaseServiceRoleKey) {
     throw new Error('Supabase admin client is not configured. Please check SUPABASE_SERVICE_ROLE_KEY environment variable.')
   }
-  return createClient(supabaseUrl, supabaseServiceRoleKey)
+  if (!_adminInstance) {
+    _adminInstance = createClient(supabaseUrl, supabaseServiceRoleKey)
+  }
+  return _adminInstance
 }
 
-// Legacy export for backwards compatibility - create lazily to avoid build errors
-let _supabase: any = null
+// Legacy export for backwards compatibility - uses singleton
 export function getSupabase() {
-  if (_supabase === null && isSupabaseConfigured()) {
+  if (isSupabaseConfigured()) {
     try {
-      _supabase = getSupabaseClient()
+      return getSupabaseClient()
     } catch {
-      _supabase = null
+      return null
     }
   }
-  return _supabase
+  return null
 }
 
 // For backwards compatibility

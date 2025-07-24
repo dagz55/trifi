@@ -110,7 +110,7 @@ export async function uploadPhoto(file: File, folder: string = 'avatars'): Promi
       if (createErr) {
         return { 
           success: false, 
-          error: `Storage bucket setup required. The storage policies have been configured - please try uploading again. Error: ${createErr.message}` 
+          error: `Storage bucket setup required. Please apply the storage policies from migrations/fix-storage-policies.sql in your Supabase dashboard. Error: ${createErr.message}` 
         }
       }
     }
@@ -119,15 +119,23 @@ export async function uploadPhoto(file: File, folder: string = 'avatars'): Promi
     const fileExt = file.name.split('.').pop()
     const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
 
-    // Upload file
+    // Upload file with proper options for RLS
     const { data, error } = await supabase.storage
       .from(PHOTO_BUCKET_CONFIG.name)
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        duplex: 'half' // This helps with some RLS issues
       })
 
     if (error) {
+      // Check if it's an RLS policy error
+      if (error.message.includes('row-level security policy') || error.message.includes('policy')) {
+        return {
+          success: false,
+          error: `Upload failed: Storage policies need to be configured. Please run the SQL from migrations/fix-storage-policies.sql in your Supabase dashboard. Original error: ${error.message}`
+        }
+      }
       return {
         success: false,
         error: `Upload failed: ${error.message}`

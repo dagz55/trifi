@@ -33,15 +33,14 @@ export function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
-  const { organizationData } = useSettings()
-  const { user } = useAuth()
+  const { userProfile, currentOrganization } = useAuth()
 
   const loadNotifications = async () => {
-    if (!user?.id || !organizationData?.id) return
+    if (!userProfile?.id || !currentOrganization?.id) return
 
     setIsLoading(true)
     try {
-      const { data, error } = await db.getNotifications(user.id, organizationData.id)
+      const { data, error } = await db.getNotifications(userProfile.id, currentOrganization.id)
       if (error) {
         console.error('Error loading notifications:', error)
       } else {
@@ -49,7 +48,7 @@ export function Notifications() {
       }
 
       // Load unread count
-      const { data: count, error: countError } = await db.getUnreadNotificationCount(user.id, organizationData.id)
+      const { data: count, error: countError } = await db.getUnreadNotificationCount(userProfile.id, currentOrganization.id)
       if (!countError) {
         setUnreadCount(count || 0)
       }
@@ -93,7 +92,7 @@ export function Notifications() {
 
   useEffect(() => {
     loadNotifications()
-  }, [user?.id, organizationData?.id])
+  }, [userProfile?.id, currentOrganization?.id])
 
   return (
     <div className="relative">

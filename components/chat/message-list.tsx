@@ -25,7 +25,7 @@ interface MessageListProps {
 
 export function MessageList({ className }: MessageListProps) {
   const { state, loadMoreMessages, editMessage, deleteMessage, addReaction } = useChatContext()
-  const { user } = useAuth()
+  const { userProfile } = useAuth()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState(true)
@@ -141,7 +141,7 @@ export function MessageList({ className }: MessageListProps) {
                 key={message.id}
                 message={message}
                 isFirstInGroup={isFirstInGroup}
-                isOwnMessage={message.user_profiles?.clerk_user_id === user?.id}
+                isOwnMessage={message.user_profiles?.clerk_user_id === userProfile?.clerk_user_id}
                 onEdit={editMessage}
                 onDelete={deleteMessage}
                 onReaction={addReaction}

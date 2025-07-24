@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useSettings } from "@/contexts/settings-context"
+import { useAuth } from "@/contexts/auth-context"
 import { db } from "@/lib/database"
 import { toast } from "sonner"
 
@@ -23,7 +23,7 @@ export function AddDepartmentModal({ open, onOpenChange, onDepartmentAdded }: Ad
     budget: 0
   })
   const [isLoading, setIsLoading] = useState(false)
-  const { organizationData } = useSettings()
+  const { currentOrganization } = useAuth()
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
@@ -31,15 +31,15 @@ export function AddDepartmentModal({ open, onOpenChange, onDepartmentAdded }: Ad
       return
     }
 
-    if (!organizationData?.id) {
-      toast.error("No organization selected")
+    if (!currentOrganization?.id) {
+      toast.error("No organization selected. Please create an organization first.")
       return
     }
 
     setIsLoading(true)
     try {
       const { data, error } = await db.createDepartment({
-        organization_id: organizationData.id,
+        organization_id: currentOrganization.id,
         name: formData.name,
         description: formData.description,
         budget: formData.budget
@@ -75,11 +75,19 @@ export function AddDepartmentModal({ open, onOpenChange, onDepartmentAdded }: Ad
     onOpenChange(false)
   }
 
+  // Don't render modal if no organization is available
+  if (!currentOrganization) {
+    return null
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Department</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Adding department to: <span className="font-medium">{currentOrganization.name}</span>
+          </p>
         </DialogHeader>
         
         <div className="space-y-4">

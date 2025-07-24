@@ -9,6 +9,7 @@ A modern, feature-rich financial management platform built with Next.js, TypeScr
 - **Role-Based Access Control** - Granular permissions for different user types
 - **Multi-Organization Support** - Users can belong to multiple organizations with different roles
 - **Bank-Grade Security** - Enterprise-level encryption and security measures
+- **Robust RLS Policies** - Comprehensive Row Level Security with proper JWT handling and type safety
 
 ### Financial Management
 - **Advanced Analytics** - Real-time financial analytics with AI-powered insights
@@ -35,11 +36,28 @@ A modern, feature-rich financial management platform built with Next.js, TypeScr
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS, shadcn/ui components
 - **Authentication**: Supabase Auth
-- **Database**: Supabase (PostgreSQL)
+- **Database**: Supabase (PostgreSQL) with comprehensive migration system
 - **State Management**: React Context API
 - **Animations**: Framer Motion
 - **Charts**: Recharts
 - **Icons**: Lucide React
+
+## 🗃️ Database & Migrations
+
+The project includes a robust migration system with:
+
+- **Idempotent Migrations** - All migrations can be run multiple times safely
+- **Type-Safe RLS Policies** - Proper JWT handling without type casting issues
+- **Comprehensive Schema** - Full featured tables for organizations, users, chat, finances, and more
+- **Security First** - Row Level Security enabled on all sensitive tables
+- **Helper Functions** - Centralized authentication functions for consistent policy implementation
+
+### Migration Files
+- `0001_init.sql` - Core schema initialization
+- `0002_roles_management.sql` - Custom role system
+- `0003_chat_system.sql` - Complete chat functionality
+- `0004_additional_tables.sql` - Extended features (payments, exports, reports)
+- `0005-0007_*.sql` - Chat RLS policy fixes and JWT authentication improvements
 
 ## 📋 Prerequisites
 
@@ -325,6 +343,13 @@ If you encounter issues not covered here:
 - Improved performance and reduced bundle size
 - New user management features
 - Updated documentation and setup guides
+
+## Branding & Logo
+
+- The official TriFi logo is now `TriFi-logo.png` (located in the public directory).
+- This logo is used for navigation, favicon, and all app icons (manifest, apple-touch, etc).
+- To update the logo, replace `public/TriFi-logo.png` with your new image (PNG, recommended transparent background).
+- The landing page and logo have been restored to the previous modern, sleek, and fancy style (gradient text logo and SVG-based TriFiLogo).
 
 ---
 

@@ -14,9 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { ModernDatePicker } from "@/components/ui/modern-date-picker"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -109,30 +107,13 @@ export function AddTransactionModal({ open, onOpenChange, onTransactionAdded }: 
             </div>
             <div className="space-y-2">
               <Label htmlFor="date">Date *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(selectedDate) => setDate(selectedDate || new Date())}
-                    defaultMonth={new Date()}
-                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <ModernDatePicker
+                value={date}
+                onChange={(selectedDate) => setDate(selectedDate || new Date())}
+                placeholder="Select transaction date"
+                maxDate={new Date()}
+                minDate={new Date("1900-01-01")}
+              />
             </div>
           </div>
           

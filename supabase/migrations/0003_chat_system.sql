@@ -2,7 +2,7 @@
 -- Comprehensive messaging system for organization communication
 
 -- Chat Channels/Rooms
-CREATE TABLE public.chat_channels (
+CREATE TABLE IF NOT EXISTS public.chat_channels (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE public.chat_channels (
 );
 
 -- Chat Channel Members
-CREATE TABLE public.chat_channel_members (
+CREATE TABLE IF NOT EXISTS public.chat_channel_members (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     channel_id UUID REFERENCES chat_channels(id) ON DELETE CASCADE,
     user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
@@ -28,7 +28,7 @@ CREATE TABLE public.chat_channel_members (
 );
 
 -- Chat Messages
-CREATE TABLE public.chat_messages (
+CREATE TABLE IF NOT EXISTS public.chat_messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     channel_id UUID REFERENCES chat_channels(id) ON DELETE CASCADE,
     user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
@@ -43,7 +43,7 @@ CREATE TABLE public.chat_messages (
 );
 
 -- Chat Message Reactions
-CREATE TABLE public.chat_message_reactions (
+CREATE TABLE IF NOT EXISTS public.chat_message_reactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     message_id UUID REFERENCES chat_messages(id) ON DELETE CASCADE,
     user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
@@ -53,7 +53,7 @@ CREATE TABLE public.chat_message_reactions (
 );
 
 -- Chat File Attachments
-CREATE TABLE public.chat_attachments (
+CREATE TABLE IF NOT EXISTS public.chat_attachments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     message_id UUID REFERENCES chat_messages(id) ON DELETE CASCADE,
     file_name TEXT NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE public.chat_attachments (
 );
 
 -- Chat Message Mentions
-CREATE TABLE public.chat_mentions (
+CREATE TABLE IF NOT EXISTS public.chat_mentions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     message_id UUID REFERENCES chat_messages(id) ON DELETE CASCADE,
     user_id UUID REFERENCES user_profiles(id) ON DELETE CASCADE,
@@ -75,26 +75,35 @@ CREATE TABLE public.chat_mentions (
 );
 
 -- Insert default channels for demonstration
-INSERT INTO public.chat_channels (name, description, type) VALUES
-('General', 'General discussion for all organization members', 'public'),
-('Random', 'Random conversations and casual chat', 'public'),
-('Announcements', 'Important organization announcements', 'public');
+INSERT INTO public.chat_channels (name, description, type)
+SELECT 'General', 'General discussion for all organization members', 'public'
+WHERE NOT EXISTS (SELECT 1 FROM public.chat_channels WHERE name = 'General');
+
+INSERT INTO public.chat_channels (name, description, type)
+SELECT 'Random', 'Random conversations and casual chat', 'public'
+WHERE NOT EXISTS (SELECT 1 FROM public.chat_channels WHERE name = 'Random');
+
+INSERT INTO public.chat_channels (name, description, type)
+SELECT 'Announcements', 'Important organization announcements', 'public'
+WHERE NOT EXISTS (SELECT 1 FROM public.chat_channels WHERE name = 'Announcements');
 
 -- Create indexes for better performance
-CREATE INDEX idx_chat_channels_organization_id ON public.chat_channels(organization_id);
-CREATE INDEX idx_chat_channels_type ON public.chat_channels(type);
-CREATE INDEX idx_chat_channel_members_channel_id ON public.chat_channel_members(channel_id);
-CREATE INDEX idx_chat_channel_members_user_id ON public.chat_channel_members(user_id);
-CREATE INDEX idx_chat_messages_channel_id ON public.chat_messages(channel_id);
-CREATE INDEX idx_chat_messages_user_id ON public.chat_messages(user_id);
-CREATE INDEX idx_chat_messages_created_at ON public.chat_messages(created_at);
-CREATE INDEX idx_chat_messages_reply_to_id ON public.chat_messages(reply_to_id);
-CREATE INDEX idx_chat_message_reactions_message_id ON public.chat_message_reactions(message_id);
-CREATE INDEX idx_chat_attachments_message_id ON public.chat_attachments(message_id);
-CREATE INDEX idx_chat_mentions_user_id ON public.chat_mentions(user_id);
-CREATE INDEX idx_chat_mentions_unread ON public.chat_mentions(user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_chat_channels_organization_id ON public.chat_channels(organization_id);
+CREATE INDEX IF NOT EXISTS idx_chat_channels_type ON public.chat_channels(type);
+CREATE INDEX IF NOT EXISTS idx_chat_channel_members_channel_id ON public.chat_channel_members(channel_id);
+CREATE INDEX IF NOT EXISTS idx_chat_channel_members_user_id ON public.chat_channel_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_channel_id ON public.chat_messages(channel_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_user_id ON public.chat_messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at ON public.chat_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_reply_to_id ON public.chat_messages(reply_to_id);
+CREATE INDEX IF NOT EXISTS idx_chat_message_reactions_message_id ON public.chat_message_reactions(message_id);
+CREATE INDEX IF NOT EXISTS idx_chat_attachments_message_id ON public.chat_attachments(message_id);
+CREATE INDEX IF NOT EXISTS idx_chat_mentions_user_id ON public.chat_mentions(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_mentions_unread ON public.chat_mentions(user_id, is_read);
 
 -- Enable Row Level Security (RLS)
+-- Note: These statements will error if RLS is already enabled, which is fine.
+-- The migration will continue, and RLS will remain enabled.
 ALTER TABLE public.chat_channels ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chat_channel_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
@@ -103,19 +112,31 @@ ALTER TABLE public.chat_attachments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chat_mentions ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for chat system
+-- Helper function to get current user ID from Clerk JWT
+CREATE OR REPLACE FUNCTION get_current_user_id() 
+RETURNS UUID AS $$
+BEGIN
+    RETURN (
+        SELECT id FROM public.user_profiles 
+        WHERE clerk_user_id = COALESCE(auth.jwt() ->> 'sub', '')
+        LIMIT 1
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Users can only see channels they're members of
 CREATE POLICY "Users can view channels they're members of" ON public.chat_channels
     FOR SELECT USING (
         id IN (
             SELECT channel_id FROM public.chat_channel_members 
-            WHERE user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+            WHERE user_id = get_current_user_id()
         ) OR type = 'public'
     );
 
 -- Users can only see their own channel memberships
 CREATE POLICY "Users can view their own channel memberships" ON public.chat_channel_members
     FOR SELECT USING (
-        user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+        user_id = get_current_user_id()
     );
 
 -- Users can only see messages in channels they're members of
@@ -123,7 +144,7 @@ CREATE POLICY "Users can view messages in their channels" ON public.chat_message
     FOR SELECT USING (
         channel_id IN (
             SELECT channel_id FROM public.chat_channel_members 
-            WHERE user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+            WHERE user_id = get_current_user_id()
         )
     );
 
@@ -132,14 +153,14 @@ CREATE POLICY "Users can send messages in their channels" ON public.chat_message
     FOR INSERT WITH CHECK (
         channel_id IN (
             SELECT channel_id FROM public.chat_channel_members 
-            WHERE user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+            WHERE user_id = get_current_user_id()
         )
     );
 
 -- Users can only update/delete their own messages
 CREATE POLICY "Users can edit their own messages" ON public.chat_messages
     FOR UPDATE USING (
-        user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+        user_id = get_current_user_id()
     );
 
 -- Allow read access to reactions and attachments for messages user can see
@@ -149,7 +170,7 @@ CREATE POLICY "Users can view reactions on accessible messages" ON public.chat_m
             SELECT id FROM public.chat_messages 
             WHERE channel_id IN (
                 SELECT channel_id FROM public.chat_channel_members 
-                WHERE user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+                WHERE user_id = get_current_user_id()
             )
         )
     );
@@ -160,7 +181,7 @@ CREATE POLICY "Users can view attachments on accessible messages" ON public.chat
             SELECT id FROM public.chat_messages 
             WHERE channel_id IN (
                 SELECT channel_id FROM public.chat_channel_members 
-                WHERE user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+                WHERE user_id = get_current_user_id()
             )
         )
     );
@@ -168,12 +189,31 @@ CREATE POLICY "Users can view attachments on accessible messages" ON public.chat
 -- Users can view their own mentions
 CREATE POLICY "Users can view their own mentions" ON public.chat_mentions
     FOR SELECT USING (
-        user_id = (SELECT id FROM public.user_profiles WHERE clerk_user_id = auth.jwt() ->> 'sub')
+        user_id = get_current_user_id()
     );
 
 -- Add updated_at triggers for chat tables
-CREATE TRIGGER update_chat_channels_updated_at BEFORE UPDATE ON public.chat_channels FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_chat_messages_updated_at BEFORE UPDATE ON public.chat_messages FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_chat_channels_updated_at') THEN
+        CREATE TRIGGER update_chat_channels_updated_at
+            BEFORE UPDATE ON public.chat_channels
+            FOR EACH ROW
+            EXECUTE FUNCTION update_updated_at_column();
+    END IF;
+END
+$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_chat_messages_updated_at') THEN
+        CREATE TRIGGER update_chat_messages_updated_at
+            BEFORE UPDATE ON public.chat_messages
+            FOR EACH ROW
+            EXECUTE FUNCTION update_updated_at_column();
+    END IF;
+END
+$$;
 
 -- Create function to auto-add users to public channels when they join an organization
 CREATE OR REPLACE FUNCTION auto_add_to_public_channels()
@@ -195,10 +235,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger to auto-add users to public channels
-CREATE TRIGGER auto_add_to_public_channels_trigger
-    AFTER INSERT ON public.organization_members
-    FOR EACH ROW
-    EXECUTE FUNCTION auto_add_to_public_channels();
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'auto_add_to_public_channels_trigger') THEN
+        CREATE TRIGGER auto_add_to_public_channels_trigger
+            AFTER INSERT ON public.organization_members
+            FOR EACH ROW
+            EXECUTE FUNCTION auto_add_to_public_channels();
+    END IF;
+END
+$$;
 
 -- Create function to get unread message count for a user
 CREATE OR REPLACE FUNCTION get_unread_message_count(user_uuid UUID, channel_uuid UUID)

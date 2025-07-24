@@ -122,20 +122,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const createOrganization = async (organizationData: Partial<Organization>): Promise<Organization | null> => {
     console.log('🏗️ AuthContext.createOrganization called with:', organizationData)
     
+    // Check if Clerk is loaded and user is signed in
+    if (!isClerkLoaded || !isSignedIn || !clerkUser) {
+      console.error('❌ Authentication not ready')
+      const errorMsg = 'Please sign in to create an organization'
+      setError(errorMsg)
+      throw new Error(errorMsg)
+    }
+    
+    // Ensure user profile exists before creating organization
     if (!userProfile) {
-      console.error('❌ User profile not available')
-      setError('User profile not available')
-      return null
+      console.log('👤 User profile not available, attempting to create...')
+      try {
+        const { data: profile, error: profileError } = await ensureUserProfile(clerkUser)
+        if (profileError || !profile) {
+          console.error('❌ Failed to create user profile:', profileError)
+          const errorMsg = `Failed to create user profile: ${profileError?.message || 'Unknown error'}`
+          setError(errorMsg)
+          throw new Error(errorMsg)
+        }
+        setUserProfile(profile)
+        console.log('✅ User profile created:', profile.id)
+      } catch (err) {
+        console.error('💥 Exception creating user profile:', err)
+        const errorMsg = `Error creating user profile: ${err instanceof Error ? err.message : 'Unknown error'}`
+        setError(errorMsg)
+        throw new Error(errorMsg)
+      }
     }
 
-    console.log('👤 User profile available:', userProfile.id)
+    const profileToUse = userProfile || (await ensureUserProfile(clerkUser)).data
+    if (!profileToUse) {
+      const errorMsg = 'Unable to create or access user profile'
+      setError(errorMsg)
+      throw new Error(errorMsg)
+    }
+
+    console.log('👤 Using user profile:', profileToUse.id)
 
     try {
       setError(null)
       
       console.log('📡 Calling db.createOrganizationWithOwner...')
       // Use the new database service method
-      const { data: newOrg, error } = await db.createOrganizationWithOwner(organizationData, userProfile.id)
+      const { data: newOrg, error } = await db.createOrganizationWithOwner(organizationData, profileToUse.id)
 
       console.log('📊 Database response:', { newOrg, error })
 

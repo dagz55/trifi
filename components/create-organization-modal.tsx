@@ -157,6 +157,12 @@ export function CreateOrganizationModal({ open, onOpenChange }: CreateOrganizati
         toast.error("Database not configured. Please set up your Supabase environment variables to create organizations.")
       } else if (error?.code === 'FUNCTION_NOT_FOUND') {
         toast.error("Database setup incomplete. Please run database migrations.")
+      } else if (error?.message?.includes('user profile')) {
+        toast.error("User profile issue: " + error.message)
+      } else if (error?.message?.includes('sign in')) {
+        toast.error("Authentication required: " + error.message)
+      } else if (error?.message?.includes('foreign key constraint')) {
+        toast.error("Database integrity issue. Please try signing out and back in.")
       } else {
         toast.error(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }

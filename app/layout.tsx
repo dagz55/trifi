@@ -74,20 +74,16 @@ export const metadata = {
   icons: {
     icon: [
       {
-        url: '/favicon.svg',
-        type: 'image/svg+xml',
-      },
-      {
-        url: '/placeholder-logo.svg',
-        type: 'image/svg+xml',
+        url: '/TriFi-logo.png',
+        type: 'image/png',
       },
     ],
-    shortcut: '/favicon.svg',
+    shortcut: '/TriFi-logo.png',
     apple: [
       {
-        url: '/apple-touch-icon.svg',
+        url: '/TriFi-logo.png',
         sizes: '180x180',
-        type: 'image/svg+xml',
+        type: 'image/png',
       },
     ],
   },

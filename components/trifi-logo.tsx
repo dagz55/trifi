@@ -51,7 +51,6 @@ export function TriFiLogo({
           <stop offset="0%" stopColor={colors.accent.start} />
           <stop offset="100%" stopColor={colors.accent.end} />
         </linearGradient>
-        
         {/* Modern filter effects */}
         <filter id={`glow-${variant}`} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -69,7 +68,6 @@ export function TriFiLogo({
             d="M60 15 L95 85 L25 85 Z"
             fill={`url(#trifi-gradient1-${variant})`}
             opacity="0.9"
-            filter={variant === 'default' ? `url(#glow-${variant})` : undefined}
           />
           <circle
             cx="60"
@@ -96,21 +94,18 @@ export function TriFiLogo({
             opacity="0.85"
             filter={variant === 'default' ? `url(#glow-${variant})` : undefined}
           />
-          
           {/* Middle triangle - represents innovation */}
           <path
             d="M60 20 L90 75 L30 75 Z"
             fill={`url(#trifi-gradient2-${variant})`}
             opacity="0.8"
           />
-          
           {/* Inner triangle - represents precision */}
           <path
             d="M60 32 L78 65 L42 65 Z"
             fill={`url(#trifi-gradient3-${variant})`}
             opacity="0.75"
           />
-          
           {/* Center circle - represents focus and clarity */}
           <circle
             cx="60"
@@ -119,7 +114,6 @@ export function TriFiLogo({
             fill="white"
             opacity="0.95"
           />
-          
           {/* Inner focus point */}
           <circle
             cx="60"
@@ -130,7 +124,7 @@ export function TriFiLogo({
           />
         </>
       )}
-    </svg>
+  </svg>
   )
   
   if (!showText) {

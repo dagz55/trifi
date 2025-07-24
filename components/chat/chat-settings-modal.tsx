@@ -60,7 +60,7 @@ interface ChannelEditData {
 
 export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps) {
   const { state, loadChannels, setCurrentChannel } = useChatContext()
-  const { user } = useAuth()
+  const { userProfile } = useAuth()
   const [activeTab, setActiveTab] = useState('channels')
   const [editingChannel, setEditingChannel] = useState<ChatChannel | null>(null)
   const [channelMembers, setChannelMembers] = useState<Array<{ 
@@ -348,7 +348,7 @@ export function ChatSettingsModal({ open, onOpenChange }: ChatSettingsModalProps
                                   </div>
                                 </div>
                                 
-                                {member.user_id !== user?.id && (
+                                {member.user_id !== userProfile?.id && (
                                   <Button
                                     variant="ghost"
                                     size="sm"

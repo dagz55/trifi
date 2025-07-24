@@ -10,6 +10,7 @@ import { Separator } from "./ui/separator"
 import { LandingNav } from "./landing-nav"
 import { BarChart3, CreditCard, DollarSign, Globe, Lock, MessageCircle, Shield, TrendingUp, Users, Zap, Smartphone } from "lucide-react"
 import Link from "next/link"
+import { AnimatedPricingCard } from "./ui/animated-pricing-card"
 
 const features = [
   {
@@ -146,6 +147,53 @@ export function LandingPage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-24 bg-gradient-to-br from-white via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-indigo-900/20">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Choose Your Plan</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Flexible pricing for teams of all sizes. Start for free, upgrade anytime.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Free Plan */}
+            <AnimatedPricingCard
+              planName="Free"
+              description="Get started with essential features for individuals and small teams."
+              price="₱0"
+              features={["Basic analytics dashboard", "Up to 3 projects", "Community support"]}
+              buttonText="Get Started"
+              variant="basic"
+              onButtonClick={() => window.location.href = '/sign-up'}
+            />
+            {/* Premium Plan */}
+            <AnimatedPricingCard
+              planName="Premium"
+              description="Unlock advanced analytics, automation, and integrations."
+              price="₱499"
+              originalPrice="₱799"
+              features={["All Free features", "Unlimited projects", "Advanced analytics", "Priority email support", "Automations & integrations"]}
+              buttonText="Buy Premium"
+              isPopular
+              isRecommended
+              variant="premium"
+              onButtonClick={() => window.location.href = '/sign-up'}
+            />
+            {/* Enterprise Plan */}
+            <AnimatedPricingCard
+              planName="Enterprise"
+              description="Custom solutions and dedicated support for large organizations."
+              price="Contact Us"
+              features={["All Premium features", "Custom integrations", "Dedicated account manager", "24/7 priority support", "Onboarding & training"]}
+              buttonText="Contact Sales"
+              variant="enterprise"
+              onButtonClick={() => window.location.href = '/contact'}
+            />
           </div>
         </div>
       </section>

@@ -74,7 +74,7 @@ const formatAmount = (amount: number, type: string) => {
 }
 
 export default function TransactionsPage() {
-  const { user } = useAuth()
+  const { userProfile, currentOrganization } = useAuth()
   
   // TODO: Replace with actual data from your database/API
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -228,7 +228,7 @@ export default function TransactionsPage() {
     return count
   }
 
-  if (!user) {
+  if (!userProfile) {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">

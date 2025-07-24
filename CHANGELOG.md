@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🔧 Major Database Fixes
+- **JWT Authentication Policies**: Comprehensive fix for "bigint = uuid" operator errors
+  - Created centralized `get_current_user_id()` helper function for consistent user authentication
+  - Fixed all RLS policies across chat system, organizations, and user management
+  - Eliminated type casting issues in PostgreSQL queries
+  - Made all migrations idempotent with proper `IF NOT EXISTS` checks
+  - Added comprehensive migration (0007) that drops and recreates all problematic policies
+
 ### 🎨 Improved
+- **Database Schema**: Enhanced migration reliability and consistency
+  - All table creation statements now use `CREATE TABLE IF NOT EXISTS`
+  - Added conditional policy and trigger creation to prevent conflicts
+  - Improved error handling in data insertion statements
 - **Dashboard Overview Cards**: Fixed text truncation and sizing issues
   - Removed redundant grid layout causing card constraints
   - Enhanced card spacing and padding for better content display
@@ -16,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced visual balance and readability
 
 ### 🔧 Fixed
+- **Migration System**: Resolved multiple critical database migration issues
+  - Fixed "relation already exists" errors by making migrations idempotent
+  - Eliminated JWT extraction type mismatches in RLS policies
+  - Added proper function parameter naming to avoid reserved keyword conflicts
 - **UI Layout**: Resolved double grid structure causing improper card sizing
 - **Text Display**: Fixed text overflow and truncation in dashboard cards
 - **Responsive Design**: Improved card layout across different screen sizes
@@ -43,6 +59,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated README with troubleshooting section for common issues
 - Enhanced photo upload error messages to be more user-friendly
 - Updated storage migration to avoid superuser privilege requirements
+- Updated navigation and all logo references to use the official TriFi-logo.png.
+- Updated app/layout.tsx metadata to use TriFi-logo.png for all icons (favicon, shortcut, apple-touch).
+- Updated public/manifest.json to use TriFi-logo.png as the only app icon for all platforms.
+- Updated TriFiLogo component to render TriFi-logo.png for the default variant.
+- Restored the previous modern, sleek, and fancy landing page and logo style (gradient text logo and SVG-based TriFiLogo component).
 
 ---
 

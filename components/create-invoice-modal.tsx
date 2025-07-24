@@ -8,9 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Plus, Trash2 } from "lucide-react"
+import { ModernDatePicker } from "@/components/ui/modern-date-picker"
+import { Plus, Trash2 } from "lucide-react"
 import { format, addDays } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useSettings } from "@/contexts/settings-context"
@@ -238,49 +237,22 @@ export function CreateInvoiceModal({ trigger }: CreateInvoiceModalProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Issue Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(formData.issueDate, "PPP")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.issueDate}
-                    onSelect={(date) => date && setFormData(prev => ({ ...prev, issueDate: date }))}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <ModernDatePicker
+                value={formData.issueDate}
+                onChange={(date) => date && setFormData(prev => ({ ...prev, issueDate: date }))}
+                placeholder="Select issue date"
+                maxDate={new Date()}
+              />
             </div>
             
             <div className="space-y-2">
               <Label>Due Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(formData.dueDate, "PPP")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={formData.dueDate}
-                    onSelect={(date) => date && setFormData(prev => ({ ...prev, dueDate: date }))}
-                    initialFocus
-                    disabled={(date) => date < formData.issueDate}
-                  />
-                </PopoverContent>
-              </Popover>
+              <ModernDatePicker
+                value={formData.dueDate}
+                onChange={(date) => date && setFormData(prev => ({ ...prev, dueDate: date }))}
+                placeholder="Select due date"
+                minDate={formData.issueDate}
+              />
             </div>
           </div>
 

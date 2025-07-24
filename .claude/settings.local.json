@@ -37,7 +37,12 @@
       "Bash(npm install:*)",
       "Bash(npx supabase:*)",
       "Bash(npx dotenv-cli:*)",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "Bash(npx tsc:*)",
+      "mcp__filesystem__search_files",
+      "mcp__filesystem__list_allowed_directories",
+      "Bash(source:*)",
+      "Bash(timeout 8 npm run dev)"
     ],
     "deny": []
   }

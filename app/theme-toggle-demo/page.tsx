@@ -28,7 +28,109 @@ export default function ThemeToggleDemo() {
         </div>
 
         {/* Demo Cards */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Dropdown Variant */}
+          <Card className="glass-card bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200 dark:border-gray-800 shadow-xl">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                  Dropdown Variant
+                </CardTitle>
+                <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                  Modern
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="text-gray-600 dark:text-gray-400">
+                Full-featured dropdown with system theme detection. Perfect for settings pages and user preferences.
+              </p>
+              
+              <div className="flex items-center justify-center p-8 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-2xl">
+                <PremiumThemeToggle variant="dropdown" />
+              </div>
+              
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <h4 className="font-semibold text-gray-900 dark:text-white">Features:</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• System theme detection</li>
+                  <li>• Accessible dropdown menu</li>
+                  <li>• Current theme indicator</li>
+                  <li>• Smooth icon transitions</li>
+                  <li>• Mobile responsive</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Compact Variant */}
+          <Card className="glass-card bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200 dark:border-gray-800 shadow-xl">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                  Compact Variant
+                </CardTitle>
+                <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
+                  Sleek
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="text-gray-600 dark:text-gray-400">
+                Sleek toggle switch with spring animations. Cycles through light, dark, and system themes.
+              </p>
+              
+              <div className="flex items-center justify-center p-8 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-2xl">
+                <PremiumThemeToggle variant="compact" />
+              </div>
+              
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <h4 className="font-semibold text-gray-900 dark:text-white">Features:</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• Three-state toggle</li>
+                  <li>• Spring animations</li>
+                  <li>• Background icons</li>
+                  <li>• Smooth transitions</li>
+                  <li>• Touch-friendly</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Animated Variant */}
+          <Card className="glass-card bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200 dark:border-gray-800 shadow-xl">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+                  Animated Variant
+                </CardTitle>
+                <Badge variant="secondary" className="bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300">
+                  Dynamic
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <p className="text-gray-600 dark:text-gray-400">
+                Eye-catching button with gradient effects and floating animations. Perfect for showcase pages.
+              </p>
+              
+              <div className="flex items-center justify-center p-8 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-2xl">
+                <PremiumThemeToggle variant="animated" />
+              </div>
+              
+              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <h4 className="font-semibold text-gray-900 dark:text-white">Features:</h4>
+                <ul className="space-y-1 ml-4">
+                  <li>• Gradient backgrounds</li>
+                  <li>• Floating animations</li>
+                  <li>• Icon rotations</li>
+                  <li>• Pulsing indicator</li>
+                  <li>• Hover effects</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Navigation Variant */}
           <Card className="glass-card bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-gray-200 dark:border-gray-800 shadow-xl">
             <CardHeader>
@@ -149,12 +251,41 @@ export default function ThemeToggleDemo() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Navigation Variant</h4>
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm">
-                  <code className="text-gray-800 dark:text-gray-200">
-                    {'<PremiumThemeToggle variant="nav" />'}
-                  </code>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Dropdown Variant</h4>
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm">
+                    <code className="text-gray-800 dark:text-gray-200">
+                      {'<PremiumThemeToggle variant="dropdown" />'}
+                    </code>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Compact Variant</h4>
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm">
+                    <code className="text-gray-800 dark:text-gray-200">
+                      {'<PremiumThemeToggle variant="compact" />'}
+                    </code>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Animated Variant</h4>
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm">
+                    <code className="text-gray-800 dark:text-gray-200">
+                      {'<PremiumThemeToggle variant="animated" />'}
+                    </code>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Navigation Variant</h4>
+                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm">
+                    <code className="text-gray-800 dark:text-gray-200">
+                      {'<PremiumThemeToggle variant="nav" />'}
+                    </code>
+                  </div>
                 </div>
               </div>
               
@@ -168,10 +299,10 @@ export default function ThemeToggleDemo() {
               </div>
               
               <div>
-                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">With Custom Styling</h4>
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-2">With Custom Options</h4>
                 <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 font-mono text-sm">
                   <code className="text-gray-800 dark:text-gray-200">
-                    {'<PremiumThemeToggle variant="nav" className="ml-4" />'}
+                    {'<PremiumThemeToggle variant="dropdown" showLabel={false} className="ml-4" />'}
                   </code>
                 </div>
               </div>
