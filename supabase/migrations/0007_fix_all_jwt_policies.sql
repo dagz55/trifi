@@ -1,17 +1,20 @@
 -- Comprehensive fix for all JWT extraction issues in RLS policies
 -- This migration drops all problematic policies and recreates them properly
 
--- Ensure our helper function exists
+-- Ensure our helper function exists with explicit type handling
 CREATE OR REPLACE FUNCTION get_current_user_id() 
 RETURNS UUID AS $$
+DECLARE
+    current_user_uuid UUID;
 BEGIN
-    RETURN (
-        SELECT id FROM public.user_profiles 
-        WHERE clerk_user_id = COALESCE(auth.jwt() ->> 'sub', '')
-        LIMIT 1
-    );
+    SELECT id INTO current_user_uuid
+    FROM public.user_profiles 
+    WHERE clerk_user_id = COALESCE(auth.jwt() ->> 'sub', '')
+    LIMIT 1;
+    
+    RETURN current_user_uuid;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
 -- ========================================
 -- DROP AND RECREATE CHAT POLICIES (IF TABLES EXIST)
@@ -34,7 +37,7 @@ BEGIN
                 organization_id IN (
                     SELECT om.organization_id 
                     FROM public.organization_members om
-                    WHERE om.user_id = get_current_user_id()
+                    WHERE om.user_id = get_current_user_id()::UUID
                 )
                 OR type = 'public'
             );
@@ -44,14 +47,14 @@ BEGIN
                 organization_id IN (
                     SELECT om.organization_id 
                     FROM public.organization_members om
-                    WHERE om.user_id = get_current_user_id()
+                    WHERE om.user_id = get_current_user_id()::UUID
                 )
-                AND created_by = get_current_user_id()
+                AND created_by = get_current_user_id()::UUID
             );
 
         CREATE POLICY "chat_channels_update_policy" ON public.chat_channels
             FOR UPDATE USING (
-                created_by = get_current_user_id()
+                created_by = get_current_user_id()::UUID
             );
     ELSE
         RAISE NOTICE 'Table chat_channels does not exist, skipping its policies';
@@ -80,31 +83,31 @@ BEGIN
                     WHERE organization_id IN (
                         SELECT om.organization_id 
                         FROM public.organization_members om
-                        WHERE om.user_id = get_current_user_id()
+                        WHERE om.user_id = get_current_user_id()::UUID
                     )
                 )
             );
 
         CREATE POLICY "chat_members_insert_policy" ON public.chat_channel_members
             FOR INSERT WITH CHECK (
-                user_id = get_current_user_id()
+                user_id = get_current_user_id()::UUID
                 OR
                 channel_id IN (
                     SELECT ccm.channel_id 
                     FROM public.chat_channel_members ccm
-                    WHERE ccm.user_id = get_current_user_id()
+                    WHERE ccm.user_id = get_current_user_id()::UUID
                     AND ccm.role = 'admin'
                 )
             );
 
         CREATE POLICY "chat_members_update_policy" ON public.chat_channel_members
             FOR UPDATE USING (
-                user_id = get_current_user_id()
+                user_id = get_current_user_id()::UUID
                 OR
                 channel_id IN (
                     SELECT ccm.channel_id 
                     FROM public.chat_channel_members ccm
-                    WHERE ccm.user_id = get_current_user_id()
+                    WHERE ccm.user_id = get_current_user_id()::UUID
                     AND ccm.role = 'admin'
                 )
             );
@@ -134,7 +137,7 @@ BEGIN
                     WHERE organization_id IN (
                         SELECT om.organization_id 
                         FROM public.organization_members om
-                        WHERE om.user_id = get_current_user_id()
+                        WHERE om.user_id = get_current_user_id()::UUID
                     )
                 )
             );
@@ -146,15 +149,15 @@ BEGIN
                     WHERE organization_id IN (
                         SELECT om.organization_id 
                         FROM public.organization_members om
-                        WHERE om.user_id = get_current_user_id()
+                        WHERE om.user_id = get_current_user_id()::UUID
                     )
                 )
-                AND user_id = get_current_user_id()
+                AND user_id = get_current_user_id()::UUID
             );
 
         CREATE POLICY "chat_messages_update_policy" ON public.chat_messages
             FOR UPDATE USING (
-                user_id = get_current_user_id()
+                user_id = get_current_user_id()::UUID
             );
     ELSE
         RAISE NOTICE 'Table chat_messages does not exist, skipping its policies';
@@ -180,7 +183,7 @@ BEGIN
                         WHERE organization_id IN (
                             SELECT om.organization_id 
                             FROM public.organization_members om
-                            WHERE om.user_id = get_current_user_id()
+                            WHERE om.user_id = get_current_user_id()::UUID
                         )
                     )
                 )
@@ -195,11 +198,11 @@ BEGIN
                         WHERE organization_id IN (
                             SELECT om.organization_id 
                             FROM public.organization_members om
-                            WHERE om.user_id = get_current_user_id()
+                            WHERE om.user_id = get_current_user_id()::UUID
                         )
                     )
                 )
-                AND user_id = get_current_user_id()
+                AND user_id = get_current_user_id()::UUID
             );
     ELSE
         RAISE NOTICE 'Table chat_message_reactions does not exist, skipping its policies';
@@ -225,7 +228,7 @@ BEGIN
                         WHERE organization_id IN (
                             SELECT om.organization_id 
                             FROM public.organization_members om
-                            WHERE om.user_id = get_current_user_id()
+                            WHERE om.user_id = get_current_user_id()::UUID
                         )
                     )
                 )
@@ -240,7 +243,7 @@ BEGIN
                         WHERE organization_id IN (
                             SELECT om.organization_id 
                             FROM public.organization_members om
-                            WHERE om.user_id = get_current_user_id()
+                            WHERE om.user_id = get_current_user_id()::UUID
                         )
                     )
                 )
@@ -262,7 +265,7 @@ BEGIN
         -- Create new policies
         CREATE POLICY "chat_mentions_select_policy" ON public.chat_mentions
             FOR SELECT USING (
-                user_id = get_current_user_id()
+                user_id = get_current_user_id()::UUID
             );
 
         CREATE POLICY "chat_mentions_insert_policy" ON public.chat_mentions
@@ -274,7 +277,7 @@ BEGIN
                         WHERE organization_id IN (
                             SELECT om.organization_id 
                             FROM public.organization_members om
-                            WHERE om.user_id = get_current_user_id()
+                            WHERE om.user_id = get_current_user_id()::UUID
                         )
                     )
                 )
@@ -298,7 +301,7 @@ BEGIN
         DROP POLICY IF EXISTS "Users can manage own profile" ON public.user_profiles;
         CREATE POLICY "Users can manage own profile" ON public.user_profiles
             FOR ALL USING (
-                id = get_current_user_id()
+                id = get_current_user_id()::UUID
                 OR true -- Allow all for now - customize based on your auth needs
             );
     ELSE
